@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "https://www.puppycrawl.com/dtd/suppressions_1_1.dtd">
+
+<suppressions>
+    <!--  suppress package-info.java check  -->
+    <suppress files="src[/\\]main[/\\]java[/\\].*" checks="JavadocPackage"/>
+    <suppress files="src[/\\]test[/\\]java[/\\].*" checks="JavadocPackage"/>
+
+    <!--  suppress javadoc check for tests -->
+    <suppress files="src[/\\]test[/\\]java[/\\].*" checks="Javadoc"/>
+
+    <!--  suppress line length check  -->
+    <suppress files="src[/\\]main[/\\]resources[/\\].*" checks="LineLength"/>
+    <suppress files="src[/\\]test[/\\]resources[/\\].*" checks="LineLength"/>
+
+    <!--  suppress star imports in tests -->
+    <suppress files="src[/\\]test[/\\]java[/\\].*" checks="AvoidStarImport"/>
+
+    <!--  suppress new line at and of file in resources -->
+    <suppress files="src[/\\]main[/\\]resources[/\\].*" checks="NewLineAtAndOfFile"/>
+    <suppress files="src[/\\]test[/\\]resources[/\\].*" checks="NewLineAtAndOfFile"/>
+
+    <!--  suppress main class checks  -->
+    <suppress files="KavaleridzeBackendApplication.java" checks="[a-zA-Z0-9]*"/>
+</suppressions>
