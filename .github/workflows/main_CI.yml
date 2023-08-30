@@ -1,0 +1,26 @@
+name: Kavaleridze-GitHubActions
+on: 
+  push:
+    branches: 
+      - master
+      
+jobs:
+ test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'corretto'
+        java-version: '17'
+        cache: maven
+
+    - name: install dependencies
+      run: pip install -r pom.xml
+
+    - name: run testes
+      run: pytest      
