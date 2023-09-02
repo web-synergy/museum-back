@@ -1,14 +1,10 @@
 package baza.trainee.domain.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import baza.trainee.domain.enums.ContentType;
 
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-public class SearchDto {
-    private String id;
-    private String title;
-    private String description;
-}
+public record SearchDto(
+    String id,
+    String title,
+    String description,
+    ContentType contentType
+) {}
