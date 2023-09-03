@@ -7,4 +7,4 @@ public record SearchDto(
     String title,
     String description,
     ContentType contentType
-) {}
+) { }

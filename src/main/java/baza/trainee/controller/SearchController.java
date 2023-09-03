@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static baza.trainee.constants.SearchConstant.BLANK_QUERY_ERROR_MESSAGE;
+import static baza.trainee.constants.SearchConstant.MAX_SIZE_QUERY;
+import static baza.trainee.constants.SearchConstant.MIN_SIZE_QUERY;
+import static baza.trainee.constants.SearchConstant.SIZE_QUERY_ERROR_MESSAGE;
+
 /**
  * The {@code SearchController} class is a Spring MVC REST controller
  * responsible for handling search-related requests and returning
@@ -31,6 +36,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 public class SearchController {
+    /**
+     * The service responsible for performing search operations.
+     */
     private final SearchService searchService;
 
     /**
@@ -42,9 +50,11 @@ public class SearchController {
      */
     @GetMapping("/{query}")
     List<SearchDto> search(@PathVariable("query")
-                           @NotBlank(message = "Query should not be blank")
-                           @Size(min = 3, max = 120, message = "Size of query should be between 3 and 120 characters")
-                           String query) {
+                           @NotBlank(message = BLANK_QUERY_ERROR_MESSAGE)
+                           @Size(min = MIN_SIZE_QUERY,
+                                   max = MAX_SIZE_QUERY,
+                                   message = SIZE_QUERY_ERROR_MESSAGE)
+                           final String query) {
         return searchService.search(query);
     }
 }
