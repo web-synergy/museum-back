@@ -5,6 +5,7 @@ import baza.trainee.domain.dto.SearchDto;
 import java.util.List;
 
 public interface SearchService {
+
     /**
      * Search events and articles.
      *

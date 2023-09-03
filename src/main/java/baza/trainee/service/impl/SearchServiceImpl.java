@@ -8,6 +8,7 @@ import java.util.List;
 
 @Service
 public class SearchServiceImpl implements SearchService {
+
     @Override
     public List<SearchDto> search(String query) {
         return null;

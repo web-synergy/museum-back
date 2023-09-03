@@ -13,6 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * The {@code SearchController} class is a Spring MVC REST controller
+ * responsible for handling search-related requests and returning
+ * result of searching (list of {@link SearchDto}).
+ * It exposes endpoints under the "/api/search" base path.
+ *
+ * This controller ensures that queries meet certain validation criteria and
+ * delegates the actual search functionality to the {@link SearchService}.
+ *
+ * @author Dmytro Teliukov
+ * @version 1.0
+ * @since 2023-09-03
+ */
 @RestController
 @RequestMapping("/api/search")
 @RequiredArgsConstructor
@@ -20,6 +33,13 @@ import java.util.List;
 public class SearchController {
     private final SearchService searchService;
 
+    /**
+     * Performs a search operation based on the provided query string.
+     *
+     * @param query The search query string to be validated and processed.
+     * @return A list of {@link SearchDto} objects representing
+     * the search results.
+     */
     @GetMapping("/{query}")
     List<SearchDto> search(@PathVariable("query")
                            @NotBlank(message = "Query should not be blank")
