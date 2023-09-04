@@ -10,6 +10,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+/**
+ *  The {@code PictureController} class is a Spring MVC REST controller
+ *  * responsible for handling add, change and delete picture
+ *  * result of add and change (string of file access path{example: /img/[2023/9/look.jpg]})
+ *  * path /img refers to the directory: absolute path to the project + /uploads
+ *  * It exposes endpoints under the "/admin/[addFile,...]" base path.
+ *  *
+ *  * Files are distributed directly, example: localhost:8080/img/2023/9/look.jpg
+ *  *
+ *  * @author Andry Sitarsky
+ *  * @version 1.0
+ *  * @since 2023-09-03*/
+
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
