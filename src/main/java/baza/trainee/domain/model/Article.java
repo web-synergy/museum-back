@@ -7,6 +7,7 @@ import com.redis.om.spring.annotations.Searchable;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -25,6 +26,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder(toBuilder = true)
 @Document
 public class Article {
 

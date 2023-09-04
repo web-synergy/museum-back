@@ -1,6 +1,7 @@
 package baza.trainee.controller;
 
-import baza.trainee.domain.dto.ArticleDto;
+import baza.trainee.domain.mapper.ArticleMapper;
+import baza.trainee.domain.model.Article;
 import baza.trainee.service.ArticleService;
 import baza.trainee.utils.LoggingService;
 import lombok.SneakyThrows;
@@ -27,22 +28,27 @@ class ArticleControllerTest {
     ArticleService articleService;
 
     @MockBean
+    ArticleMapper articleMapper;
+
+    @MockBean
     LoggingService loggingService;
 
     @Test
     @SneakyThrows
     void findById() {
-        //GIVEN
-        final var articleDto = new ArticleDto("testId", "testTitle", "testDescription",
-                "testContent", new HashSet<>(), LocalDate.now(), null);
+        final var article = Article.builder()
+                .id("testId")
+                .title("testTitle")
+                .description("testDescription")
+                .content("testContent")
+                .images(new HashSet<>())
+                .created(LocalDate.now())
+                .updated(null)
+                .build();
 
-        when(articleService.findById(articleDto.id())).thenReturn(articleDto);
+        when(articleService.findById(article.getId())).thenReturn(article);
 
-        //WHEN
-        final var result = mockMvc.perform(get("/api/article/{articleId}", articleDto.id()));
-
-        //THEN
-        result
+        mockMvc.perform(get("/api/article/{articleId}", article.getId()))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

@@ -1,6 +1,7 @@
 package baza.trainee.controller;
 
 import baza.trainee.domain.dto.ArticleDto;
+import baza.trainee.domain.mapper.ArticleMapper;
 import baza.trainee.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,10 @@ public class ArticleController {
      * The service responsible for performing article operations.
      */
     private final ArticleService articleService;
+    /**
+     * Map article models within domain and web layers.
+     */
+    private final ArticleMapper articleMapper;
 
     /**
      * Finds an existing article by given id.
@@ -32,6 +37,7 @@ public class ArticleController {
      */
     @GetMapping(value = "/{articleId}", produces = "application/json")
     public ArticleDto findById(@PathVariable(name = "articleId") final String articleId) {
-        return articleService.findById(articleId);
+        final var articleById = articleService.findById(articleId);
+        return articleMapper.toDto(articleById);
     }
 }
