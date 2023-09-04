@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 
 @Service
@@ -30,15 +29,20 @@ public class PictureServiceImpl implements PictureService {
 
     private String createFile(MultipartFile newPicture, String dir)
             throws IOException {
-        if (newPicture != null && newPicture.getOriginalFilename() != null) {
-            File uploadDir = new File(dir);
+        if (newPicture != null && newPicture.getOriginalFilename() !=null) {
+            Path pathDir = Path.of(dir);
 
-            if (!uploadDir.exists()) {
-                Files.createDirectory(Path.of(dir));
+            if (!Files.exists(pathDir)) {
+                Files.createDirectory(pathDir);
             }
 
-            newPicture.transferTo(new File(dir + File.separator + newPicture.getOriginalFilename()));
-            return "/img" + dir + File.separator + newPicture.getOriginalFilename();
+            newPicture.transferTo(Path.of(dir + File.separator + newPicture.getOriginalFilename()));
+
+
+            String pathAfterUploads = dir.replace(
+                    Path.of(System.getProperty(USER_DIR) + uploadPath).toString(),"");
+            return Path.of("/img" + pathAfterUploads + File.separator
+                    + newPicture.getOriginalFilename()).toString();
         } else {
             throw new IOException("Not file or not file name");
         }
