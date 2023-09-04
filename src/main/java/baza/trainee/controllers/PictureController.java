@@ -30,10 +30,19 @@ public class PictureController {
 
     private final PictureService pictureService;
 
+    /**
+     * Add picture in directory /uploads
+     *
+     * @param newFile example:<input name="newFile" type=file/>
+     * @return short path of file, example:/img/2023/9/look.jpg
+     * */
     @PostMapping("/addFile")
     public String addPicture(MultipartFile newFile) throws IOException {
         return pictureService.addPicture(newFile);
     }
+
+    /**
+     * Change */
 
     @PostMapping("/changeFile")
     public String changeFile(String oldPathFile, MultipartFile newFile) throws IOException {
@@ -44,4 +53,5 @@ public class PictureController {
     public boolean deleteFile(String oldPathFile) throws IOException {
         return pictureService.deletePicture(oldPathFile);
     }
+
 }

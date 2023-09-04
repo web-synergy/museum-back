@@ -70,4 +70,5 @@ public class PictureServiceImpl implements PictureService {
         Files.delete(pathFile);
         return !Files.exists(pathFile);
     }
+
 }
