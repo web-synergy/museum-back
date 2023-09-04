@@ -1,11 +1,11 @@
 package baza.trainee.services.impls;
 
 import baza.trainee.services.PictureService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,62 +13,79 @@ import java.time.LocalDate;
 
 @Service
 public class PictureServiceImpl implements PictureService {
-    public static final String USER_DIR = "user.dir";
+
     @Value("${uploads.path}")
     private String uploadPath;
 
-    @Override
-    public String addPicture(MultipartFile newPicture) throws IOException {
-        /*Create new dir*/
-        LocalDate currentDate = LocalDate.now();
-        String newDir = File.separator + currentDate.getYear() + File.separator + currentDate.getMonthValue();
-        String newFullDir = System.getProperty(USER_DIR) + uploadPath + newDir;
+    @Value("${prefix.response}")
+    private String prefixResponse;
 
-        return createFile(newPicture, newFullDir);
+    private Path rootLocation;
+    private Path dirResponse;
+
+    @PostConstruct
+    public void init() {
+        this.rootLocation = Path.of(System.getProperty("user.dir"), uploadPath);
+        this.dirResponse = Path.of(prefixResponse);
     }
 
-    private String createFile(MultipartFile newPicture, String dir)
-            throws IOException {
-        if (newPicture != null && newPicture.getOriginalFilename() !=null) {
-            Path pathDir = Path.of(dir);
+    @Override
+    public String addPicture(MultipartFile newPicture) throws IOException {
+        return createFile(newPicture, createNewDir());
+    }
 
-            if (!Files.exists(pathDir)) {
-                Files.createDirectory(pathDir);
+    private Path createNewDir() {
+        LocalDate currentDate = LocalDate.now();
+        Path newDir = Path.of(Integer.toString(currentDate.getYear()),
+                Integer.toString(currentDate.getMonthValue()));
+        return rootLocation.resolve(newDir);
+    }
+
+    private String createFile(MultipartFile newFile, Path dir)
+            throws IOException {
+        if (newFile != null && newFile.getOriginalFilename() != null) {
+
+
+            if (!Files.exists(dir)) {
+                Files.createDirectory(dir);
             }
 
-            newPicture.transferTo(Path.of(dir + File.separator + newPicture.getOriginalFilename()));
+            newFile.transferTo(dir.resolve(newFile.getOriginalFilename()));
 
-
-            String pathAfterUploads = dir.replace(
-                    Path.of(System.getProperty(USER_DIR) + uploadPath).toString(),"");
-            return Path.of("/img" + pathAfterUploads + File.separator
-                    + newPicture.getOriginalFilename()).toString();
+            Path pathAfterUploads = rootLocation.relativize(dir);
+            return dirResponse.resolve(pathAfterUploads)
+                    .resolve(newFile.getOriginalFilename()).toString();
         } else {
             throw new IOException("Not file or not file name");
         }
+
     }
 
     @Override
     public String changePicture(String oldPath, MultipartFile newPicture)
             throws IOException {
-        if (!deletePicture(oldPath)) {throw new IOException("Not delete file");
+        if (!deletePicture(oldPath)) {
+            throw new IOException("Not delete file");
         }
 
-        String oldFullName = System.getProperty(USER_DIR) + uploadPath + File.separator +
-                oldPath.replace("/img/", "");
-        String oldDir = new File(oldFullName).getParent();
+        Path oldFullPath =
+                rootLocation.resolve(dirResponse.relativize(Path.of(oldPath)));
 
-        return createFile(newPicture, oldDir);
+        return createFile(newPicture, oldFullPath.getParent());
     }
 
     @Override
     public boolean deletePicture(String oldPath) throws IOException {
-        if (oldPath == null || oldPath.isBlank()){return false;}
-        String oldFullPath = System.getProperty(USER_DIR)
-                + uploadPath + oldPath.replace("img/", "");
-        Path pathFile = Path.of(oldFullPath);
-        Files.delete(pathFile);
-        return !Files.exists(pathFile);
+        if (oldPath != null && oldPath.isBlank()) {
+            Path oldPathFile = rootLocation.resolve(
+                    dirResponse.relativize(Path.of(oldPath)));
+
+            if (Files.exists(oldPathFile)) {
+                Files.delete(oldPathFile);
+            }
+            return !Files.exists(oldPathFile);
+        }
+        return false;
     }
 
 }
