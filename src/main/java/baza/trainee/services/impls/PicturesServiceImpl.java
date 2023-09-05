@@ -19,10 +19,10 @@ public class PicturesServiceImpl implements PicturesService {
     private final PictureService pictureService;
 
     @Override
-    public List<String> addAllPictures(List<MultipartFile> pictures){
+    public List<String> addAllPictures(List<MultipartFile> pictures, String ownDir){
         return pictures.stream().map(newFile -> {
             try {
-                return pictureService.addPicture(newFile);
+                return pictureService.addPicture(newFile, ownDir);
             } catch (IOException e) {
                 log.error("Not create file " + newFile.getOriginalFilename());
             }

@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface PicturesService {
-    List<String> addAllPictures(List<MultipartFile> pictures);
+    List<String> addAllPictures(List<MultipartFile> pictures, String ownDir);
 
     List<Boolean> deleteAllPictures(List<String> pictures);
 

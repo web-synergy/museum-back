@@ -3,6 +3,7 @@ package baza.trainee.controllers;
 import baza.trainee.dtos.RequestPicturesDto;
 import baza.trainee.services.PicturesService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PicturesController {
 
+    @Value("${dir}")
+    private String defaultDir;
+
     private final PicturesService picturesService;
 
     /**
@@ -39,9 +43,8 @@ public class PicturesController {
      * */
 
     @PostMapping("/addAllPicture")
-    public List<String> addAllPicture(RequestPicturesDto dto) throws
-            IOException {
-        return picturesService.addAllPictures(dto.getFiles());
+    public List<String> addAllPicture(RequestPicturesDto dto) {
+        return picturesService.addAllPictures(dto.getFiles(), defaultDir);
     }
 
     /**
@@ -54,7 +57,7 @@ public class PicturesController {
      * */
 
     @PostMapping("/changeAllPicture")
-    public List<String> changeAllPicture(RequestPicturesDto dto) throws IOException {
+    public List<String> changeAllPicture(RequestPicturesDto dto) {
         return picturesService.changeAllPictures(dto.getPictures());
     }
 
@@ -67,7 +70,7 @@ public class PicturesController {
      * */
 
     @PostMapping("/deleteAllPicture")
-    public List<Boolean> deleteAllPicture(RequestPicturesDto dto) throws IOException {
+    public List<Boolean> deleteAllPicture(RequestPicturesDto dto) {
         return picturesService.deleteAllPictures(dto.getOldPaths());
     }
 }

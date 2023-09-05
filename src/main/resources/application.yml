@@ -2,4 +2,6 @@ uploads:
   path: /uploads
 
 prefix:
-  response: /img
+  response: /picture
+
+dir: /2023

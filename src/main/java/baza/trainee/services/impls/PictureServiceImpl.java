@@ -30,15 +30,12 @@ public class PictureServiceImpl implements PictureService {
     }
 
     @Override
-    public String addPicture(MultipartFile newPicture) throws IOException {
-        return createFile(newPicture, createNewDir());
+    public String addPicture(MultipartFile newPicture, String ownDir) throws IOException {
+        return createFile(newPicture, Path.of(ownDir));
     }
 
-    private Path createNewDir() {
-        LocalDate currentDate = LocalDate.now();
-        Path newDir = Path.of(Integer.toString(currentDate.getYear()),
-                Integer.toString(currentDate.getMonthValue()));
-        return rootLocation.resolve(newDir);
+    private Path createNewNameFile(String originalFileName) {
+        return Path.of(LocalDate.now().toString(), originalFileName);
     }
 
     private String createFile(MultipartFile newFile, Path dir)
@@ -50,7 +47,7 @@ public class PictureServiceImpl implements PictureService {
                 Files.createDirectory(dir);
             }
 
-            newFile.transferTo(dir.resolve(newFile.getOriginalFilename()));
+            newFile.transferTo(dir.resolve(createNewNameFile(newFile.getOriginalFilename())));
 
             Path pathAfterUploads = rootLocation.relativize(dir);
             return dirResponse.resolve(pathAfterUploads)

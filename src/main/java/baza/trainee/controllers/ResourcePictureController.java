@@ -18,7 +18,7 @@ public class ResourcePictureController {
 
     private ResourcePictureService resourcePictureService;
 
-    @GetMapping(value = "/{filename}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/{*filename}", produces = MediaType.IMAGE_JPEG_VALUE)
     byte[] getImage(@PathVariable("filename") String filename) throws
             IOException {
         Resource resource = resourcePictureService.loadAsResource(filename);
