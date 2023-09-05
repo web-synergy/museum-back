@@ -2,7 +2,6 @@ package baza.trainee.controllers;
 
 import baza.trainee.services.PictureService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,14 +41,25 @@ public class PictureController {
     }
 
     /**
-     * Change */
+     * Change picture in  directory /uploads
+     *
+     * @param newFile example:<input name="newFile" type=file/><input name="oldPathFile" type=text/>
+     * @return short path of file, example:/img/2023/9/look.jpg
+     * */
 
     @PostMapping("/changeFile")
     public String changeFile(String oldPathFile, MultipartFile newFile) throws IOException {
         return pictureService.changePicture(oldPathFile, newFile);
     }
 
-    @DeleteMapping("/deleteFile")
+    /**
+     * Change picture in  directory /uploads
+     *
+     * @param oldPathFile example:<input name="oldPathFile" type=text/>
+     * @return Is file delete or not
+     * */
+
+    @PostMapping("/deleteFile")
     public boolean deleteFile(String oldPathFile) throws IOException {
         return pictureService.deletePicture(oldPathFile);
     }

@@ -30,17 +30,41 @@ public class PicturesController {
 
     private final PicturesService picturesService;
 
+    /**
+     * Add list of pictures
+     *
+     * @param  dto contains list of MultipartFile
+     * example of element list: <input name="pictures[0].newFile" type=file/>
+     * @return list of short path file
+     * */
+
     @PostMapping("/addAllPicture")
     public List<String> addAllPicture(RequestPicturesDto dto) throws
             IOException {
         return picturesService.addAllPictures(dto.getFiles());
     }
 
+    /**
+     * Change list of pictures
+     *
+     * @param  dto contains list of MultipartFile
+     * example of element list: <input name="pictures[0].newFile" type=file/>
+     *             <input name="pictures[0].oldPath" type=text/>
+     * @return list of short path file
+     * */
+
     @PostMapping("/changeAllPicture")
     public List<String> changeAllPicture(RequestPicturesDto dto) throws IOException {
         return picturesService.changeAllPictures(dto.getPictures());
     }
 
+    /**
+     * Delete pictures
+     *
+     * @param  dto contains list of String of old files
+     * example of element list: <input name="pictures[0].oldPath" type=text/>
+     * @return Is files of list delete or not
+     * */
 
     @PostMapping("/deleteAllPicture")
     public List<Boolean> deleteAllPicture(RequestPicturesDto dto) throws IOException {
