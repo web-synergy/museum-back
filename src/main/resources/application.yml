@@ -1,2 +1,5 @@
 uploads:
-  path: uploads
+  path: /uploads
+
+prefix:
+  response: /img
