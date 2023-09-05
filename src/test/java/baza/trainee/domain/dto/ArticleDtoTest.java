@@ -3,29 +3,22 @@ package baza.trainee.domain.dto;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-
+import static baza.trainee.constants.ArticleModelConstants.NOT_VALID_ARTICLE_DTO;
+import static baza.trainee.constants.ArticleModelConstants.MODEL_VALIDATION_ERROR_COUNT;
+import static baza.trainee.constants.ArticleModelConstants.VALID_ARTICLE_DTO;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ArticleDtoTest {
 
-    public static final ArticleDto VALID_ARTICLE_DTO;
-    public static final ArticleDto NOT_VALID_ARTICLE_DTO;
     private Validator validator;
 
-    static {
-        VALID_ARTICLE_DTO = new ArticleDto("testId", "testTitle", "testDescription",
-                "testContent", new HashSet<>(), LocalDate.now(),null);
-        NOT_VALID_ARTICLE_DTO = new ArticleDto("testId", "", " ", null,
-                new HashSet<>(), LocalDate.now(), null);
-    }
-
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    void init() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
@@ -37,6 +30,6 @@ class ArticleDtoTest {
 
     @Test
     void articleDtoValidation_threeFieldsNotValid() {
-        assertThat(validator.validate(NOT_VALID_ARTICLE_DTO)).hasSize(3);
+        assertThat(validator.validate(NOT_VALID_ARTICLE_DTO)).hasSize(MODEL_VALIDATION_ERROR_COUNT);
     }
 }

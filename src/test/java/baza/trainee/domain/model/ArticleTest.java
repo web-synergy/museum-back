@@ -4,44 +4,22 @@ package baza.trainee.domain.model;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-
+import static baza.trainee.constants.ArticleModelConstants.NOT_VALID_ARTICLE;
+import static baza.trainee.constants.ArticleModelConstants.MODEL_VALIDATION_ERROR_COUNT;
+import static baza.trainee.constants.ArticleModelConstants.VALID_ARTICLE;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ArticleTest {
 
-    public static final Article VALID_ARTICLE;
-    public static final Article NOT_VALID_ARTICLE;
     private Validator validator;
 
-    static {
-        VALID_ARTICLE = Article.builder()
-                .id("testId")
-                .title("testTitle")
-                .description("testDescription")
-                .content("testContent")
-                .images(new HashSet<>())
-                .created(LocalDate.now())
-                .updated(null)
-                .build();
-
-        NOT_VALID_ARTICLE = Article.builder()
-                .id("testId")
-                .title("")
-                .description(" ")
-                .content(null)
-                .images(new HashSet<>())
-                .created(LocalDate.now())
-                .updated(null)
-                .build();
-    }
-
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    void init() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
@@ -53,6 +31,6 @@ class ArticleTest {
 
     @Test
     void articleValidation_threeFieldsNotValid() {
-        assertThat(validator.validate(NOT_VALID_ARTICLE)).hasSize(3);
+        assertThat(validator.validate(NOT_VALID_ARTICLE)).hasSize(MODEL_VALIDATION_ERROR_COUNT);
     }
 }
