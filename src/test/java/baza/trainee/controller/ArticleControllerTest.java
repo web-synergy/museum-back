@@ -1,6 +1,5 @@
 package baza.trainee.controller;
 
-import baza.trainee.domain.mapper.ArticleMapper;
 import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.service.ArticleService;
 import baza.trainee.utils.LoggingService;
@@ -12,8 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static baza.trainee.constants.ArticleModelConstants.GET_BY_ID_URL;
-import static baza.trainee.constants.ArticleModelConstants.NOT_VALID_ARTICLE;
-import static baza.trainee.constants.ArticleModelConstants.VALID_ARTICLE;
+import static baza.trainee.constants.ArticleModelConstants.VALID_ARTICLE_DTO;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -28,17 +26,14 @@ class ArticleControllerTest {
     ArticleService articleService;
 
     @MockBean
-    ArticleMapper articleMapper;
-
-    @MockBean
     LoggingService loggingService;
 
     @Test
     @SneakyThrows
     void findById() {
-        when(articleService.findById(VALID_ARTICLE.getId())).thenReturn(VALID_ARTICLE);
+        when(articleService.findById(VALID_ARTICLE_DTO.id())).thenReturn(VALID_ARTICLE_DTO);
 
-        mockMvc.perform(get(GET_BY_ID_URL, VALID_ARTICLE.getId()))
+        mockMvc.perform(get(GET_BY_ID_URL, VALID_ARTICLE_DTO.id()))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -52,16 +47,6 @@ class ArticleControllerTest {
         mockMvc.perform(get(GET_BY_ID_URL, wrongId))
                 .andDo(print())
                 .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void findById_mappingException() throws Exception {
-        when(articleService.findById(NOT_VALID_ARTICLE.getId())).thenReturn(NOT_VALID_ARTICLE);
-        when(articleMapper.toDto(NOT_VALID_ARTICLE)).thenThrow(new RuntimeException());
-
-        mockMvc.perform(get(GET_BY_ID_URL, NOT_VALID_ARTICLE.getId()))
-                .andDo(print())
-                .andExpect(status().isInternalServerError());
     }
 }
 
