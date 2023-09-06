@@ -1,5 +1,6 @@
 package baza.trainee.controllers;
 
+import baza.trainee.services.PictureCacheService;
 import baza.trainee.services.PictureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- *  The {@code PictureController} class is a Spring MVC REST controller
+ *  The {@code PictureCacheController} class is a Spring MVC REST controller
  *  * responsible for handling add, change and delete picture
  *  * result of add and change (string of file access path{example: /img/[2023/9/look.jpg]})
  *  * path /img refers to the directory: absolute path to the project + /uploads
@@ -19,52 +20,50 @@ import org.springframework.web.multipart.MultipartFile;
  *  *
  *  * @author Andry Sitarsky
  *  * @version 1.0
- *  * @since 2023-09-03*/
+ *  * @since 2023-09-10*/
 
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
-public class PictureController {
-
+public class PictureCacheController {
     @Value("${dir}")
     public String defaultDir;
-    private final PictureService pictureService;
+    private final PictureCacheService pictureService;
 
 
     /**
-     * Add picture in directory /uploads
+     * Add picture in  cache
      *
      * @param newFile example:<input name="newFile" type=file/>
      * @return short path of file, example:/img/2023/9/look.jpg
      * */
-    @PostMapping("/addFile")
+    @PostMapping("/addCacheFile")
     public String addPicture(MultipartFile newFile) {
         return pictureService.addPicture(newFile, defaultDir);
     }
 
     /**
-     * Change picture in  directory /uploads
+     * Change picture in  cache
      *
      * @param newFile example:<input name="newFile" type=file/>
      * @param oldPathFile example:<input name="oldPathFile" type=text/>
      * @return short path of file, example:/img/2023/9/look.jpg
      * */
 
-    @PostMapping("/changeFile")
+    @PostMapping("/changeCacheFile")
     public String changeFile(String oldPathFile, MultipartFile newFile) {
         return pictureService.changePicture(oldPathFile, newFile);
     }
 
     /**
-     * Change picture in  directory /uploads
+     * Delete picture in  cache
      *
      * @param oldPathFile example:<input name="oldPathFile" type=text/>
-     * @return Is file delete or not
      * */
 
-    @PostMapping("/deleteFile")
-    public boolean deleteFile(String oldPathFile) {
-        return pictureService.deletePicture(oldPathFile);
+    @PostMapping("/deleteCacheFile")
+    public void deleteFile(String oldPathFile) {
+        pictureService.deletePicture(oldPathFile);
     }
 
 }

@@ -8,13 +8,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
  *  The {@code PicturesController} class is a Spring MVC REST controller
  *  * responsible for handling add, change and delete list of pictures
- *  * result of add and change (list of string of file access
+ *  * result of add and change list of string of file access
  *  *
  *  * It exposes endpoints under the "/admin/[addAllFile,...]" base path.
  *  *

@@ -1,12 +1,12 @@
 package baza.trainee.services.impls;
 
+import baza.trainee.exceptions.StorageFileNotFoundException;
 import baza.trainee.services.ResourcePictureService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 
@@ -16,7 +16,7 @@ public class ResourcePictureServiceImpl implements ResourcePictureService {
     private String uploadPath;
 
     @Override
-    public Resource loadAsResource(String filename) throws IOException {
+    public Resource loadAsResource(String filename) {
         try {
             var file = load(filename);
             var resource = new UrlResource(file.toUri());
@@ -24,12 +24,12 @@ public class ResourcePictureServiceImpl implements ResourcePictureService {
             if (resource.exists() || resource.isReadable()) {
                 return resource;
             } else {
-                throw new IOException(
+                throw new StorageFileNotFoundException(
                         "Could not read file: " + filename);
 
             }
         } catch (MalformedURLException e) {
-            throw new IOException("Could not read file: " + filename, e);
+            throw new StorageFileNotFoundException("Could not read file: " + filename, e);
         }
     }
 

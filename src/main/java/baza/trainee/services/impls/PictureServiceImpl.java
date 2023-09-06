@@ -1,5 +1,6 @@
 package baza.trainee.services.impls;
 
+import baza.trainee.exceptions.StorageException;
 import baza.trainee.services.PictureService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,7 @@ public class PictureServiceImpl implements PictureService {
     }
 
     @Override
-    public String addPicture(MultipartFile newPicture, String ownDir) throws IOException {
+    public String addPicture(MultipartFile newPicture, String ownDir) {
         return createFile(newPicture, Path.of(ownDir));
     }
 
@@ -38,31 +39,34 @@ public class PictureServiceImpl implements PictureService {
         return Path.of(LocalDate.now().toString(), originalFileName);
     }
 
-    private String createFile(MultipartFile newFile, Path dir)
-            throws IOException {
+    private String createFile(MultipartFile newFile, Path dir){
         if (newFile != null && newFile.getOriginalFilename() != null) {
+            Path newNameFile = createNewNameFile(newFile.getOriginalFilename());
 
+            try {
+                if (!Files.exists(dir)) {
+                    Files.createDirectory(dir);
+                }
 
-            if (!Files.exists(dir)) {
-                Files.createDirectory(dir);
+                newFile.transferTo(dir.resolve(newNameFile));
+            } catch (IOException e) {
+                throw new StorageException("Not create file" + newFile.getOriginalFilename());
             }
-
-            newFile.transferTo(dir.resolve(createNewNameFile(newFile.getOriginalFilename())));
 
             Path pathAfterUploads = rootLocation.relativize(dir);
             return dirResponse.resolve(pathAfterUploads)
-                    .resolve(newFile.getOriginalFilename()).toString();
+                    .resolve(newNameFile).toString();
         } else {
-            throw new IOException("Not file or not file name");
+            throw new StorageException("Not file or not file name for create file");
         }
 
     }
 
     @Override
     public String changePicture(String oldPath, MultipartFile newPicture)
-            throws IOException {
+             {
         if (!deletePicture(oldPath)) {
-            throw new IOException("Not delete file");
+            throw new StorageException("Not file or not file name for delete file ");
         }
 
         Path oldFullPath =
@@ -72,13 +76,17 @@ public class PictureServiceImpl implements PictureService {
     }
 
     @Override
-    public boolean deletePicture(String oldPath) throws IOException {
+    public boolean deletePicture(String oldPath) {
         if (oldPath != null && oldPath.isBlank()) {
             Path oldPathFile = rootLocation.resolve(
                     dirResponse.relativize(Path.of(oldPath)));
 
             if (Files.exists(oldPathFile)) {
-                Files.delete(oldPathFile);
+                try {
+                    Files.delete(oldPathFile);
+                } catch (IOException e) {
+                    throw new StorageException("Not delete file " + oldPath);
+                }
             }
             return !Files.exists(oldPathFile);
         }

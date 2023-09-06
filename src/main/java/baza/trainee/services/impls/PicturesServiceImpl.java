@@ -1,6 +1,7 @@
 package baza.trainee.services.impls;
 
 import baza.trainee.dtos.RequestPictureDto;
+import baza.trainee.exceptions.StorageException;
 import baza.trainee.services.PictureService;
 import baza.trainee.services.PicturesService;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -23,7 +23,7 @@ public class PicturesServiceImpl implements PicturesService {
         return pictures.stream().map(newFile -> {
             try {
                 return pictureService.addPicture(newFile, ownDir);
-            } catch (IOException e) {
+            } catch (StorageException e) {
                 log.error("Not create file " + newFile.getOriginalFilename());
             }
             return null;
@@ -35,7 +35,7 @@ public class PicturesServiceImpl implements PicturesService {
         return pictures.stream().map(oldPath -> {
             try {
                 return pictureService.deletePicture(oldPath);
-            } catch (IOException e) {
+            } catch (StorageException e) {
                 log.error("Not delete file " + oldPath);
             }
             return null;
@@ -47,7 +47,7 @@ public class PicturesServiceImpl implements PicturesService {
         return pictures.stream().map(changeFiles -> {
             try {
                 return pictureService.changePicture(changeFiles.getOldPath(), changeFiles.getNewFile());
-            } catch (IOException ex) {
+            } catch (StorageException e) {
                 log.error("Not change file " + changeFiles.getOldPath() );
             }
             return null;
