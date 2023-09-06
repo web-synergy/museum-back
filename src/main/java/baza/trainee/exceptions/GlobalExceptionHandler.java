@@ -28,12 +28,10 @@ public class GlobalExceptionHandler {
      * with the exception message and timestamp.
      */
     @ExceptionHandler(BasicApplicationException.class)
-    public ResponseEntity<ErrorResponse> handleCustomException(
-            final BasicApplicationException ex) {
-        loggingService.logError(ex.getClass().getName(), ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleCustomException(final BasicApplicationException ex) {
+        loggingService.logError(ex.getClass().getSimpleName(), ex.getMessage());
 
-        ErrorResponse response =
-                new ErrorResponse(ex.getMessage(), System.currentTimeMillis());
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), System.currentTimeMillis());
         return new ResponseEntity<>(response, ex.getHttpStatus());
     }
 
@@ -46,12 +44,10 @@ public class GlobalExceptionHandler {
      * with the exception message and timestamp.
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleServerException(
-            final Exception ex) {
-        loggingService.logError(ex.getClass().getName(), ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleServerException(final Exception ex) {
+        loggingService.logError(ex.getClass().getSimpleName(), ex.getMessage());
 
-        ErrorResponse response =
-                new ErrorResponse(ex.getMessage(), System.currentTimeMillis());
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), System.currentTimeMillis());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
