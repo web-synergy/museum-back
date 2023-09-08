@@ -15,12 +15,16 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
+import static baza.trainee.constants.MailConstants.FAIL_SEND_MSG;
+import static baza.trainee.constants.MailConstants.MUSEUM_EMAIL;
+import static baza.trainee.constants.MailConstants.MUSEUM_LABEL;
+import static baza.trainee.constants.MailConstants.MUSEUM_TEMPLATE_PATH;
+import static baza.trainee.constants.MailConstants.USER_TEMPLATE_PATH;
+
 @Service
 @AllArgsConstructor
 public class MailServiceImpl implements MailService {
-    public static final String FAIL_SEND_MSG = "failed to send email";
-    public static final String MUSEUM_TEMPLATE_PATH = "templates/msg_for_museum.html";
-    public static final String USER_TEMPLATE_PATH = "templates/msg_for_user.html";
+
     private final JavaMailSender mailSender;
 
     @Override
@@ -30,7 +34,7 @@ public class MailServiceImpl implements MailService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
             helper.setText(message, true);
             helper.setTo(to);
-            helper.setFrom("noreply@museum.ua", "Museum.ua");
+            helper.setFrom(MUSEUM_EMAIL, MUSEUM_LABEL);
             helper.setSubject(subject);
             mailSender.send(mimeMessage);
         } catch (MessagingException | UnsupportedEncodingException ex) {
