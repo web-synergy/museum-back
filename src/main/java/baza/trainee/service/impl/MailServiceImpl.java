@@ -1,5 +1,6 @@
 package baza.trainee.service.impl;
 
+import baza.trainee.exceptions.custom.EmailSendingException;
 import baza.trainee.service.MailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -33,7 +34,7 @@ public class MailServiceImpl implements MailService {
             helper.setSubject(subject);
             mailSender.send(mimeMessage);
         } catch (MessagingException | UnsupportedEncodingException ex) {
-            throw new IllegalArgumentException(FAIL_SEND_MSG);
+            throw new EmailSendingException(FAIL_SEND_MSG);
         }
     }
 
