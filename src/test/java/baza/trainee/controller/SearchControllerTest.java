@@ -1,6 +1,7 @@
 package baza.trainee.controller;
 
 import baza.trainee.service.SearchService;
+import baza.trainee.utils.LoggingService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,13 +18,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@WebMvcTest
+@WebMvcTest(SearchController.class)
 class SearchControllerTest {
     @Autowired
     MockMvc mockMvc;
 
     @MockBean
     SearchService searchService;
+
+    @MockBean
+    LoggingService loggingService;
 
     @Test
     @SneakyThrows
