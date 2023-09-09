@@ -48,8 +48,6 @@ public class MailControllerTest {
 
     @Test
     public void testSubmitContactFormWithValidData() throws Exception {
-        MailDto mailDto = new MailDto("John", "Doe", "test@gmail.com", "User message");
-
         when(mailService.buildMsgForUser(any(), any())).thenReturn("Message for user");
         when(mailService.buildMsgForMuseum(any(), any(), any(), any())).thenReturn("Message for museum");
 
@@ -60,7 +58,7 @@ public class MailControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(""));
 
-        verify(mailService).sendEmail(mailDto.email(), "Message for user", MUSEUM_SUBJECT);
+        verify(mailService).sendEmail(validMailDto.email(), "Message for user", MUSEUM_SUBJECT);
         verify(mailService).sendEmail(MUSEUM_EMAIL, "Message for museum", MUSEUM_SUBJECT);
     }
 
