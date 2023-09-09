@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -17,7 +18,8 @@ import static baza.trainee.constants.MailConstants.MUSEUM_SUBJECT;
 import static baza.trainee.utils.ControllerUtils.handleFieldsErrors;
 
 @AllArgsConstructor
-@RestController("/api/feedback")
+@RestController
+@RequestMapping(("/api/feedback"))
 public class MailController {
 
     private final MailService mailService;
