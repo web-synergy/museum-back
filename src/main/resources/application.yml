@@ -16,3 +16,12 @@ spring:
     username: ${MAIL_USER}
     password: ${MAIL_PASSWORD}
     port: '587'
+
+mail:
+  template:
+    path:
+      user: templates/msg_for_user.html
+      museum: templates/msg_for_museum.html
+  museum:
+    email: museum@gmail.com
+    label: Museum.ua

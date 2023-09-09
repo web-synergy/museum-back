@@ -9,13 +9,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static baza.trainee.constants.MailConstants.FAIL_SEND_MSG;
-import static baza.trainee.constants.MailConstants.MUSEUM_EMAIL;
 import static baza.trainee.constants.MailConstants.MUSEUM_SUBJECT;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,6 +40,9 @@ public class MailControllerTest {
     private MailDto validMailDto;
     private MailDto notValidMailDto;
 
+    @Value("${mail.museum.email}")
+    private String museumEmail;
+
     @BeforeAll
     public void setUp() {
         validMailDto = new MailDto("John", "Doe", "test@gmail.com", "User message");
@@ -59,7 +62,7 @@ public class MailControllerTest {
                 .andExpect(content().string(""));
 
         verify(mailService).sendEmail(validMailDto.email(), "Message for user", MUSEUM_SUBJECT);
-        verify(mailService).sendEmail(MUSEUM_EMAIL, "Message for museum", MUSEUM_SUBJECT);
+        verify(mailService).sendEmail(museumEmail, "Message for museum", MUSEUM_SUBJECT);
     }
 
     @Test
@@ -70,7 +73,7 @@ public class MailControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", is("email - must be a well-formed email address;")))
+                .andExpect(jsonPath("$.message", is("email - Invalid email;")))
                 .andExpect(status().isBadRequest());
     }
 

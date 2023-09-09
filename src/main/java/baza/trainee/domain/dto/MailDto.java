@@ -14,6 +14,7 @@ import static baza.trainee.constants.MailConstants.MIN_NAME_LENGTH;
 import static baza.trainee.constants.MailConstants.NULL_FIELD_ERROR_MSG;
 
 public record MailDto(
+
         @NotBlank(message = NULL_FIELD_ERROR_MSG)
         @Size(min = MIN_NAME_LENGTH, max = MAX_NAME_LENGTH, message = FIELD_NAME_ERROR_MSG)
         String firstName,

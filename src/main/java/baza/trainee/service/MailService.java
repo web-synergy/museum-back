@@ -1,6 +1,5 @@
 package baza.trainee.service;
 
-import java.io.IOException;
 
 public interface MailService {
 
@@ -20,7 +19,7 @@ public interface MailService {
      * @param lastName  The last name of the user.
      * @return A formatted html-message string that includes the user's name.
      */
-    String buildMsgForUser(String firstName, String lastName) throws IOException;
+    String buildMsgForUser(String firstName, String lastName);
 
     /**
      * Builds a message for a museum, including user information and a custom message.
@@ -31,5 +30,5 @@ public interface MailService {
      * @param message   The message from user.
      * @return A formatted html-message string for the museum that includes user information and message.
      */
-    String buildMsgForMuseum(String firstName, String lastName, String email, String message) throws IOException;
+    String buildMsgForMuseum(String firstName, String lastName, String email, String message);
 }
