@@ -1,15 +1,15 @@
 package baza.trainee.service;
 
 
-import baza.trainee.domain.dto.ArticleDto;
+import baza.trainee.domain.model.Article;
 
 public interface ArticleService {
 
     /**
-     * Finds an existing article by given id.
+     * Finds an existing article by given title.
      *
-     * @param id id to get an existing article.
-     * @return {@link ArticleDto} object containing an existing article with its full content.
+     * @param title title to get an existing article.
+     * @return {@link Article} object containing an existing article with its full content.
      */
-    ArticleDto findById(String id);
+    Article findByTitle(String title);
 }

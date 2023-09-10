@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import static baza.trainee.constants.ArticleModelConstants.NOT_VALID_ARTICLE;
 import static baza.trainee.constants.ArticleModelConstants.MODEL_VALIDATION_ERROR_COUNT;
+import static baza.trainee.constants.ArticleModelConstants.NOT_VALID_ARTICLE;
 import static baza.trainee.constants.ArticleModelConstants.VALID_ARTICLE;
 import static org.assertj.core.api.Assertions.assertThat;
 

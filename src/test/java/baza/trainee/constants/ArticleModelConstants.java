@@ -1,10 +1,11 @@
 package baza.trainee.constants;
 
-import baza.trainee.domain.dto.ArticleDto;
 import baza.trainee.domain.model.Article;
+import baza.trainee.domain.model.ContentBlock;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Constant objects required for testing the 'article' business model.
@@ -14,10 +15,7 @@ import java.util.HashSet;
  */
 public class ArticleModelConstants {
 
-    public static final String GET_BY_ID_URL;
-
-    public static final ArticleDto VALID_ARTICLE_DTO;
-    public static final ArticleDto NOT_VALID_ARTICLE_DTO;
+    public static final String GET_BY_TITLE_URL;
 
     public static final Article VALID_ARTICLE;
     public static final Article NOT_VALID_ARTICLE;
@@ -25,20 +23,13 @@ public class ArticleModelConstants {
     public static final Integer MODEL_VALIDATION_ERROR_COUNT;
 
     static {
-        GET_BY_ID_URL = "/api/article/{articleId}";
-
-        VALID_ARTICLE_DTO = new ArticleDto("testId", "testTitle", "testDescription",
-                "testContent", new HashSet<>(), LocalDate.now(),null);
-
-        NOT_VALID_ARTICLE_DTO = new ArticleDto("testId", "", " ", null,
-                new HashSet<>(), LocalDate.now(), null);
+        GET_BY_TITLE_URL = "/api/article/{title}";
 
         VALID_ARTICLE = Article.builder()
                 .id("testId")
                 .title("testTitle")
                 .description("testDescription")
-                .content("testContent")
-                .images(new HashSet<>())
+                .content(new HashSet<>(List.of(new ContentBlock())))
                 .created(LocalDate.now())
                 .updated(null)
                 .build();
@@ -47,12 +38,11 @@ public class ArticleModelConstants {
                 .id("testId")
                 .title("")
                 .description(" ")
-                .content(null)
-                .images(new HashSet<>())
+                .content(new HashSet<>())
                 .created(LocalDate.now())
                 .updated(null)
                 .build();
 
-        MODEL_VALIDATION_ERROR_COUNT = 3;
+        MODEL_VALIDATION_ERROR_COUNT = 5;
     }
 }
