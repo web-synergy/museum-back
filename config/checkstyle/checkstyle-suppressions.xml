@@ -24,4 +24,8 @@
 
     <!--  suppress main class checks  -->
     <suppress files="KavaleridzeBackendApplication.java" checks="[a-zA-Z0-9]*"/>
+<<<<<<< HEAD
+=======
+    <suppress files="src[/\\]test[/\\]java[/\\].*" checks="[a-zA-Z0-9]*"/>
+>>>>>>> 8cbbf4a1562a5bf7ba00a1c3399c3e3d7fdcb838
 </suppressions>

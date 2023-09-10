@@ -39,7 +39,10 @@ indent_size = 2
 ij_gherkin_keep_indents_on_empty_lines = false
 
 [*.java]
+<<<<<<< HEAD
 max_line_length = 80
+=======
+>>>>>>> 8cbbf4a1562a5bf7ba00a1c3399c3e3d7fdcb838
 ij_java_align_consecutive_assignments = false
 ij_java_align_consecutive_variable_declarations = false
 ij_java_align_group_field_declarations = false
