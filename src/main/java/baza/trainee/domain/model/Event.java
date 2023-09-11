@@ -28,7 +28,7 @@ import static baza.trainee.constants.EventConstant.MIN_TITLE_SIZE;
 @Setter
 @NoArgsConstructor
 @Document
-public class Event {
+public class Event implements Post {
 
     @Id
     @Indexed
@@ -65,11 +65,9 @@ public class Event {
     @FutureOrPresent
     private LocalDate end;
 
-    @Setter(AccessLevel.PROTECTED)
     @CreatedDate
     private LocalDate created;
 
-    @Setter(AccessLevel.PROTECTED)
     @LastModifiedDate
     private LocalDate updated;
 

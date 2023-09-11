@@ -1,6 +1,6 @@
 package baza.trainee.controller;
 
-import baza.trainee.domain.dto.SearchDto;
+import baza.trainee.domain.dto.SearchResponse;
 import baza.trainee.service.SearchService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -21,7 +21,7 @@ import static baza.trainee.constants.SearchConstant.SIZE_QUERY_ERROR_MESSAGE;
 /**
  * The {@code SearchController} class is a Spring MVC REST controller
  * responsible for handling search-related requests and returning
- * result of searching (list of {@link SearchDto}).
+ * result of searching (list of {@link SearchResponse}).
  * It exposes endpoints under the "/api/search" base path.
  *
  * This controller ensures that queries meet certain validation criteria and
@@ -45,11 +45,11 @@ public class SearchController {
      * Performs a search operation based on the provided query string.
      *
      * @param query The search query string to be validated and processed.
-     * @return A list of {@link SearchDto} objects representing
+     * @return A list of {@link SearchResponse} objects representing
      * the search results.
      */
     @GetMapping("/{query}")
-    List<SearchDto> search(@PathVariable("query")
+    List<SearchResponse> search(@PathVariable("query")
                            @NotBlank(message = BLANK_QUERY_ERROR_MESSAGE)
                            @Size(min = MIN_SIZE_QUERY,
                                    max = MAX_SIZE_QUERY,
