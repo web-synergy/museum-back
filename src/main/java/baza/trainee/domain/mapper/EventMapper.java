@@ -6,11 +6,10 @@ import baza.trainee.domain.model.Event;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-
 /**
  * Mapper for {@link Event} entity.
+ *
  */
-
 @Mapper(componentModel = "spring")
 public interface EventMapper {
 
@@ -23,7 +22,5 @@ public interface EventMapper {
     @Mapping(target = "bannerURI", ignore = true)
     @Mapping(target = "bannerPreviewURI", ignore = true)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "updated", ignore = true)
-    @Mapping(target = "created", ignore = true)
     Event toEvent(EventPublication publication);
 }

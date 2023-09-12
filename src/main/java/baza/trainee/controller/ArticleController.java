@@ -1,6 +1,6 @@
 package baza.trainee.controller;
 
-import baza.trainee.domain.dto.ArticleDto;
+import baza.trainee.domain.model.Article;
 import baza.trainee.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,13 +25,13 @@ public class ArticleController {
     private final ArticleService articleService;
 
     /**
-     * Finds an existing article by given id.
+     * Finds an existing article by given title.
      *
-     * @param articleId id to get an existing article.
-     * @return {@link ArticleDto} object containing an existing article with its full content.
+     * @param title title to get an existing article.
+     * @return {@link Article} object containing an existing article with its full content.
      */
-    @GetMapping(value = "/{articleId}", produces = "application/json")
-    public ArticleDto findById(@PathVariable(name = "articleId") final String articleId) {
-        return articleService.findById(articleId);
+    @GetMapping(value = "/{title}", produces = "application/json")
+    public Article findByTitle(@PathVariable(name = "title") final String title) {
+        return articleService.findByTitle(title);
     }
 }

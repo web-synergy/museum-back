@@ -10,8 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static baza.trainee.constants.ArticleModelConstants.GET_BY_ID_URL;
-import static baza.trainee.constants.ArticleModelConstants.VALID_ARTICLE_DTO;
+import static baza.trainee.constants.ArticleModelConstants.GET_BY_TITLE_URL;
+import static baza.trainee.constants.ArticleModelConstants.VALID_ARTICLE;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -31,20 +31,20 @@ class ArticleControllerTest {
     @Test
     @SneakyThrows
     void findById() {
-        when(articleService.findById(VALID_ARTICLE_DTO.id())).thenReturn(VALID_ARTICLE_DTO);
+        when(articleService.findByTitle(VALID_ARTICLE.getTitle())).thenReturn(VALID_ARTICLE);
 
-        mockMvc.perform(get(GET_BY_ID_URL, VALID_ARTICLE_DTO.id()))
+        mockMvc.perform(get(GET_BY_TITLE_URL, VALID_ARTICLE.getTitle()))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
     void findById_notFoundException() throws Exception {
-        var wrongId = "wrongId";
+        var wrongTitle = "wrongTitle";
 
-        when(articleService.findById(wrongId)).thenThrow(new EntityNotFoundException("article", "id: " + wrongId));
+        when(articleService.findByTitle(wrongTitle)).thenThrow(new EntityNotFoundException("article", "title: " + wrongTitle));
 
-        mockMvc.perform(get(GET_BY_ID_URL, wrongId))
+        mockMvc.perform(get(GET_BY_TITLE_URL, wrongTitle))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }

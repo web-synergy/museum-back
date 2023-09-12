@@ -1,6 +1,6 @@
 package baza.trainee.service;
 
-import baza.trainee.domain.dto.SearchDto;
+import baza.trainee.domain.dto.SearchResponse;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ public interface SearchService {
      * Search events and articles.
      *
      * @param query Client query for searching content.
-     * @return {@link SearchDto} list.
+     * @return {@link SearchResponse} list.
      */
-    List<SearchDto> search(String query);
+    List<SearchResponse> search(String query);
 }
