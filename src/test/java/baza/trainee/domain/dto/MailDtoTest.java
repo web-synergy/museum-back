@@ -6,7 +6,6 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Set;
 
@@ -16,7 +15,6 @@ import static baza.trainee.constants.MailConstants.FIELD_NAME_ERROR_MSG;
 import static baza.trainee.constants.MailConstants.NULL_FIELD_ERROR_MSG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
 public class MailDtoTest {
 
     private static MailDto validMailDto;

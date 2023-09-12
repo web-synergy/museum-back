@@ -1,32 +1,33 @@
 package baza.trainee.service.impl;
 
 import baza.trainee.domain.model.Event;
+import baza.trainee.integration.RedisTestConfig;
 import baza.trainee.repository.EventRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDate;
 import java.util.List;
 
-@ExtendWith(MockitoExtension.class)
+import static org.mockito.Mockito.when;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@Import({ RedisTestConfig.class, EventServiceMockConfig.class})
 class EventServiceImplTest {
 
-    @Mock
-    private final EventRepository eventRepository;
-    @InjectMocks
-    private final EventServiceImpl eventService;
+    @MockBean
+    private EventRepository eventRepository;
 
+    @Autowired
+    private EventServiceImpl eventService;
 
-    EventServiceImplTest(EventServiceImpl eventService, EventRepository eventRepository) {
-        this.eventService = eventService;
-        this.eventRepository = eventRepository;
-    }
 
     private List<Event> myListEvents(){
         Event event1 = new Event("one","Title1","Description1","Type1","event/banner1","event/preview1",LocalDate.ofEpochDay(2023-5-25),LocalDate.ofEpochDay(2023-5-30));
@@ -53,16 +54,24 @@ class EventServiceImplTest {
 
         return List.of(event1, event2);
     }
+
     @Test
-    void getAll(Pageable pageable) {
+    void getAll() {
+        // given:
+        var pageable = Pageable.ofSize(10).withPage(0);
         List<Event> events = myListEvents();
-        Mockito.when(eventRepository.findAll()).thenReturn(events);
+        var page = new PageImpl<>(events, pageable, events.size());
+
+        // when:
+        when(eventRepository.findAll(pageable)).thenReturn(page);
+
+        // then:
         Page<Event> result = eventService.getAll(pageable);
         int numberEvents = (int)result.getTotalElements();
         int numberPage = result.getTotalPages();
-        Assertions.assertNotNull(numberEvents);
+//        Assertions.assertNotNull(numberEvents);           // int is NOT an Object. It can`t be Null.
         Assertions.assertEquals(2, numberEvents);
-        Assertions.assertNotNull(numberPage);
+//        Assertions.assertNotNull(numberPage);             // int is NOT an Object. It can`t be Null.
         Assertions.assertEquals(1, numberPage);
     }
 
