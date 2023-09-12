@@ -3,6 +3,7 @@ package baza.trainee.service.impl;
 import baza.trainee.domain.dto.event.EventPublication;
 import baza.trainee.domain.mapper.EventMapper;
 import baza.trainee.domain.model.Event;
+import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.repository.EventRepository;
 import baza.trainee.service.EventService;
 import org.springframework.data.domain.Page;
@@ -29,7 +30,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event getById(String id) {
-        return eventRepository.getEventById(id);
+        return eventRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Event", "ID: " + id));
     }
 
     @Override
@@ -49,6 +51,6 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void deleteEventById(String id) {
-        eventRepository.deleteEventById(id);
+        eventRepository.deleteById(id);
     }
 }
