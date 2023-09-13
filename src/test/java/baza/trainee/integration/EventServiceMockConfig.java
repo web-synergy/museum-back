@@ -1,4 +1,4 @@
-package baza.trainee.service.impl;
+package baza.trainee.integration;
 
 import baza.trainee.service.ArticleService;
 import baza.trainee.service.MailService;

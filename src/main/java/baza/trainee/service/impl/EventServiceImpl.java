@@ -37,16 +37,16 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event save(EventPublication newEvent) {
         Event event = eventMapper.toEvent(newEvent);
-        eventRepository.save(event);
-        return event;
+
+        return eventRepository.save(event);
     }
 
     @Override
     public Event update(String id, EventPublication updatedEvent) {
         Event event = eventMapper.toEvent(updatedEvent);
         event.setId(id);
-        eventRepository.save(event);
-        return event;
+
+        return eventRepository.update(event);
     }
 
     @Override
