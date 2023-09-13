@@ -59,9 +59,17 @@ public class PictureTempController {
 
     @PostMapping("/moveToFolder")
     public void moveToFolder(List<String> oldPathsFile) {
-        pictureService.moveToFolder(oldPathsFile, defaultDir);
+        pictureService.moveAndCompressionFileToFolder(oldPathsFile, defaultDir);
     }
 
+    @PostMapping("/deleteFileInFolder")
+    public void deleteFileInFolder(List<String> pathsFile){
+        pictureService.deleteFilesInFolders(pathsFile);
+    }
+
+    public void updateFilesInFolder(List<String> pathsFile){
+        pictureService.updateFilesInFolder(pathsFile,"dest");
+    }
     /**
      * Get file in directory temp
      *

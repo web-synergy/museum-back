@@ -5,7 +5,10 @@ prefix:
   response: /picture
   cache: /pictureCache
 
-dir: /2023
+dir:
+  temp: /temp
+  original: /original
+  preview: /preview
 
 spring:
   servlet:
