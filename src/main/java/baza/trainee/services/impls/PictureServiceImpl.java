@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
+import java.util.UUID;
 
 @Service
 public class PictureServiceImpl implements PictureService {
@@ -33,46 +33,49 @@ public class PictureServiceImpl implements PictureService {
     @Override
     public String addPicture(MultipartFile newPicture, String ownDir) {
         return createFile(newPicture, Path.of(ownDir));
+
     }
 
-    private Path createNewNameFile(String originalFileName) {
-        return Path.of(LocalDate.now().toString(), originalFileName);
-    }
-
-    private String createFile(MultipartFile newFile, Path dir){
-        if (newFile != null && newFile.getOriginalFilename() != null) {
-            Path newNameFile = createNewNameFile(newFile.getOriginalFilename());
+    private String createFile(MultipartFile newPicture, Path dir) {
+        if (newPicture != null && newPicture.getName().isBlank()) {
+            Path newNameFile = createNewNameFile(newPicture.getName());
+            final Path newPathDir = rootLocation.resolve(dir);
 
             try {
-                if (!Files.exists(dir)) {
-                    Files.createDirectory(dir);
+                if (!Files.exists(newPathDir)) {
+                    Files.createDirectory(newPathDir);
                 }
 
-                newFile.transferTo(dir.resolve(newNameFile));
+                newPicture.transferTo(newPathDir.resolve(newNameFile));
             } catch (IOException e) {
-                throw new StorageException("Not create file" + newFile.getOriginalFilename());
+                throw new StorageException(
+                        "Not create file" + newPicture.getOriginalFilename());
             }
 
-            Path pathAfterUploads = rootLocation.relativize(dir);
+            Path pathAfterUploads = rootLocation.relativize(newPathDir);
             return dirResponse.resolve(pathAfterUploads)
                     .resolve(newNameFile).toString();
         } else {
-            throw new StorageException("Not file or not file name for create file");
+            throw new StorageException(
+                    "Not file or not file name for create file");
         }
+    }
 
+    private Path createNewNameFile(String originalFileName) {
+        return Path.of(UUID.randomUUID() + originalFileName);
     }
 
     @Override
-    public String changePicture(String oldPath, MultipartFile newPicture)
-             {
+    public String changePicture(String oldPath, MultipartFile newPicture) {
         if (!deletePicture(oldPath)) {
-            throw new StorageException("Not file or not file name for delete file ");
+            throw new StorageException(
+                    "Not file or not file name for delete file ");
         }
 
         Path oldFullPath =
                 rootLocation.resolve(dirResponse.relativize(Path.of(oldPath)));
-
         return createFile(newPicture, oldFullPath.getParent());
+
     }
 
     @Override

@@ -2,7 +2,7 @@ package baza.trainee.controllers;
 
 import baza.trainee.services.ResourcePictureService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,8 +14,8 @@ import java.io.IOException;
 /**
  *  The {@code ResourcePictureController} class is a Spring MVC REST controller
  *  * responsible for handling get picture
- *  * result return resource of picture, example: localhost:8080/picture/2023/look.jpg
- *  *{2023 default dir. We change dir on entity id}
+ *  * result return resource of picture, example: localhost:8080/picture/original/look.jpg
+ *  *{original default dir in file system of directory uploads/original}
  *  *
  *  * @author Andry Sitarsky
  *  * @version 1.0
@@ -25,13 +25,23 @@ import java.io.IOException;
 @RequestMapping("/picture")
 @RequiredArgsConstructor
 public class ResourcePictureController {
+    @Value("$dir.preview")
+    String preview ;
+    @Value("$dir.original")
+    final String original;
 
-    private ResourcePictureService resourcePictureService;
+    private final ResourcePictureService resourcePictureService;
 
-    @GetMapping(value = "/{*filename}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public byte[] getImage(@PathVariable("filename") String filename) throws
-            IOException {
-        Resource resource = resourcePictureService.loadAsResource(filename);
-        return resource.getContentAsByteArray();
+    /**
+     * Method get image in directory upload/preview or upload/original
+     *
+     * @param type default original or preview
+     * @param filename path in directory upload/preview or upload/original
+     * @return image*/
+    @GetMapping(value = "/{type}/{*filename}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public byte[] getImage(@PathVariable("type") String type, @PathVariable("filename") String filename)
+            throws IOException {
+        return resourcePictureService.loadAsResource(
+                type.equals(preview)? preview : original, filename).getContentAsByteArray();
     }
 }

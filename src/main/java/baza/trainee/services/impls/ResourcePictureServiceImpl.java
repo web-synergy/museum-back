@@ -16,9 +16,9 @@ public class ResourcePictureServiceImpl implements ResourcePictureService {
     private String uploadPath;
 
     @Override
-    public Resource loadAsResource(String filename) {
+    public Resource loadAsResource(String type, String filename) {
         try {
-            var file = load(filename);
+            var file = load(type,filename);
             var resource = new UrlResource(file.toUri());
 
             if (resource.exists() || resource.isReadable()) {
@@ -33,8 +33,8 @@ public class ResourcePictureServiceImpl implements ResourcePictureService {
         }
     }
 
-    private Path load(String filename) {
-        return Path.of(System.getProperty("user.dir"), uploadPath, filename)
+    private Path load(String type, String filename) {
+        return Path.of(System.getProperty("user.dir"), uploadPath,type, filename)
                 .normalize().toAbsolutePath();
     }
 }

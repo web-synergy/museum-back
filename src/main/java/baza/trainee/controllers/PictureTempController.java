@@ -1,0 +1,77 @@
+package baza.trainee.controllers;
+
+import baza.trainee.services.PictureTempService;
+import baza.trainee.services.ResourcePictureService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+
+/**
+ *  The {@code PictureTempController} class is a Spring MVC REST controller
+ *  * responsible for handling add, change and delete picture in directory /upload/temp
+ *  * result of add and change (string of file access path{example: /pictureCache/[2023/9/look.jpg]})
+ *  * path /pictureCache refers to the directory: absolute path to the project + /uploads
+ *  * It exposes endpoints under the "/admin/[addFile,...]" base path.
+ *  *
+ *  * Files are distributed directly, example: localhost:8080/pictureCache/2023/9/look.jpg
+ *  *
+ *  * @author Andry Sitarsky
+ *  * @version 1.0
+ *  * @since 2023-09-10*/
+
+@RestController
+@RequestMapping("/admin")
+@RequiredArgsConstructor
+public class PictureTempController {
+    @Value("${dir.temp}")
+    public String defaultDir;
+
+    private final PictureTempService pictureService;
+    private final ResourcePictureService resourcePictureService;
+
+
+    /**
+     * Add picture in  directory upload/temp
+     *
+     * @param newFile example:<input name="newFile" type=file/>
+     * @return short path of file, example:/img/2023/9/look.jpg
+     * */
+    @PostMapping("/addTempFile")
+    public String addPicture(MultipartFile newFile) {
+        return pictureService.addPicture(newFile, defaultDir);
+    }
+
+
+    /**
+     * Move file in directory temp to directory upload
+     *
+     * @param oldPathsFile file in directory temp
+     * */
+
+    @PostMapping("/moveToFolder")
+    public void moveToFolder(List<String> oldPathsFile) {
+        pictureService.moveToFolder(oldPathsFile, defaultDir);
+    }
+
+    /**
+     * Get file in directory temp
+     *
+     * @param filename path in directory uploads/temp
+     * */
+
+    @GetMapping(value = "/picture/{*filename}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public byte[] getImage(@PathVariable("filename") String filename)
+            throws IOException {
+        return resourcePictureService.loadAsResource(defaultDir, filename).getContentAsByteArray();
+    }
+
+}

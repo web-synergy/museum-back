@@ -2,7 +2,6 @@ package baza.trainee.controllers;
 
 import baza.trainee.services.PictureService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,20 +25,20 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PictureController {
 
-    @Value("${dir}")
-    public String defaultDir;
+    private static final String TEMP = "temp";
+
     private final PictureService pictureService;
 
 
     /**
-     * Add picture in directory /uploads
+     * Add picture in directory /uploads/temp
      *
      * @param newFile example:<input name="newFile" type=file/>
      * @return short path of file, example:/img/2023/9/look.jpg
      * */
     @PostMapping("/addFile")
     public String addPicture(MultipartFile newFile) {
-        return pictureService.addPicture(newFile, defaultDir);
+        return pictureService.addPicture(newFile, TEMP);
     }
 
     /**
