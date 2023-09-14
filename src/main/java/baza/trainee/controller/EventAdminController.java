@@ -27,7 +27,8 @@ public class EventAdminController {
     private final EventService eventService;
 
     /**
-     * @param request The EventPublication containing information about the event to be created.
+     * @param request       The EventPublication containing information about the event to be created.
+     * @param bindingResult for validation exception specifying.
      * @return Saved event.
      */
     @PostMapping
@@ -43,8 +44,9 @@ public class EventAdminController {
     /**
      * Update an existing event identified by its unique identifier.
      *
-     * @param id      The unique identifier of the event to be updated.
-     * @param request The EventPublication containing the updated information for the event.
+     * @param id            The unique identifier of the event to be updated.
+     * @param request       The EventPublication containing the updated information for the event.
+     * @param bindingResult for validation exception specifying.
      * @return Updated event.
      */
     @PutMapping("/{id}")

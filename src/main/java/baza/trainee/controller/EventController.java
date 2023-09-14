@@ -19,6 +19,8 @@ public class EventController {
     private final EventService eventService;
 
     /**
+     * @param size page size.
+     * @param page number of the page.
      * @return  A page of events.
      */
     @GetMapping

@@ -33,7 +33,7 @@ public interface Post {
     /**
      * Getter for content field.
      *
-     * @return
+     * @return collection of {@link ContentBlock}.
      */
     Collection<ContentBlock> getContent();
 }
