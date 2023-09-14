@@ -19,6 +19,8 @@ public interface EventMapper {
      * @param publication {@link EventPublication} DTO.
      * @return mapped Event.
      */
+    @Mapping(target = "updated", ignore = true)
+    @Mapping(target = "created", ignore = true)
     @Mapping(target = "bannerURI", ignore = true)
     @Mapping(target = "bannerPreviewURI", ignore = true)
     @Mapping(target = "id", ignore = true)
