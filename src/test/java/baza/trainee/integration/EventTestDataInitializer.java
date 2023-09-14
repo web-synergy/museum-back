@@ -3,13 +3,13 @@ package baza.trainee.integration;
 import baza.trainee.domain.enums.BlockType;
 import baza.trainee.domain.model.ContentBlock;
 import baza.trainee.domain.model.Event;
-import io.netty.util.internal.ThreadLocalRandom;
 import lombok.Getter;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDate;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 /**
@@ -26,7 +26,9 @@ class EventTestDataInitializer {
     @Bean
     CommandLineRunner testDataInitializer(TestEventRepository repository) {
         return args -> {
-            if (!repository.findAll().isEmpty()) repository.deleteAll();
+            if (!repository.findAll().isEmpty()) {
+                repository.deleteAll();
+            }
 
             IntStream.range(0, EVENT_COUNT).forEach(i -> {
                 var event = new Event();

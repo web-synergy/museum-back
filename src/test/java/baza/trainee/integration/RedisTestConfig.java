@@ -15,18 +15,24 @@ import org.springframework.data.redis.core.RedisTemplate;
  */
 @TestConfiguration
 @EnableRedisDocumentRepositories(
-        basePackageClasses = { TestEventRepository.class, TestArticleRepository.class, Event.class, Article.class })
+        basePackageClasses = {
+                TestEventRepository.class,
+                TestArticleRepository.class,
+                Event.class,
+                Article.class
+        })
 public class RedisTestConfig {
 
-    @Bean
-    JedisConnectionFactory jedisConnectionFactory() {
-        return new JedisConnectionFactory();
-    }
+//    @Bean
+//    JedisConnectionFactory jedisConnectionFactory() {
+//        return new JedisConnectionFactory();
+//    }
+//
+//    @Bean
+//    RedisTemplate<String, Object> redisTemplate() {
+//        RedisTemplate<String, Object> template = new RedisTemplate<>();
+//        template.setConnectionFactory(jedisConnectionFactory());
+//        return template;
+//    }
 
-    @Bean
-    RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(jedisConnectionFactory());
-        return template;
-    }
 }

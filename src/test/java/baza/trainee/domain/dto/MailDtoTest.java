@@ -16,7 +16,6 @@ import static baza.trainee.constants.MailConstants.FIELD_NAME_ERROR_MSG;
 import static baza.trainee.constants.MailConstants.NULL_FIELD_ERROR_MSG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
 public class MailDtoTest {
 
     private static MailDto validMailDto;
