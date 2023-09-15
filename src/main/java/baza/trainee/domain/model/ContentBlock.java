@@ -1,5 +1,6 @@
 package baza.trainee.domain.model;
 
+import baza.trainee.domain.enums.BlockType;
 import com.redis.om.spring.annotations.Document;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -26,7 +27,7 @@ public class ContentBlock {
     private Integer columns;
 
     @NotNull
-    private String blockType;
+    private BlockType blockType;
 
     private String textContent;
 

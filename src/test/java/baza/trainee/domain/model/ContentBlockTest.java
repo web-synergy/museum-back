@@ -24,7 +24,7 @@ class ContentBlockTest {
         validator = factory.getValidator();
         validBlock = new ContentBlock();
         validBlock.setId("12");
-        validBlock.setBlockType(BlockType.PICTURE_TEXT_BLOCK.getValue());
+        validBlock.setBlockType(BlockType.PICTURE_TEXT_BLOCK);
         validBlock.setOrder(2);
         validBlock.setColumns(4);
         validBlock.setPictureLink("https://example.com/banner.jpg");
