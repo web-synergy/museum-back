@@ -3,6 +3,7 @@ package baza.trainee.integration;
 import baza.trainee.domain.enums.BlockType;
 import baza.trainee.domain.model.ContentBlock;
 import baza.trainee.domain.model.Event;
+import baza.trainee.repository.EventRepository;
 import lombok.Getter;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -24,7 +25,7 @@ class EventTestDataInitializer {
     private static final int CONTENT_BLOCKS_COUNT = 5;
 
     @Bean
-    CommandLineRunner testDataInitializer(TestEventRepository repository) {
+    CommandLineRunner testDataInitializer(EventRepository repository) {
         return args -> {
             if (!repository.findAll().isEmpty()) {
                 repository.deleteAll();

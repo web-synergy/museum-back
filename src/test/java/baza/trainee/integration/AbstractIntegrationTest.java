@@ -1,8 +1,6 @@
 package baza.trainee.integration;
 
-import org.junit.jupiter.api.AfterAll;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -14,7 +12,6 @@ import org.testcontainers.utility.DockerImageName;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Testcontainers
-@Import({ RedisTestConfig.class })
 abstract class AbstractIntegrationTest {
 
     private static final String REDIS_STACK_IMAGE = "redis/redis-stack:7.2.0-v0";
@@ -30,8 +27,4 @@ abstract class AbstractIntegrationTest {
         System.setProperty("spring.data.redis.port", redis.getMappedPort(REDIS_PORT).toString());
     }
 
-    @AfterAll
-    static void tearDown() {
-        redis.stop();
-    }
 }

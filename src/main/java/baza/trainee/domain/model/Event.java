@@ -17,6 +17,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static baza.trainee.constants.EventConstant.MAX_DESCRIPTION_SIZE;
@@ -98,4 +99,27 @@ public class Event implements Post {
     public void addContentBlock(@Valid ContentBlock block) {
         this.content.add(block);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, description, type, tags, content, bannerURI, bannerPreviewURI, begin, end);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Event)) {
+            return false;
+        }
+        Event other = (Event) obj;
+        return Objects.equals(id, other.id) && Objects.equals(title, other.title)
+                && Objects.equals(description, other.description) && Objects.equals(type, other.type)
+                && Objects.equals(tags, other.tags) && Objects.equals(content, other.content)
+                && Objects.equals(bannerURI, other.bannerURI)
+                && Objects.equals(bannerPreviewURI, other.bannerPreviewURI) && Objects.equals(begin, other.begin)
+                && Objects.equals(end, other.end);
+    }
+
 }
