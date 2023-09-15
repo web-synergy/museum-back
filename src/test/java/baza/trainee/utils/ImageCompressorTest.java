@@ -11,9 +11,9 @@ import java.io.InputStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ImageCompressorTest {
+class ImageCompressorTest {
     @Test
-    public void testCompress() throws IOException {
+    void testCompress() throws IOException {
 
         MultipartFile inputFile = new CustomMultipartFile(
                 "test.jpg",
@@ -24,8 +24,8 @@ public class ImageCompressorTest {
 
         MultipartFile compressedFile = ImageCompressor.compress(inputFile, 200, 0.9f);
 
-        assertEquals("image/webp", compressedFile.getContentType());
-        assertEquals("test.webp", compressedFile.getOriginalFilename());
+        assertEquals("image/jpeg", compressedFile.getContentType());
+        assertEquals("test.jpg", compressedFile.getOriginalFilename());
         assertTrue(inputFile.getSize() > compressedFile.getSize());
         assertEquals(200, getImageWidth(compressedFile));
     }

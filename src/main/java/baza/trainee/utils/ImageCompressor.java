@@ -3,13 +3,10 @@ package baza.trainee.utils;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 
 public class ImageCompressor {
 
@@ -34,23 +31,9 @@ public class ImageCompressor {
                     .toOutputStream(outputStream);
 
             byte[] jpegData = outputStream.toByteArray();
-            byte[] webpData = convertToWebp(jpegData);
-            String webpFileName = Objects.requireNonNull(
-                            inputFile.getOriginalFilename())
-                    .replaceFirst("\\..+$", ".webp");
 
-            return new CustomMultipartFile(webpFileName, webpFileName,
-                    "image/webp", new ByteArrayInputStream(webpData));
+            return new CustomMultipartFile(inputFile.getOriginalFilename(), inputFile.getName(),
+                    "image/jpeg", new ByteArrayInputStream(jpegData));
         }
-    }
-
-    private static byte[] convertToWebp(final byte[] jpegData) throws IOException {
-        ByteArrayInputStream jpegInputStream = new ByteArrayInputStream(jpegData);
-        BufferedImage jpegImage = ImageIO.read(jpegInputStream);
-
-        ByteArrayOutputStream webpOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(jpegImage, "webp", webpOutputStream);
-
-        return webpOutputStream.toByteArray();
     }
 }
