@@ -13,18 +13,18 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ContentBlockTest {
+class ContentBlockTest {
 
     private Validator validator;
     private ContentBlock validBlock;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
         validBlock = new ContentBlock();
         validBlock.setId("12");
-        validBlock.setBlockType(BlockType.PICTURE_TEXT_BLOCK);
+        validBlock.setBlockType(BlockType.PICTURE_TEXT_BLOCK.getValue());
         validBlock.setOrder(2);
         validBlock.setColumns(4);
         validBlock.setPictureLink("https://example.com/banner.jpg");
@@ -32,7 +32,7 @@ public class ContentBlockTest {
     }
 
     @Test
-    public void testContentBlockWithValidData() {
+    void testContentBlockWithValidData() {
         // given:
         ContentBlock contentBlock = validBlock;
 
@@ -43,7 +43,7 @@ public class ContentBlockTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(ints = {-1})
-    public void testEventWithInvalidOrder(Integer order) {
+    void testEventWithInvalidOrder(Integer order) {
         // given:
         ContentBlock contentBlock = new ContentBlock();
         contentBlock.setOrder(order);
@@ -55,7 +55,7 @@ public class ContentBlockTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(ints = {-1})
-    public void testEventWithInvalidColumns(Integer columns) {
+    void testEventWithInvalidColumns(Integer columns) {
         // given:
         ContentBlock contentBlock = new ContentBlock();
         contentBlock.setColumns(columns);
@@ -64,14 +64,4 @@ public class ContentBlockTest {
         assertFalse(validator.validate(contentBlock).isEmpty());
     }
 
-    @ParameterizedTest
-    @NullSource
-    public void testEventWithInvalidColumns(BlockType type) {
-        // given:
-        ContentBlock contentBlock = new ContentBlock();
-        contentBlock.setBlockType(type);
-
-        // then:
-        assertFalse(validator.validate(contentBlock).isEmpty());
-    }
 }

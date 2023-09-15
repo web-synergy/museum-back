@@ -60,7 +60,7 @@ class EventTestDataInitializer {
 
                     var type = (j % 2 == 0) ? BlockType.PICTURE_BLOCK
                             : BlockType.PICTURE_TEXT_BLOCK;
-                    block.setBlockType(type);
+                    block.setBlockType(type.getValue());
 
                     int column = ThreadLocalRandom.current().nextInt(1) + 1;
                     block.setColumns(column);
