@@ -3,6 +3,10 @@ package baza.trainee.controller;
 import baza.trainee.domain.dto.event.EventPublication;
 import baza.trainee.domain.model.Event;
 import baza.trainee.service.EventService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static baza.trainee.utils.ControllerUtils.handleFieldsErrors;
 
-
+/**
+ * Spring MVC REST controller serving event operations for admin users.
+ *
+ * @author Oleksandr Korkach
+ */
 @RestController
 @RequestMapping("/admin/events")
 @RequiredArgsConstructor
@@ -33,8 +41,15 @@ public class EventAdminController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Event createEvent(@RequestBody @Valid final EventPublication request,
-                             final BindingResult bindingResult
+    @Operation(summary = "Create a new event", description = "Creates a new event with the provided information.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Event created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
+    public Event createEvent(
+            @Parameter(description = "Event data to be created")
+            @RequestBody @Valid final EventPublication request,
+            final BindingResult bindingResult
     ) {
         handleFieldsErrors(bindingResult);
 
@@ -50,9 +65,19 @@ public class EventAdminController {
      * @return Updated event.
      */
     @PutMapping("/{id}")
-    public Event updateEvent(@PathVariable("id") final String id,
-                             @RequestBody @Valid final EventPublication request,
-                             final BindingResult bindingResult
+    @Operation(summary = "Update an existing event",
+            description = "Updates an existing event with the provided information.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Event updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Event not found")
+    })
+    public Event updateEvent(
+            @Parameter(description = "Unique identifier of the event to be updated")
+            @PathVariable("id") final String id,
+            @Parameter(description = "Event data to be updated")
+            @RequestBody @Valid final EventPublication request,
+            final BindingResult bindingResult
     ) {
         handleFieldsErrors(bindingResult);
 
@@ -66,7 +91,15 @@ public class EventAdminController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteEvent(final @PathVariable("id") String id) {
+    @Operation(summary = "Delete an existing event",
+            description = "Deletes an existing event by its unique identifier.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Event deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Event not found")
+    })
+    public void deleteEvent(
+            @Parameter(description = "Unique identifier of the event to be deleted")
+            @PathVariable("id") final String id) {
         eventService.deleteEventById(id);
     }
 }
