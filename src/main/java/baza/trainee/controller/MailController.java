@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +42,7 @@ public class MailController {
      * @param bindingResult An object that holds information about data binding and validation errors, if any.
      * @return A ResponseEntity with a status of 200 (OK) if the email sending is successful.
      */
+    @CrossOrigin(origins = "http://127.0.0.1:8080")
     @PostMapping("/submit")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Email sent successfully"),
