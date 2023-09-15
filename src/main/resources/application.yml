@@ -22,11 +22,6 @@ spring:
     password: ${MAIL_PASSWORD}
     port: '587'
 
-  data:
-    redis:
-      host: ${ REDIS_HOST:redis }
-      port: ${ REDIS_PORT:6379 }
-
 mail:
   template:
     path:
