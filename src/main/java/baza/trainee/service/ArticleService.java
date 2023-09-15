@@ -3,8 +3,6 @@ package baza.trainee.service;
 
 import baza.trainee.domain.model.Article;
 
-import java.util.Optional;
-
 public interface ArticleService {
 
     /**

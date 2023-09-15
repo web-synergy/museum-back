@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ArticleController.class)
 class ArticleControllerTest {
+
     @Autowired
     MockMvc mockMvc;
 
@@ -29,8 +30,7 @@ class ArticleControllerTest {
     LoggingService loggingService;
 
     @Test
-    @SneakyThrows
-    void findById() {
+    void findById() throws Exception {
         when(articleService.findByTitle(VALID_ARTICLE.getTitle())).thenReturn(VALID_ARTICLE);
 
         mockMvc.perform(get(GET_BY_TITLE_URL, VALID_ARTICLE.getTitle()))
