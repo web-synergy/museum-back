@@ -20,12 +20,6 @@ class MailServiceTest {
     private EventService eventService;
 
     @Test
-    void testBuildMsgForUser() throws IOException {
-        String result = mailService.buildMsgForUser("John", "Doe");
-        assertThat(result).contains("John", "Doe");
-    }
-
-    @Test
     void testBuildMsgForMuseum() throws IOException {
         String result = mailService.buildMsgForMuseum("John", "Doe",
                 "test@example.com", "Message");

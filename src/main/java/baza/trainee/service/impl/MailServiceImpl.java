@@ -53,12 +53,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public String buildMsgForUser(final String firstName, final String lastName) {
-        String emailTemplate = readHtmlTemplateFromFile(userTemplatePath);
-
-        emailTemplate = emailTemplate.replace("{{firstName}}", firstName);
-        emailTemplate = emailTemplate.replace("{{lastName}}", lastName);
-
-        return emailTemplate;
+        return readHtmlTemplateFromFile(userTemplatePath);
     }
 
     @Override
