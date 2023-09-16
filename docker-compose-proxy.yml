@@ -10,6 +10,9 @@ services:
 
   app:
     build: .
+    environment:
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
     depends_on:
       - redis
     restart: on-failure
