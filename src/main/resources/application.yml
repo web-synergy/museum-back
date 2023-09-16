@@ -1,3 +1,7 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
 spring:
   data:
     redis:
@@ -16,10 +20,10 @@ spring:
           auth: 'true'
           connectiontimeout: '5000'
           writetimeout: '5000'
-    host: smtp.gmail.com
+    host: smtp.meta.ua
     username: ${MAIL_USER}
     password: ${MAIL_PASSWORD}
-    port: '587'
+    port: '465'
 
 mail:
   template:
@@ -27,5 +31,5 @@ mail:
       user: templates/msg_for_user.html
       museum: templates/msg_for_museum.html
   museum:
-    email: museum@gmail.com
+    email: ${MAIL_USER}
     label: Museum.ua
