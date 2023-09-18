@@ -6,7 +6,6 @@ import baza.trainee.domain.mapper.EventMapper;
 import baza.trainee.domain.model.ContentBlock;
 import baza.trainee.domain.model.Event;
 import baza.trainee.service.EventService;
-import baza.trainee.utils.LoggingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -43,9 +42,6 @@ public class EventAdminControllerTest {
 
     @MockBean
     private EventService eventService;
-
-    @MockBean
-    private LoggingService logService;
 
     @Test
     public void testCreateEventStatusIsCreated() throws Exception {

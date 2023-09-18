@@ -1,7 +1,6 @@
 package baza.trainee.controller;
 
 import baza.trainee.service.SearchService;
-import baza.trainee.utils.LoggingService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,9 +24,6 @@ class SearchControllerTest {
 
     @MockBean
     SearchService searchService;
-
-    @MockBean
-    LoggingService loggingService;
 
     @Test
     @SneakyThrows

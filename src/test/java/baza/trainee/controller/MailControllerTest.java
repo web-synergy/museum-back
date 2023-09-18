@@ -3,7 +3,6 @@ package baza.trainee.controller;
 import baza.trainee.domain.dto.MailDto;
 import baza.trainee.exceptions.custom.EmailSendingException;
 import baza.trainee.service.MailService;
-import baza.trainee.utils.LoggingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -33,9 +32,6 @@ public class MailControllerTest {
 
     @MockBean
     private MailService mailService;
-
-    @MockBean
-    private LoggingService loggingService;
 
     private MailDto validMailDto;
     private MailDto notValidMailDto;

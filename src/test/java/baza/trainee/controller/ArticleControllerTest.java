@@ -2,7 +2,6 @@ package baza.trainee.controller;
 
 import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.service.ArticleService;
-import baza.trainee.utils.LoggingService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +24,6 @@ class ArticleControllerTest {
 
     @MockBean
     ArticleService articleService;
-
-    @MockBean
-    LoggingService loggingService;
 
     @Test
     void findById() throws Exception {
