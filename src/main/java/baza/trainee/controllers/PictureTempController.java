@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,7 +59,7 @@ public class PictureTempController {
      * @param oldPathsFile file in directory temp
      * */
     @PostMapping("/moveToFolder")
-    public void moveAndCompressionToFolder(List<String> oldPathsFile) {
+    public void moveAndCompressionToFolder(@RequestBody List<String> oldPathsFile) {
         pictureService.moveAndCompressionFileToFolder(oldPathsFile, defaultDir);
     }
 
@@ -80,8 +81,8 @@ public class PictureTempController {
      * @param pathsFile file in directory rootLocation
      * */
     @PostMapping("/updateFileInFolder")
-    public void updateFilesInFolder(List<String> pathsFile){
-        pictureService.updateFilesInFolder(pathsFile,"userId");
+    public List<String> updateFilesInFolder(@RequestBody List<String> pathsFile){
+        return pictureService.updateFilesInFolder(pathsFile,"userId");
     }
 
     /**
