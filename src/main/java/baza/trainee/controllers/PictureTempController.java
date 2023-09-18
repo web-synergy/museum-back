@@ -5,6 +5,7 @@ import baza.trainee.services.ResourcePictureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,17 +63,19 @@ public class PictureTempController {
     }
 
     /**
-     * Move file in directory temp to directory rootLocation
+     * Delete directory in directory rootLocation
      *
-     * @param pathsFile files in directory rootLocation
+     * @param dir short path directory in directory rootLocation
      * */
-    @PostMapping("/deleteFileInFolder")
-    public void deleteFileInFolder(List<String> pathsFile){
-        pictureService.deleteFilesInFolders(pathsFile);
+    @DeleteMapping("/deleteDirectory")
+    public void deleteFolder(String dir){
+        pictureService.deleteDirectory(dir);
     }
 
     /**
-     * Move file in directory temp to directory rootLocation
+     * Update file in directory rootLocation
+     * Delete file without path
+     * Leave old file and add files in directory temp
      *
      * @param pathsFile file in directory rootLocation
      * */

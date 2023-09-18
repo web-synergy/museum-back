@@ -28,7 +28,7 @@ public class ResourcePictureController {
     @Value("$dir.preview")
     String preview ;
     @Value("$dir.original")
-    final String original;
+    String original;
 
     private final ResourcePictureService resourcePictureService;
 

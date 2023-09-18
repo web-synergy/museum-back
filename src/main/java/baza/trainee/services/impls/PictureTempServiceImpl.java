@@ -46,7 +46,7 @@ public class PictureTempServiceImpl implements PictureTempService {
 
     @PostConstruct
     public void init() {
-        this.rootLocation = Path.of(System.getProperty("user.dir"), uploadPath);
+        rootLocation = Path.of(System.getProperty("user.dir"), uploadPath);
         dirResponse = Path.of(prefixResponse);
     }
 
@@ -61,13 +61,13 @@ public class PictureTempServiceImpl implements PictureTempService {
             List<String> oldPathsFile, String dest) {
         StringBuilder errors = new StringBuilder();
         final List<String> pathMoveFiles = oldPathsFile.stream().map(path -> {
-            Path oldPath = rootLocation.resolve(temp).resolve(path).normalize();
-            Path destOriginalPath =
-                    rootLocation.resolve(original).resolve(dest).resolve(path)
-                            .normalize();
+            Path oldPath = rootLocation.resolve(temp).resolve(path)
+                    .normalize().toAbsolutePath();
+            Path destOriginalPath =rootLocation.resolve(original).resolve(dest).resolve(path)
+                            .normalize().toAbsolutePath();
             Path destPreviewPath =
                     rootLocation.resolve(preview).resolve(dest).resolve(path)
-                            .normalize();
+                            .normalize().toAbsolutePath();
             if (Files.exists(oldPath)) {
                 try {
                     Files.copy(oldPath, destOriginalPath);
@@ -100,27 +100,25 @@ public class PictureTempServiceImpl implements PictureTempService {
     }
 
     @Override
-    public void deleteFilesInFolders(List<String> pathsFile) {
-        StringBuilder errors = new StringBuilder();
-        pathsFile.forEach(path -> {
-            deleteFile(errors, path, original);
-            deleteFile(errors, path, preview);
-        });
-        if (!errors.isEmpty()){throw new StorageException(errors.toString());}
+    public void deleteDirectory(String dir) {
+        Path absolutPathOriginalDir =rootLocation.resolve(original).resolve(dir)
+                .normalize().toAbsolutePath();
+        Path absolutPathPreviewDir =rootLocation.resolve(original).resolve(dir)
+                .normalize().toAbsolutePath();
+        deletePartDirectory(absolutPathOriginalDir);
+        deletePartDirectory(absolutPathPreviewDir);
     }
+
     /**
-     * Delete file in directory from directory rootLocation
+     * Delete directory with original files or compression files from directory rootLocation
      *
-     * @param errors log errors
-     * @param dir Dir after rootLocation
-     * @param path Path after dir*/
-    private void deleteFile(StringBuilder errors, String path, String dir) {
-        Path absolutPath = rootLocation.resolve(dir).resolve(path);
+     * @param absolutPathDir Path part directory in directory rootLocation*/
+    private void deletePartDirectory(Path absolutPathDir) {
         try {
-            Files.delete(absolutPath);
+            FileSystemUtils.deleteRecursively(absolutPathDir);
         } catch (IOException e) {
-            errors.append("Not delete original file ").append(path)
-                    .append("\\n");
+            throw new StorageException("Not delete file in directory " +
+                    absolutPathDir);
         }
     }
 
@@ -138,13 +136,13 @@ public class PictureTempServiceImpl implements PictureTempService {
 
         return moveAndCompressionNewFiles(pathsFile, originalDir, dest);
     }
+
     /**
      * Leave old files from list paths file
      * Move and compression new files
      *
      * @param pathsFile Short old paths in rootLocation and new path in temp
      * @param originalDir Absolut path original dir
-     * @param dest Short destination directory
      * @return list old paths and add paths new file
      * */
     private List<String> moveAndCompressionNewFiles(List<String> pathsFile,
@@ -152,20 +150,18 @@ public class PictureTempServiceImpl implements PictureTempService {
                                                     String dest) {
         try (final Stream<Path> pathDir = Files.walk(originalDir,
                 Integer.MAX_VALUE)) {
-            List<String> absolutPathLeaveFiles = pathDir
+            List<String> shortPathLeaveFiles = pathDir
                     .filter(path -> pathsFile.contains(
                             originalDir.relativize(path).toString()))
                     .map(path -> originalDir.relativize(path).toString())
                     .toList();
             List<String> shortPathFileFromTemp = pathsFile.stream()
-                    .filter(path -> !absolutPathLeaveFiles
-                            .contains(originalDir.resolve(path).toString())).toList();
+                    .filter(path -> !shortPathLeaveFiles.contains(path)).toList();
+
             List<String> pathsNewFiles =
                     moveAndCompressionFileToFolder(shortPathFileFromTemp, dest);
 
-            List<String> shortPathLeaveFiles = pathsFile.stream()
-                    .filter(path -> !shortPathFileFromTemp.contains(path))
-                    .toList();
+
             return Stream.of(shortPathLeaveFiles, pathsNewFiles)
                     .flatMap(Collection::stream).toList();
 
@@ -208,7 +204,7 @@ public class PictureTempServiceImpl implements PictureTempService {
     private String createFile(MultipartFile newPicture, Path dest) {
         if (newPicture != null && newPicture.getName().isBlank()) {
             Path newNameFile = createNewNameFile(newPicture.getName());
-            final Path newPathDir = rootLocation.resolve(dest);
+            Path newPathDir = rootLocation.resolve(dest).normalize().toAbsolutePath();
 
             try {
                 if (!Files.exists(newPathDir)) {

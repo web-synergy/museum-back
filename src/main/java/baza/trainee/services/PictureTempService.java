@@ -25,9 +25,9 @@ public interface PictureTempService {
     /**
      * Delete file in folder rootLocation/original and rootLocation/preview
      *
-     * @param pathsFile List short path in folder rootLocation/original and rootLocation/preview
+     * @param dir  short path directory in directory rootLocation/original and rootLocation/preview
      * */
-    void deleteFilesInFolders(List<String> pathsFile);
+    void deleteDirectory(String dir);
 
     /**
      * Delete files without path from new list in folder rootLocation/original and rootLocation/preview
