@@ -3,11 +3,6 @@ spring:
     redis:
       host: localhost
       port: 6379
-<<<<<<< HEAD
-
-#Mail
-=======
->>>>>>> 7041faccf1f57ef5be98448514cd4ec6d5aa9a38
   mail:
     properties:
       mail:
@@ -33,8 +28,6 @@ mail:
   museum:
     email: museum@gmail.com
     label: Museum.ua
-<<<<<<< HEAD
-=======
 
 resources:
   files:
@@ -43,4 +36,3 @@ resources:
       original: 'original'
       compressed: 'compressed'
       temporary: 'temp'
->>>>>>> 7041faccf1f57ef5be98448514cd4ec6d5aa9a38
