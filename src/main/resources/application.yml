@@ -32,3 +32,11 @@ mail:
   museum:
     email: ${MAIL_USER}
     label: Museum.ua
+
+logging:
+  file:
+    name: logfile.log
+  pattern:
+    file: "%replace(%msg){'\\u001B\\[[;\\d]*m', ''}%n"
+  level:
+    root: error

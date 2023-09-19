@@ -45,6 +45,7 @@ public class EventServiceImpl implements EventService {
         var eventToUpdate = getById(id);
         var eventForUpdate = eventMapper.toEvent(updatedEvent);
         eventForUpdate.setId(eventToUpdate.getId());
+        eventForUpdate.setCreated(eventToUpdate.getCreated());
 
         return eventRepository.update(eventForUpdate);
     }

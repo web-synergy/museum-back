@@ -52,7 +52,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public String buildMsgForUser(final String firstName, final String lastName) {
+    public String buildMsgForUser() {
         return readHtmlTemplateFromFile(userTemplatePath);
     }
 

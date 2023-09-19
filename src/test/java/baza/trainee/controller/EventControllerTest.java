@@ -4,7 +4,6 @@ import baza.trainee.domain.model.Event;
 import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.exceptions.custom.MethodArgumentNotValidException;
 import baza.trainee.service.EventService;
-import baza.trainee.utils.LoggingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,9 +29,6 @@ public class EventControllerTest {
 
     @MockBean
     private EventService eventService;
-
-    @MockBean
-    private LoggingService logService;
 
     @Test
     public void testGetEvents() throws Exception {

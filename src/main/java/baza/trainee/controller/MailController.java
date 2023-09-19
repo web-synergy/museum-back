@@ -55,7 +55,7 @@ public class MailController {
     ) {
         handleFieldsErrors(bindingResult);
 
-        String msgForUser = mailService.buildMsgForUser(mailDto.firstName(), mailDto.lastName());
+        String msgForUser = mailService.buildMsgForUser();
         mailService.sendEmail(mailDto.email(), msgForUser, MUSEUM_SUBJECT);
 
         String msgForMuseum = mailService.buildMsgForMuseum(mailDto.firstName(), mailDto.lastName(),
