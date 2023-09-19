@@ -3,7 +3,6 @@ package baza.trainee.controller;
 import baza.trainee.domain.dto.MailDto;
 import baza.trainee.exceptions.custom.EmailSendingException;
 import baza.trainee.service.MailService;
-import baza.trainee.utils.LoggingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -34,9 +33,6 @@ public class MailControllerTest {
     @MockBean
     private MailService mailService;
 
-    @MockBean
-    private LoggingService loggingService;
-
     private MailDto validMailDto;
     private MailDto notValidMailDto;
 
@@ -51,7 +47,7 @@ public class MailControllerTest {
 
     @Test
     public void testSubmitContactFormWithValidData() throws Exception {
-        when(mailService.buildMsgForUser(any(), any())).thenReturn("Message for user");
+        when(mailService.buildMsgForUser()).thenReturn("Message for user");
         when(mailService.buildMsgForMuseum(any(), any(), any(), any())).thenReturn("Message for museum");
 
         mockMvc.perform(post("/api/feedback/submit")

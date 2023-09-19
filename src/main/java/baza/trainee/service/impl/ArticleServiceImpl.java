@@ -1,19 +1,25 @@
 package baza.trainee.service.impl;
 
-import baza.trainee.domain.model.Article;
-import baza.trainee.service.ArticleService;
 import org.springframework.stereotype.Service;
+
+import baza.trainee.domain.model.Article;
+import baza.trainee.exceptions.custom.EntityNotFoundException;
+import baza.trainee.repository.ArticleRepository;
+import baza.trainee.service.ArticleService;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
-    /**
-     * Finds an existing article by given title.
-     *
-     * @param title title to get an existing article.
-     * @return {@link Article} object containing an existing article with its full content.
-     */
+
+    private final ArticleRepository articleRepository;
+
+    public ArticleServiceImpl(ArticleRepository articleRepository) {
+        this.articleRepository = articleRepository;
+    }
+
     @Override
-    public Article findByTitle(final String title) {
-        return null;
+    public Article findByTitle(String title) {
+        // Implement the logic to fetch the article by title from the repository
+        return articleRepository.findByTitle(title)
+                .orElseThrow(() -> new EntityNotFoundException(Article.class.getSimpleName(), "with title" + title));
     }
 }

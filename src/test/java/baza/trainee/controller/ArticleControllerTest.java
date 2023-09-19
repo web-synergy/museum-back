@@ -2,7 +2,6 @@ package baza.trainee.controller;
 
 import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.service.ArticleService;
-import baza.trainee.utils.LoggingService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +18,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ArticleController.class)
 class ArticleControllerTest {
+
     @Autowired
     MockMvc mockMvc;
 
     @MockBean
     ArticleService articleService;
 
-    @MockBean
-    LoggingService loggingService;
-
     @Test
-    @SneakyThrows
-    void findById() {
+    void findById() throws Exception {
         when(articleService.findByTitle(VALID_ARTICLE.getTitle())).thenReturn(VALID_ARTICLE);
 
         mockMvc.perform(get(GET_BY_TITLE_URL, VALID_ARTICLE.getTitle()))

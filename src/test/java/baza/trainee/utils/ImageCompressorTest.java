@@ -25,7 +25,7 @@ public class ImageCompressorTest {
         MultipartFile compressedFile = ImageCompressor.compress(inputFile, 200, 0.9f);
 
         assertEquals("image/webp", compressedFile.getContentType());
-        assertEquals("test.jpg", compressedFile.getOriginalFilename());
+        assertEquals("test.webp", compressedFile.getOriginalFilename());
         assertTrue(inputFile.getSize() > compressedFile.getSize());
         assertEquals(200, getImageWidth(compressedFile));
     }

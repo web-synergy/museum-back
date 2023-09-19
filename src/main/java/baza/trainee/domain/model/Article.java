@@ -65,6 +65,7 @@ public class Article {
      * Article content.
      */
     @NotEmpty
+    @Builder.Default
     private Set<ContentBlock> content = new HashSet<>();
 
     /**

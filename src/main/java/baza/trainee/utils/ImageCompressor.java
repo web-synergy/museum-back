@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 public class ImageCompressor {
 
@@ -34,8 +35,11 @@ public class ImageCompressor {
 
             byte[] jpegData = outputStream.toByteArray();
             byte[] webpData = convertToWebp(jpegData);
+            String webpFileName = Objects.requireNonNull(
+                            inputFile.getOriginalFilename())
+                    .replaceFirst("\\..+$", ".webp");
 
-            return new CustomMultipartFile(inputFile.getName(), inputFile.getOriginalFilename(),
+            return new CustomMultipartFile(webpFileName, webpFileName,
                     "image/webp", new ByteArrayInputStream(webpData));
         }
     }

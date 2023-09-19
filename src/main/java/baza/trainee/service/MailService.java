@@ -13,13 +13,11 @@ public interface MailService {
     void sendEmail(String to, String message, String subject);
 
     /**
-     * Builds a message for a user by combining their first name and last name.
+     * Builds a message for a user.
      *
-     * @param firstName The first name of the user.
-     * @param lastName  The last name of the user.
-     * @return A formatted html-message string that includes the user's name.
+     * @return A formatted html-message string for user.
      */
-    String buildMsgForUser(String firstName, String lastName);
+    String buildMsgForUser();
 
     /**
      * Builds a message for a museum, including user information and a custom message.

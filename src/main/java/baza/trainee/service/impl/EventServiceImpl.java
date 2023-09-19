@@ -26,12 +26,10 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findAll(pageable);
     }
 
-
-
     @Override
     public Event getById(String id) {
         return eventRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Event", "ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Event", "ID: " + id));
     }
 
     @Override
@@ -43,14 +41,17 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event update(String id, EventPublication updatedEvent) {
-        Event event = eventMapper.toEvent(updatedEvent);
-        event.setId(id);
+        var eventToUpdate = getById(id);
+        var eventForUpdate = eventMapper.toEvent(updatedEvent);
+        eventForUpdate.setId(eventToUpdate.getId());
+        eventForUpdate.setCreated(eventToUpdate.getCreated());
 
-        return eventRepository.update(event);
+        return eventRepository.update(eventForUpdate);
     }
 
     @Override
     public void deleteEventById(String id) {
-        eventRepository.deleteById(id);
+        var event = getById(id);
+        eventRepository.delete(event);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 public interface EventService {
 
     /**
+     * @param pageable {@link Pageable} object.
      * @return A Page of events.
      */
     Page<Event> getAll(Pageable pageable);
