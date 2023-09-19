@@ -47,7 +47,7 @@ public class MailControllerTest {
 
     @Test
     public void testSubmitContactFormWithValidData() throws Exception {
-        when(mailService.buildMsgForUser(any(), any())).thenReturn("Message for user");
+        when(mailService.buildMsgForUser()).thenReturn("Message for user");
         when(mailService.buildMsgForMuseum(any(), any(), any(), any())).thenReturn("Message for museum");
 
         mockMvc.perform(post("/api/feedback/submit")

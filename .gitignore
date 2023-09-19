@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/logfile.log
+/logfile.log.2023-09-15.0.gz
