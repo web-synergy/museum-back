@@ -10,15 +10,14 @@ spring:
           starttls:
             enable: 'true'
           ssl:
-            trust: '*'
-          timeout: '3000'
+            enable: 'true'
           auth: 'true'
           connectiontimeout: '5000'
           writetimeout: '5000'
-    host: smtp.gmail.com
+    host: smtp.meta.ua
     username: ${MAIL_USER}
     password: ${MAIL_PASSWORD}
-    port: '587'
+    port: '465'
 
 mail:
   template:
