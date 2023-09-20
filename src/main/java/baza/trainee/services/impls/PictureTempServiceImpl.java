@@ -43,7 +43,7 @@ public class PictureTempServiceImpl implements PictureTempService {
     @Override
     public String addPicture(MultipartFile newPicture, String userId,
                              String dest) {
-        if (newPicture != null && newPicture.getName().isBlank()) {
+        if (newPicture != null && !newPicture.getName().isBlank()) {
             for (TypePicture value : TypePicture.values()) {
                 Path newPathDir = Path.of(rootLocation.toString(), temp, userId,
                                 value.name().toLowerCase(), dest)
@@ -84,7 +84,7 @@ public class PictureTempServiceImpl implements PictureTempService {
     private void createDir(Path newPathDir) {
         if (!Files.exists(newPathDir)) {
             try {
-                Files.createDirectory(newPathDir);
+                Files.createDirectories(newPathDir);
             } catch (IOException e) {
                 throw new StorageException("Not create directory " + newPathDir);
             }
@@ -132,9 +132,9 @@ public class PictureTempServiceImpl implements PictureTempService {
                 }
             });
 
-            Path rootDirInTemp = Path.of(value.name().toLowerCase()).resolve(
+            Path pathRootDir = Path.of(value.name().toLowerCase()).resolve(
                     Path.of(sourcePathsFile.get(0)).getName(0));
-            Path pathDeleteDir = sourceDir.resolve(rootDirInTemp)
+            Path pathDeleteDir = sourceDir.resolve(pathRootDir)
                     .normalize().toAbsolutePath();
             deletePartDir(errors, pathDeleteDir);
         }

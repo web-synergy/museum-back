@@ -38,7 +38,7 @@ class ResourcePictureControllerTest {
                 .getContentAsByteArray();
         when(resourcePictureService.loadAsResource(anyString(), anyString())).thenReturn(img);
         mockMvc.perform(get("/picture/{type}/{*file}" ,"original" ,"noImages.jpg")
-                        .contentType(MediaType.IMAGE_JPEG)
+                        .contentType(MediaType.IMAGE_JPEG_VALUE)
                         .content(img))
                 .andDo(print()).andExpect(status().isOk());
     }
