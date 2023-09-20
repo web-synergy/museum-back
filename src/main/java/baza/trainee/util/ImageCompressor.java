@@ -9,8 +9,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -28,9 +26,9 @@ public class ImageCompressor {
      * @return A compressed MultipartFile representing the compressed image.
      * @throws IOException If an I/O error occurs while processing the input file.
      */
-    public static MultipartFile compress(final File inputFile, final int targetWidth, final float quality)
+    public static MultipartFile compress(final MultipartFile inputFile, final int targetWidth, final float quality)
             throws IOException {
-        try (InputStream inputStream = new FileInputStream(inputFile)) {
+        try (InputStream inputStream = inputFile.getInputStream()) {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
             Thumbnails.of(inputStream)
@@ -43,7 +41,7 @@ public class ImageCompressor {
             byte[] webpData = convertToWebp(jpegData);
 
             return new MockMultipartFile(inputFile.getName(),
-                    inputFile.getPath(),
+                    inputFile.getName(),
                     "image/webp", new ByteArrayInputStream(webpData)) {
             };
         }

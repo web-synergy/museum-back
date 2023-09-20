@@ -12,7 +12,6 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -34,22 +33,24 @@ class ResourcePictureControllerTest {
     @Test
     @SneakyThrows
     void getImage() {
-        Resource img = new UrlResource(Path.of(System.getProperty("user.dir"),
-                "upload", "noImages.jpg").normalize().toAbsolutePath().toUri());
+        byte[] img = new UrlResource(Path.of(System.getProperty("user.dir"),
+                "upload", "noImages.jpg").normalize().toAbsolutePath().toUri())
+                .getContentAsByteArray();
         when(resourcePictureService.loadAsResource(anyString(), anyString())).thenReturn(img);
         mockMvc.perform(get("/picture/{*file}" , "noImages.jpg")
                         .contentType(MediaType.IMAGE_JPEG)
-                        .content(img.getContentAsByteArray()))
+                        .content(img))
                 .andDo(print()).andExpect(status().isOk());
     }
 
     @SneakyThrows
     @Test
-    void getImage_notStorageException(){
+    void getImage_notStorageException() throws RuntimeException{
         when(resourcePictureService.loadAsResource(anyString(), anyString()))
                 .thenThrow(new StorageFileNotFoundException("Could not read file: "));
         mockMvc.perform(get("/picture/{*file}" , "life.jpg")
                         .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Could not read file: "));
     }

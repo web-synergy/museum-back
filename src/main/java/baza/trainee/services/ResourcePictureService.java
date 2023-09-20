@@ -1,5 +1,6 @@
 package baza.trainee.services;
 
+import baza.trainee.enums.TypePicture;
 import org.springframework.core.io.Resource;
 
 public interface ResourcePictureService {
@@ -9,5 +10,5 @@ public interface ResourcePictureService {
      * @param type Can type is original,preview or temp
      * @param filename file path in upload/{type}
      * @return Resource file*/
-    Resource loadAsResource(String type, String filename);
+    byte[] loadAsResource(String type, String filename);
 }

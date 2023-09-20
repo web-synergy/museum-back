@@ -6,37 +6,39 @@ import java.util.List;
 
 public interface PictureTempService {
     /**
-     * Add picture in rootLocation/temp directory
+     * Add and compression picture in rootLocation/temp/userId/{type} directory
      *
      * @param newFile file from form
-     * @param dir rootLocation/temp/own directory in file system
-     * @return Short path of rootLocation/temp directory*/
-    String addPicture(MultipartFile newFile, String dir);
+     * @param userId Id user
+     * @param dir uuid directory
+     * @return Short path of rootLocation/temp/userId/{type} directory*/
+    String addPicture(MultipartFile newFile, String userId,
+                      String dir);
 
     /**
-     * Move and Compression files in temp directory to original and
-     * preview directory
-     *  @param oldPathsFile List of short paths in temp directory
-     * @param dir User directory when write file in rootLocation/original or
-     * preview directory
-     * @return paths of new file*/
-    List<String> moveAndCompressionFileToFolder(List<String> oldPathsFile, String dir);
+     * Move  files in temp directory to rootLocation/{type} directory
+     *  @param sourcePathsFile List of short paths in temp directory
+     * @param userId Id user
+     **/
+    void moveFilesInTempToFolder(List<String> sourcePathsFile, String userId);
 
     /**
-     * Delete file in folder rootLocation/original and rootLocation/preview
+     * Move files in rootLocation/{type} directory to temp directory
      *
-     * @param dir  short path directory in directory rootLocation/original and rootLocation/preview
+     *  @param sourcePathsFile List of short paths in temp directory
+     * @param userId Id user
+     **/
+    void moveFilesInFolderToTemp(List<String> sourcePathsFile, String userId);
+
+    /**
+     * Delete directories in folder rootLocation/{type}
+     *
+     * @param pathsDeleteDir  short path directory in directory rootLocation/original and rootLocation/preview
      * */
-    void deleteDirectory(String dir);
+    void deleteDirectory(String pathsDeleteDir, String userId);
 
-    /**
-     * Delete files without path from new list in folder rootLocation/original and rootLocation/preview
-     * Leave old files from new list in folder rootLocation/original and rootLocation/preview
-     * Move new file from temp directory in folder rootLocation/original and rootLocation/preview
-     *
-     *  @param pathsFile List short path in folder rootLocation/original and rootLocation/preview
-     * @param dest Destination directory in rootLocation
-     * @return paths old and new file*/
 
-    List<String> updateFilesInFolder(List<String> pathsFile, String dest);
+    String fullPath(String ...arg);
+
+    String createDir();
 }

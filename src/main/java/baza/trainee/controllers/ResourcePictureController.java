@@ -1,5 +1,6 @@
 package baza.trainee.controllers;
 
+import baza.trainee.enums.TypePicture;
 import baza.trainee.services.ResourcePictureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,10 +26,6 @@ import java.io.IOException;
 @RequestMapping("/picture")
 @RequiredArgsConstructor
 public class ResourcePictureController {
-    @Value("$dir.preview")
-    String preview ;
-    @Value("$dir.original")
-    String original;
 
     private final ResourcePictureService resourcePictureService;
 
@@ -39,9 +36,7 @@ public class ResourcePictureController {
      * @param filename path in directory upload/preview or upload/original
      * @return image*/
     @GetMapping(value = "/{type}/{*filename}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public byte[] getImage(@PathVariable("type") String type, @PathVariable("filename") String filename)
-            throws IOException {
-        return resourcePictureService.loadAsResource(
-                type.equals(preview)? preview : original, filename).getContentAsByteArray();
+    public byte[] getImage(@PathVariable("type") TypePicture type, @PathVariable("filename") String filename){
+        return resourcePictureService.loadAsResource(type.name().toLowerCase(), filename);
     }
 }

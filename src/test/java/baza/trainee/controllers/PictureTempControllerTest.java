@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -26,7 +25,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PictureTempController.class)
@@ -51,52 +49,23 @@ class PictureTempControllerTest {
         byte[] imageBytes = new UrlResource(absolutePathFile.toUri()).getContentAsByteArray();
         MockMultipartFile mockFile = new MockMultipartFile("file", "noImages.jpg",
                 "image/jpeg", imageBytes);
-        when(pictureTempService.addPicture(eq(mockFile),anyString())).thenReturn("noImages.jpg");
+        when(pictureTempService.addPicture(eq(mockFile), "userId", anyString())).thenReturn("noImages.jpg");
         mockMvc.perform(multipart("/admin/addTempFile").file(mockFile))
                 .andExpect(status().isOk());
     }
 
 
-    @Test
-    @SneakyThrows
-    void moveAndCompressionToFolder() {
-        List<String> list = List.of("noImage.jpg");
-        when(pictureTempService.moveAndCompressionFileToFolder(anyList(), anyString())).thenReturn(list);
-        mockMvc.perform(post("/admin/moveToFolder")
-                .requestAttr("oldPathsFile", list)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(list)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @SneakyThrows
-    void deleteFolder() {
-        mockMvc.perform(post("/amin/deleteDirectory")
-                .param("dir", anyString())).andExpect(status().isOk());
-    }
-
-    @Test
-    @SneakyThrows
-    void updateFilesInFolder() {
-        List<String> list = List.of("noImage.jpg");
-        when(pictureTempService.updateFilesInFolder(anyList(), anyString())).thenReturn(list);
-        mockMvc.perform(post("/admin/updateFileInFolder")
-                        .requestAttr("pathsFile", list)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(list)))
-                .andExpect(status().isOk());
-    }
 
     @Test
     @SneakyThrows
     void getImage() {
-        Resource img = new UrlResource(Path.of(System.getProperty("user.dir"),
-                "upload", "noImages.jpg").normalize().toAbsolutePath().toUri());
+        byte[] img = new UrlResource(Path.of(System.getProperty("user.dir"),
+                "upload", "noImages.jpg").normalize().toAbsolutePath().toUri())
+                .getContentAsByteArray();
         when(resourcePictureService.loadAsResource(anyString(), anyString())).thenReturn(img);
         mockMvc.perform(get("/admin/picture/{*file}" , "noImages.jpg")
                         .contentType(MediaType.IMAGE_JPEG)
-                        .content(img.getContentAsByteArray()))
+                        .content(img))
                 .andDo(print()).andExpect(status().isOk());
     }
 }

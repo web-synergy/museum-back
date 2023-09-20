@@ -1,5 +1,6 @@
 package baza.trainee.services.impls;
 
+import baza.trainee.enums.TypePicture;
 import baza.trainee.exceptions.StorageException;
 import baza.trainee.services.PictureTempService;
 import baza.trainee.util.ImageCompressor;
@@ -28,204 +29,162 @@ import java.util.stream.Stream;
 public class PictureTempServiceImpl implements PictureTempService {
     @Value("${uploads.path}")
     private String uploadPath;
-    @Value("${prefix.response}")
-    private String prefixResponse;
 
     @Value("${dir.temp}")
     private String temp;
-    @Value("${dir.original}")
-    private String original;
-    @Value("$dir.preview")
-    String preview;
-
-    private static final int TARGET_WIDTH = 680;
-    private static final float QUALITY = 0.5F;
 
     private Path rootLocation;
-    private Path dirResponse;
+
 
     @PostConstruct
     public void init() {
         rootLocation = Path.of(System.getProperty("user.dir"), uploadPath);
-        dirResponse = Path.of(prefixResponse);
     }
 
 
     @Override
-    public String addPicture(MultipartFile newPicture, String dest) {
-        return createFile(newPicture, Path.of(temp, dest)).replace(temp, "");
-    }
-
-    @Override
-    public List<String> moveAndCompressionFileToFolder(
-            List<String> oldPathsFile, String dest) {
-        StringBuilder errors = new StringBuilder();
-        final List<String> pathMoveFiles = oldPathsFile.stream().map(path -> {
-            Path oldPath = rootLocation.resolve(temp).resolve(path)
-                    .normalize().toAbsolutePath();
-            Path destOriginalPath =rootLocation.resolve(original).resolve(dest).resolve(path)
-                            .normalize().toAbsolutePath();
-            Path destPreviewPath =
-                    rootLocation.resolve(preview).resolve(dest).resolve(path)
-                            .normalize().toAbsolutePath();
-            if (Files.exists(oldPath)) {
-                try {
-                    Files.copy(oldPath, destOriginalPath);
-                } catch (IOException e) {
-                    errors.append("Not move file ").append(path).append(" \\n");
-                }
-                try {
-                    ImageCompressor.compress(oldPath.toFile(), TARGET_WIDTH,
-                                    QUALITY)
-                            .transferTo(destPreviewPath);
-                } catch (IOException e) {
-                    errors.append("Not compression file ").append(path)
-                            .append(" \\n");
-                }
-            } else {
-                errors.append("Not file ").append(path).append(" \\n");
-            }
-            return Path.of(dest, path).toString();
-        }).toList();
-        try {
-            Path rootDirInTemp = Path.of(oldPathsFile.get(0)).getName(0);
-            FileSystemUtils.deleteRecursively(rootLocation.resolve(temp).resolve(rootDirInTemp));
-        } catch (IOException e) {
-            throw new StorageException("Not delete directory " + dest);
-        }
-        if (!errors.isEmpty()) {
-            throw new StorageException(errors.toString());
-        }
-        return pathMoveFiles;
-    }
-
-    @Override
-    public void deleteDirectory(String dir) {
-        Path absolutPathOriginalDir =rootLocation.resolve(original).resolve(dir)
-                .normalize().toAbsolutePath();
-        Path absolutPathPreviewDir =rootLocation.resolve(original).resolve(dir)
-                .normalize().toAbsolutePath();
-        deletePartDirectory(absolutPathOriginalDir);
-        deletePartDirectory(absolutPathPreviewDir);
-    }
-
-    /**
-     * Delete directory with original files or compression files from directory rootLocation
-     *
-     * @param absolutPathDir Path part directory in directory rootLocation*/
-    private void deletePartDirectory(Path absolutPathDir) {
-        try {
-            FileSystemUtils.deleteRecursively(absolutPathDir);
-        } catch (IOException e) {
-            throw new StorageException("Not delete file in directory " +
-                    absolutPathDir);
-        }
-    }
-
-    @Override
-    public List<String> updateFilesInFolder(List<String> pathsFile,
-                                            String dest) {
-        final Path originalDir = rootLocation.resolve(original).resolve(dest);
-        final Path previewDir = rootLocation.resolve(preview).resolve(dest);
-        final StringBuilder errorsDelete =
-                deleteFileWithoutPath(pathsFile, originalDir)
-                        .append(deleteFileWithoutPath(pathsFile, previewDir));
-        if (!errorsDelete.isEmpty()) {
-            throw new StorageException(errorsDelete.toString());
-        }
-
-        return moveAndCompressionNewFiles(pathsFile, originalDir, dest);
-    }
-
-    /**
-     * Leave old files from list paths file
-     * Move and compression new files
-     *
-     * @param pathsFile Short old paths in rootLocation and new path in temp
-     * @param originalDir Absolut path original dir
-     * @return list old paths and add paths new file
-     * */
-    private List<String> moveAndCompressionNewFiles(List<String> pathsFile,
-                                                    Path originalDir,
-                                                    String dest) {
-        try (final Stream<Path> pathDir = Files.walk(originalDir,
-                Integer.MAX_VALUE)) {
-            List<String> shortPathLeaveFiles = pathDir
-                    .filter(path -> pathsFile.contains(
-                            originalDir.relativize(path).toString()))
-                    .map(path -> originalDir.relativize(path).toString())
-                    .toList();
-            List<String> shortPathFileFromTemp = pathsFile.stream()
-                    .filter(path -> !shortPathLeaveFiles.contains(path)).toList();
-
-            List<String> pathsNewFiles =
-                    moveAndCompressionFileToFolder(shortPathFileFromTemp, dest);
-
-
-            return Stream.of(shortPathLeaveFiles, pathsNewFiles)
-                    .flatMap(Collection::stream).toList();
-
-        } catch (IOException e) {
-            throw new StorageException(
-                    "Not delete files in directory " + originalDir);
-        }
-    }
-    /**
-     * Delete file in rootLocation without path in list paths file
-     *
-     * @param pathsFile Short path files in rootLocation
-     * @param dir Absolut path directory*/
-    private StringBuilder deleteFileWithoutPath(List<String> pathsFile, Path dir) {
-        StringBuilder errors = new StringBuilder();
-        try (final Stream<Path> filesInDir = Files.walk(dir, Integer.MAX_VALUE)) {
-            filesInDir.filter(path -> !pathsFile.contains(
-                            dir.relativize(path).toString()))
-                    .forEach(pathDelete -> {
-                        try {
-                            Files.delete(pathDelete);
-                        } catch (IOException e) {
-                            errors.append("Not delete file ").append(pathDelete)
-                                    .append("\\n");
-                        }
-                    });
-        } catch (IOException e) {
-            errors.append("Not delete files in directory ").append(dir)
-                    .append("\\n");
-        }
-        return errors;
-    }
-
-    /**
-     * Create directory and file in file system.
-     *
-     * @param newPicture file from form
-     * @param dest path of destination directory in directory rootLocation
-     * @return Short path start after path directory rootLocation*/
-    private String createFile(MultipartFile newPicture, Path dest) {
+    public String addPicture(MultipartFile newPicture, String userId,
+                             String dest) {
         if (newPicture != null && newPicture.getName().isBlank()) {
-            Path newNameFile = createNewNameFile(newPicture.getName());
-            Path newPathDir = rootLocation.resolve(dest).normalize().toAbsolutePath();
+            for (TypePicture value : TypePicture.values()) {
+                Path newPathDir = Path.of(rootLocation.toString(), temp, userId,
+                                value.name().toLowerCase(), dest)
+                        .normalize().toAbsolutePath();
+                createDir(newPathDir);
 
-            try {
-                if (!Files.exists(newPathDir)) {
-                    Files.createDirectory(newPathDir);
-                }
-
-                newPicture.transferTo(newPathDir.resolve(newNameFile));
-            } catch (IOException e) {
-                throw new StorageException(
-                        "Not create file" + newPicture.getOriginalFilename());
+                createFileOrCompressionFile(newPicture, value, newPathDir);
             }
-
-            return dirResponse.resolve(dest)
-                    .resolve(newNameFile).toString();
+            return Path.of(dest,newPicture.getName()).toString();
         } else {
             throw new StorageException(
                     "Not file or not file name for create file");
         }
+
     }
 
-    private Path createNewNameFile(String originalFileName) {
-        return Path.of(UUID.randomUUID() + originalFileName);
+
+    private void createFileOrCompressionFile(MultipartFile newPicture, TypePicture value,
+                           Path newPathDir) {
+        if (value == TypePicture.ORIGINAL) {
+            try {
+                newPicture.transferTo(newPathDir.resolve(newPicture.getName()));
+            } catch (IOException e) {
+                throw new StorageException("Not create original file " +
+                        newPicture.getName());
+            }
+        } else {
+            try {
+                ImageCompressor.compress(newPicture, value.getTargetWidth(),
+                                value.getQuality()).transferTo(newPathDir);
+            } catch (IOException e) {
+                throw new StorageException("Not create " + value.name().toLowerCase() +
+                        " file " + newPicture.getName());
+            }
+        }
     }
+
+    private void createDir(Path newPathDir) {
+        if (!Files.exists(newPathDir)) {
+            try {
+                Files.createDirectory(newPathDir);
+            } catch (IOException e) {
+                throw new StorageException("Not create directory " + newPathDir);
+            }
+        }
+    }
+
+    @Override
+    public void moveFilesInTempToFolder(List<String> sourcePathsFile, String userId) {
+        Path pathSourceDir = rootLocation.resolve(temp).resolve(
+                userId);
+        moveFilesToFolder(sourcePathsFile, pathSourceDir, rootLocation);
+    }
+
+    @Override
+    public void moveFilesInFolderToTemp(List<String> sourcePathsFile, String userId) {
+        Path pathDestDir = rootLocation.resolve(temp).resolve(
+                userId);
+        moveFilesToFolder(sourcePathsFile, rootLocation, pathDestDir);
+    }
+
+    /**
+     * Move files in source directory to destination directory and delete source directory
+     *
+     * @param sourcePathsFile  paths files of source move in destination directory
+     * @param sourceDir path source directory
+     * @param destDir path destination directory*/
+    private void moveFilesToFolder(List<String> sourcePathsFile, Path sourceDir,
+                                   Path destDir) {
+        StringBuilder errors = new StringBuilder();
+        for (TypePicture value : TypePicture.values()){
+            sourcePathsFile.forEach(path -> {
+                Path absoluteOldPath = sourceDir
+                        .resolve(value.name().toLowerCase())
+                        .resolve(path)
+                        .normalize().toAbsolutePath();
+                Path absoluteNewPath = destDir.resolve(value.name().toLowerCase())
+                        .resolve(path)
+                        .normalize().toAbsolutePath();
+                try {
+                    Files.move(absoluteOldPath, absoluteNewPath);
+                } catch (IOException e) {
+                    errors.append("Not move file ").append(absoluteOldPath).append(" \\n");
+                }
+            });
+
+            Path rootDirInTemp = Path.of(value.name().toLowerCase()).resolve(
+                    Path.of(sourcePathsFile.get(0)).getName(0));
+            Path pathDeleteDir = sourceDir.resolve(rootDirInTemp)
+                    .normalize().toAbsolutePath();
+            deletePartDir(errors, pathDeleteDir);
+        }
+
+
+        if (!errors.isEmpty()) {
+            throw new StorageException(errors.toString());
+        }
+    }
+
+    @Override
+    public void deleteDirectory(String pathsDeleteDir, String userId) {
+        StringBuilder errors = new StringBuilder();
+        for (TypePicture value : TypePicture.values()){
+            Path pathDirInRoot =rootLocation.resolve(value.name().toLowerCase()).
+                    resolve(pathsDeleteDir).normalize().toAbsolutePath();
+            deletePartDir(errors, pathDirInRoot);
+
+            Path pathDirInTemp =rootLocation.resolve(userId).resolve(value.name().toLowerCase()).
+                    resolve(pathsDeleteDir).normalize().toAbsolutePath();
+            deletePartDir(errors, pathDirInTemp);
+        }
+        if (!errors.isEmpty()) {
+            throw new StorageException(errors.toString());
+        }
+    }
+
+    /**
+     * Delete directory
+     *
+     * @param errors log error processing*
+     * @param pathDir Absolut path directory*/
+    private void deletePartDir(StringBuilder errors, Path pathDir) {
+        try {
+            FileSystemUtils.deleteRecursively(pathDir);
+        } catch (IOException e) {
+            errors.append("Not delete directory ").append(pathDir)
+                    .append("\\n");
+        }
+    }
+
+
+    @Override
+    public String fullPath(String[] paths) {
+        return Path.of("", paths).toString();
+    }
+
+    @Override
+    public String createDir() {
+        return UUID.randomUUID().toString();
+    }
+
 }
