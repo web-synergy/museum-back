@@ -30,8 +30,6 @@ mail:
   museum:
     email: museum@gmail.com
     label: Museum.ua
-<<<<<<< HEAD
-=======
 
 logging:
   file:
@@ -48,4 +46,3 @@ resources:
       original: 'original'
       compressed: 'compressed'
       temporary: 'temp'
->>>>>>> 7041faccf1f57ef5be98448514cd4ec6d5aa9a38
