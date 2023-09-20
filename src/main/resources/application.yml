@@ -3,12 +3,10 @@ uploads:
 
 prefix:
   response: /picture
-  cache: /pictureCache
+
 
 dir:
   temp: /temp
-  original: /original
-  preview: /preview
 
 spring:
   servlet:

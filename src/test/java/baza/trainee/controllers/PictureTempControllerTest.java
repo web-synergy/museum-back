@@ -49,7 +49,7 @@ class PictureTempControllerTest {
         byte[] imageBytes = new UrlResource(absolutePathFile.toUri()).getContentAsByteArray();
         MockMultipartFile mockFile = new MockMultipartFile("file", "noImages.jpg",
                 "image/jpeg", imageBytes);
-        when(pictureTempService.addPicture(eq(mockFile), "userId", anyString())).thenReturn("noImages.jpg");
+        when(pictureTempService.addPicture(mockFile, anyString(), anyString())).thenReturn("noImages.jpg");
         mockMvc.perform(multipart("/admin/addTempFile").file(mockFile))
                 .andExpect(status().isOk());
     }

@@ -3,14 +3,11 @@ package baza.trainee.controllers;
 import baza.trainee.enums.TypePicture;
 import baza.trainee.services.ResourcePictureService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
 
 /**
  *  The {@code ResourcePictureController} class is a Spring MVC REST controller
@@ -30,10 +27,10 @@ public class ResourcePictureController {
     private final ResourcePictureService resourcePictureService;
 
     /**
-     * Method get image in directory upload/preview or upload/original
+     * Method get image in directory rootLocal/{type}
      *
-     * @param type default original or preview
-     * @param filename path in directory upload/preview or upload/original
+     * @param type original or compression file
+     * @param filename path in directory rootLocation/{type}
      * @return image*/
     @GetMapping(value = "/{type}/{*filename}", produces = MediaType.IMAGE_JPEG_VALUE)
     public byte[] getImage(@PathVariable("type") TypePicture type, @PathVariable("filename") String filename){

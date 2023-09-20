@@ -37,7 +37,7 @@ class ResourcePictureControllerTest {
                 "upload", "noImages.jpg").normalize().toAbsolutePath().toUri())
                 .getContentAsByteArray();
         when(resourcePictureService.loadAsResource(anyString(), anyString())).thenReturn(img);
-        mockMvc.perform(get("/picture/{*file}" , "noImages.jpg")
+        mockMvc.perform(get("/picture/{type}/{*file}" ,"original" ,"noImages.jpg")
                         .contentType(MediaType.IMAGE_JPEG)
                         .content(img))
                 .andDo(print()).andExpect(status().isOk());
@@ -48,7 +48,7 @@ class ResourcePictureControllerTest {
     void getImage_notStorageException() throws RuntimeException{
         when(resourcePictureService.loadAsResource(anyString(), anyString()))
                 .thenThrow(new StorageFileNotFoundException("Could not read file: "));
-        mockMvc.perform(get("/picture/{*file}" , "life.jpg")
+        mockMvc.perform(get("/picture/{type}/{*file}" , "original", "life.jpg")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())

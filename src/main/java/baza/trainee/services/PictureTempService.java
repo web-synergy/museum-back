@@ -17,6 +17,7 @@ public interface PictureTempService {
 
     /**
      * Move  files in temp directory to rootLocation/{type} directory
+     *
      *  @param sourcePathsFile List of short paths in temp directory
      * @param userId Id user
      **/
@@ -31,14 +32,14 @@ public interface PictureTempService {
     void moveFilesInFolderToTemp(List<String> sourcePathsFile, String userId);
 
     /**
-     * Delete directories in folder rootLocation/{type}
+     * Delete directories in folder rootLocation/{type} and temp
      *
      * @param pathsDeleteDir  short path directory in directory rootLocation/original and rootLocation/preview
      * */
     void deleteDirectory(String pathsDeleteDir, String userId);
 
 
-    String fullPath(String ...arg);
+    String getFullPath(String ...arg);
 
-    String createDir();
+    String getDir();
 }

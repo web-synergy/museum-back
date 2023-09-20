@@ -10,14 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 /**
  * Service that implements {@link PictureTempService} contract.
@@ -32,6 +29,7 @@ public class PictureTempServiceImpl implements PictureTempService {
 
     @Value("${dir.temp}")
     private String temp;
+    private String destDir;
 
     private Path rootLocation;
 
@@ -77,7 +75,7 @@ public class PictureTempServiceImpl implements PictureTempService {
                 ImageCompressor.compress(newPicture, value.getTargetWidth(),
                                 value.getQuality()).transferTo(newPathDir);
             } catch (IOException e) {
-                throw new StorageException("Not create " + value.name().toLowerCase() +
+                throw new StorageException("Not compression " + value.name().toLowerCase() +
                         " file " + newPicture.getName());
             }
         }
@@ -98,6 +96,7 @@ public class PictureTempServiceImpl implements PictureTempService {
         Path pathSourceDir = rootLocation.resolve(temp).resolve(
                 userId);
         moveFilesToFolder(sourcePathsFile, pathSourceDir, rootLocation);
+        destDir = null;
     }
 
     @Override
@@ -105,6 +104,7 @@ public class PictureTempServiceImpl implements PictureTempService {
         Path pathDestDir = rootLocation.resolve(temp).resolve(
                 userId);
         moveFilesToFolder(sourcePathsFile, rootLocation, pathDestDir);
+        destDir = Path.of(sourcePathsFile.get(0)).getName(0).toString();
     }
 
     /**
@@ -146,20 +146,23 @@ public class PictureTempServiceImpl implements PictureTempService {
     }
 
     @Override
-    public void deleteDirectory(String pathsDeleteDir, String userId) {
+    public void deleteDirectory(String pathDeleteDir, String userId) {
         StringBuilder errors = new StringBuilder();
         for (TypePicture value : TypePicture.values()){
             Path pathDirInRoot =rootLocation.resolve(value.name().toLowerCase()).
-                    resolve(pathsDeleteDir).normalize().toAbsolutePath();
-            deletePartDir(errors, pathDirInRoot);
+                    resolve(pathDeleteDir).normalize().toAbsolutePath();
+            if (Files.exists(pathDirInRoot)){
+            deletePartDir(errors, pathDirInRoot);}
 
             Path pathDirInTemp =rootLocation.resolve(userId).resolve(value.name().toLowerCase()).
-                    resolve(pathsDeleteDir).normalize().toAbsolutePath();
-            deletePartDir(errors, pathDirInTemp);
+                    resolve(pathDeleteDir).normalize().toAbsolutePath();
+            if (Files.exists(pathDirInTemp)){
+            deletePartDir(errors, pathDirInTemp);}
         }
         if (!errors.isEmpty()) {
             throw new StorageException(errors.toString());
         }
+        destDir = null;
     }
 
     /**
@@ -178,13 +181,14 @@ public class PictureTempServiceImpl implements PictureTempService {
 
 
     @Override
-    public String fullPath(String[] paths) {
+    public String getFullPath(String[] paths) {
         return Path.of("", paths).toString();
     }
 
     @Override
-    public String createDir() {
-        return UUID.randomUUID().toString();
+    public String getDir() {
+        if (destDir == null){destDir = UUID.randomUUID().toString();}
+        return destDir;
     }
 
 }

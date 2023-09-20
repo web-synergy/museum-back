@@ -15,8 +15,7 @@ class ResourcePictureServiceTest {
     @Test
     @SneakyThrows
     void loadAsResource() {
-        byte[] content = service.loadAsResource("", "noImages.jpg")
-                        .getContentAsByteArray();
+        byte[] content = service.loadAsResource("original", "noImages.jpg");
         assertTrue(content.length > 0);
     }
 }
