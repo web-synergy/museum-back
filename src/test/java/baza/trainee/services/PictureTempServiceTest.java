@@ -1,8 +1,8 @@
 package baza.trainee.services;
 
+import baza.trainee.enums.TypePicture;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -76,14 +76,6 @@ class PictureTempServiceTest {
         Files.createFile(path);
         service.deleteDirectory(service.getDir(), "userId");
         assertFalse(path.toFile().exists());
-    }
-
-    @Test
-    void getFullPath() {
-        String actual = service.getFullPath("upload", "temp", "userId", "original");
-        String expected = Path.of("upload", "temp", "userId", "original")
-                .toString();
-        assertEquals(expected, actual);
     }
 
     @Test

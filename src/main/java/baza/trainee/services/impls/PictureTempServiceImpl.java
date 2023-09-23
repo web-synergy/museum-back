@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -24,25 +25,47 @@ import java.util.UUID;
 
 @Service
 public class PictureTempServiceImpl implements PictureTempService {
+
+    /**
+     * Name root directory for write files.
+     */
     @Value("${uploads.path}")
     private String uploadPath;
-
+    /**
+     * Name temp directory for write files.
+     */
     @Value("${dir.temp}")
     private String temp;
+    /**
+     * Name destination directory for write files.
+     */
     private String destDir;
-
+    /**
+     * Full path of root directory.
+     */
     private Path rootLocation;
 
-
+    /**
+     * Path initialization of root directory.
+     */
     @PostConstruct
     public void init() {
         rootLocation = Path.of(System.getProperty("user.dir"), uploadPath);
     }
 
-
+    /**
+     * Add and compression picture in rootLocation/temp/userId/{type} directory.
+     *
+     * @param newPicture file from form
+     * @param userId     Id user
+     * @param dest       uuid directory
+     * @return Short path of rootLocation/temp/userId/{type} directory
+     */
     @Override
-    public String addPicture(MultipartFile newPicture, String userId,
-                             String dest) {
+    public String addPicture(final MultipartFile newPicture,
+                             final String userId,
+                             final String dest) {
+        String result;
         if (newPicture != null && !newPicture.getName().isBlank()) {
             for (TypePicture value : TypePicture.values()) {
                 Path newPathDir = Path.of(rootLocation.toString(), temp, userId,
@@ -52,55 +75,81 @@ public class PictureTempServiceImpl implements PictureTempService {
 
                 createFileOrCompressionFile(newPicture, value, newPathDir);
             }
-            return Path.of(dest,newPicture.getName()).toString();
+            result = Path.of(dest, newPicture.getOriginalFilename()).toString();
         } else {
             throw new StorageException(
                     "Not file or not file name for create file");
         }
-
+        return result;
     }
 
 
-    private void createFileOrCompressionFile(MultipartFile newPicture, TypePicture value,
-                           Path newPathDir) {
+    private void createFileOrCompressionFile(final MultipartFile newPicture,
+                                             final TypePicture value,
+                                             final Path newPathDir)
+            throws StorageException {
         if (value == TypePicture.ORIGINAL) {
             try {
-                newPicture.transferTo(newPathDir.resolve(newPicture.getName()));
+                newPicture.transferTo(
+                        newPathDir.resolve(Objects.requireNonNull(
+                                newPicture.getOriginalFilename())));
             } catch (IOException e) {
-                throw new StorageException("Not create original file " +
-                        newPicture.getName());
+                throw new StorageException(
+                        "Not create original file "
+                                + newPicture.getOriginalFilename());
             }
         } else {
             try {
-                ImageCompressor.compress(newPicture, value.getTargetWidth(),
-                                value.getQuality()).transferTo(newPathDir);
+                final MultipartFile compressionFile =
+                        ImageCompressor.compress(newPicture,
+                                value.getTargetWidth(), value.getQuality());
+                compressionFile.transferTo(newPathDir
+                        .resolve(Objects.requireNonNull(
+                                compressionFile.getOriginalFilename())));
             } catch (IOException e) {
-                throw new StorageException("Not compression " + value.name().toLowerCase() +
-                        " file " + newPicture.getName());
+                throw new StorageException(
+                        "Not compression " + value.name().toLowerCase()
+                                + " file " + newPicture.getName());
             }
         }
     }
 
-    private void createDir(Path newPathDir) {
+
+    private void createDir(final Path newPathDir) {
         if (!Files.exists(newPathDir)) {
             try {
                 Files.createDirectories(newPathDir);
             } catch (IOException e) {
-                throw new StorageException("Not create directory " + newPathDir);
+                throw new StorageException(
+                        "Not create directory " + newPathDir);
             }
         }
     }
 
+    /**
+     * Move  files in temp directory to rootLocation/{type} directory.
+     *
+     * @param sourcePathsFile List of short paths in temp directory
+     * @param userId          Id user
+     **/
     @Override
-    public void moveFilesInTempToFolder(List<String> sourcePathsFile, String userId) {
+    public void moveFilesInTempToFolder(final List<String> sourcePathsFile,
+                                        final String userId) {
         Path pathSourceDir = rootLocation.resolve(temp).resolve(
                 userId);
         moveFilesToFolder(sourcePathsFile, pathSourceDir, rootLocation);
         destDir = null;
     }
 
+    /**
+     * Move files in rootLocation/{type} directory to temp directory.
+     *
+     * @param sourcePathsFile List of short paths in temp directory
+     * @param userId          Userid
+     **/
     @Override
-    public void moveFilesInFolderToTemp(List<String> sourcePathsFile, String userId) {
+    public void moveFilesInFolderToTemp(final List<String> sourcePathsFile,
+                                        final String userId) {
         Path pathDestDir = rootLocation.resolve(temp).resolve(
                 userId);
         moveFilesToFolder(sourcePathsFile, rootLocation, pathDestDir);
@@ -108,27 +157,33 @@ public class PictureTempServiceImpl implements PictureTempService {
     }
 
     /**
-     * Move files in source directory to destination directory and delete source directory
+     * Move files in source directory to destination directory and
+     * delete source directory.
      *
-     * @param sourcePathsFile  paths files of source move in destination directory
-     * @param sourceDir path source directory
-     * @param destDir path destination directory*/
-    private void moveFilesToFolder(List<String> sourcePathsFile, Path sourceDir,
-                                   Path destDir) {
+     * @param sourcePathsFile paths files of source move in
+     *                        destination directory.
+     * @param sourceDir       path source directory.
+     * @param destinationDir  path destination directory.
+     */
+    private void moveFilesToFolder(final List<String> sourcePathsFile,
+                                   final Path sourceDir,
+                                   final Path destinationDir) {
         StringBuilder errors = new StringBuilder();
-        for (TypePicture value : TypePicture.values()){
+        for (TypePicture value : TypePicture.values()) {
             sourcePathsFile.forEach(path -> {
                 Path absoluteOldPath = sourceDir
                         .resolve(value.name().toLowerCase())
                         .resolve(path)
                         .normalize().toAbsolutePath();
-                Path absoluteNewPath = destDir.resolve(value.name().toLowerCase())
-                        .resolve(path)
-                        .normalize().toAbsolutePath();
+                Path absoluteNewPath =
+                        destinationDir.resolve(value.name().toLowerCase())
+                                .resolve(path)
+                                .normalize().toAbsolutePath();
                 try {
                     Files.move(absoluteOldPath, absoluteNewPath);
                 } catch (IOException e) {
-                    errors.append("Not move file ").append(absoluteOldPath).append(" \\n");
+                    errors.append("Not move file ").append(absoluteOldPath)
+                            .append(" \\n");
                 }
             });
 
@@ -145,19 +200,31 @@ public class PictureTempServiceImpl implements PictureTempService {
         }
     }
 
+    /**
+     * Delete directories in folder rootLocation/{type} and temp.
+     *
+     * @param pathDeleteDir short path directory in directory
+     *                      rootLocation/{type}.
+     * @param userId        User id
+     */
     @Override
-    public void deleteDirectory(String pathDeleteDir, String userId) {
+    public void deleteDirectory(final String pathDeleteDir,
+                                final String userId) {
         StringBuilder errors = new StringBuilder();
-        for (TypePicture value : TypePicture.values()){
-            Path pathDirInRoot =rootLocation.resolve(value.name().toLowerCase()).
-                    resolve(pathDeleteDir).normalize().toAbsolutePath();
-            if (Files.exists(pathDirInRoot)){
-            deletePartDir(errors, pathDirInRoot);}
+        for (TypePicture value : TypePicture.values()) {
+            Path pathDirInRoot =
+                    rootLocation.resolve(value.name().toLowerCase()).
+                            resolve(pathDeleteDir).normalize().toAbsolutePath();
+            if (Files.exists(pathDirInRoot)) {
+                deletePartDir(errors, pathDirInRoot);
+            }
 
-            Path pathDirInTemp =rootLocation.resolve(userId).resolve(value.name().toLowerCase()).
-                    resolve(pathDeleteDir).normalize().toAbsolutePath();
-            if (Files.exists(pathDirInTemp)){
-            deletePartDir(errors, pathDirInTemp);}
+            Path pathDirInTemp = rootLocation.resolve(userId)
+                    .resolve(value.name().toLowerCase()).resolve(pathDeleteDir)
+                    .normalize().toAbsolutePath();
+            if (Files.exists(pathDirInTemp)) {
+                deletePartDir(errors, pathDirInTemp);
+            }
         }
         if (!errors.isEmpty()) {
             throw new StorageException(errors.toString());
@@ -166,11 +233,12 @@ public class PictureTempServiceImpl implements PictureTempService {
     }
 
     /**
-     * Delete directory
+     * Delete directory.
      *
-     * @param errors log error processing*
-     * @param pathDir Absolut path directory*/
-    private void deletePartDir(StringBuilder errors, Path pathDir) {
+     * @param errors  log error processing*
+     * @param pathDir Absolut path directory
+     */
+    private void deletePartDir(final StringBuilder errors, final Path pathDir) {
         try {
             FileSystemUtils.deleteRecursively(pathDir);
         } catch (IOException e) {
@@ -180,14 +248,16 @@ public class PictureTempServiceImpl implements PictureTempService {
     }
 
 
-    @Override
-    public String getFullPath(String[] paths) {
-        return Path.of("", paths).toString();
-    }
-
+    /**
+     * Get uuid name directory.
+     *
+     * @return Uuid name directory
+     */
     @Override
     public String getDir() {
-        if (destDir == null){destDir = UUID.randomUUID().toString();}
+        if (destDir == null) {
+            destDir = UUID.randomUUID().toString();
+        }
         return destDir;
     }
 

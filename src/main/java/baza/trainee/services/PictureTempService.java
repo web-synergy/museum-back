@@ -6,17 +6,17 @@ import java.util.List;
 
 public interface PictureTempService {
     /**
-     * Add and compression picture in rootLocation/temp/userId/{type} directory
+     * Add and compression picture in rootLocation/temp/userId/{type} directory.
      *
-     * @param newFile file from form
+     * @param newPicture file from form
      * @param userId Id user
-     * @param dir uuid directory
-     * @return Short path of rootLocation/temp/userId/{type} directory*/
-    String addPicture(MultipartFile newFile, String userId,
-                      String dir);
+     * @param dest uuid directory
+     * @return Short path /{uuid}/filename*/
+    String addPicture(MultipartFile newPicture, String userId,
+                      String dest);
 
     /**
-     * Move  files in temp directory to rootLocation/{type} directory
+     * Move  files in temp directory to rootLocation/{type} directory.
      *
      *  @param sourcePathsFile List of short paths in temp directory
      * @param userId Id user
@@ -24,22 +24,25 @@ public interface PictureTempService {
     void moveFilesInTempToFolder(List<String> sourcePathsFile, String userId);
 
     /**
-     * Move files in rootLocation/{type} directory to temp directory
+     * Move files in rootLocation/{type} directory to temp directory.
      *
      *  @param sourcePathsFile List of short paths in temp directory
-     * @param userId Id user
+     * @param userId Userid
      **/
     void moveFilesInFolderToTemp(List<String> sourcePathsFile, String userId);
 
     /**
-     * Delete directories in folder rootLocation/{type} and temp
+     * Delete directories in folder rootLocation/{type} and temp.
      *
-     * @param pathsDeleteDir  short path directory in directory rootLocation/original and rootLocation/preview
+     * @param pathDeleteDir short path directory in directory
+     *                       rootLocation/{type}.
+     * @param userId User id
      * */
-    void deleteDirectory(String pathsDeleteDir, String userId);
+    void deleteDirectory(String pathDeleteDir, String userId);
 
-
-    String getFullPath(String ...arg);
-
+    /**
+     * Get full path from massive of string.
+     *
+     * @return Uuid name directory*/
     String getDir();
 }

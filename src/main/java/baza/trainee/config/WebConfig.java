@@ -4,8 +4,9 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 public class WebConfig implements WebMvcConfigurer {
+    /**Registry converter.*/
     @Override
-    public void addFormatters(FormatterRegistry registry) {
+    public void addFormatters(final FormatterRegistry registry) {
         registry.addConverter(new StringToEnumConverter());
     }
 }

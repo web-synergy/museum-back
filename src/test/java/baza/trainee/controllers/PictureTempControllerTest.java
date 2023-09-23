@@ -1,5 +1,6 @@
 package baza.trainee.controllers;
 
+import baza.trainee.enums.TypePicture;
 import baza.trainee.services.PictureTempService;
 import baza.trainee.services.ResourcePictureService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,22 +9,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.file.Path;
-import java.util.List;
 
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,8 +59,9 @@ class PictureTempControllerTest {
         byte[] img = new UrlResource(Path.of(System.getProperty("user.dir"),
                 "upload", "noImages.jpg").normalize().toAbsolutePath().toUri())
                 .getContentAsByteArray();
-        when(resourcePictureService.loadAsResource(anyString(), anyString())).thenReturn(img);
-        mockMvc.perform(get("/admin/picture/{*file}" , "noImages.jpg")
+        when(resourcePictureService.getPictureFromTemp(anyString(),any(
+                TypePicture.class), anyString())).thenReturn(img);
+        mockMvc.perform(get("/admin/picture/original/{*file}" , "noImages.jpg")
                         .contentType(MediaType.IMAGE_JPEG)
                         .content(img))
                 .andDo(print()).andExpect(status().isOk());

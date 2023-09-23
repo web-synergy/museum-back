@@ -1,14 +1,25 @@
 package baza.trainee.services;
 
 import baza.trainee.enums.TypePicture;
-import org.springframework.core.io.Resource;
 
 public interface ResourcePictureService {
+
     /**
-     * Load resource from upload/{type}/{filename}
+     * Get path of type picture in upload/{type}.
      *
-     * @param type Can type is original,preview or temp
+     * @param type     Type picture
      * @param filename file path in upload/{type}
-     * @return Resource file*/
-    byte[] loadAsResource(String type, String filename);
+     * @return Massive byte of picture
+     */
+    byte[] getPicture(TypePicture type, String filename);
+
+    /**
+     * Get picture from temp directory.
+     *
+     * @param userId User id
+     * @param type Type picture
+     * @param filename path file in temp directory
+     * @return massive byte of picture*/
+    byte[] getPictureFromTemp(String userId, TypePicture type,
+                            String filename);
 }

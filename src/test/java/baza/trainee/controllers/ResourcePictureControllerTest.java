@@ -1,5 +1,6 @@
 package baza.trainee.controllers;
 
+import baza.trainee.enums.TypePicture;
 import baza.trainee.exceptions.StorageFileNotFoundException;
 import baza.trainee.services.ResourcePictureService;
 import lombok.SneakyThrows;
@@ -7,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,7 +36,7 @@ class ResourcePictureControllerTest {
         byte[] img = new UrlResource(Path.of(System.getProperty("user.dir"),
                 "upload", "noImages.jpg").normalize().toAbsolutePath().toUri())
                 .getContentAsByteArray();
-        when(resourcePictureService.loadAsResource(anyString(), anyString())).thenReturn(img);
+        when(resourcePictureService.getPicture(TypePicture.ORIGINAL, anyString())).thenReturn(img);
         mockMvc.perform(get("/picture/{type}/{*file}" ,"original" ,"noImages.jpg")
                         .contentType(MediaType.IMAGE_JPEG_VALUE)
                         .content(img))
@@ -46,7 +46,7 @@ class ResourcePictureControllerTest {
     @SneakyThrows
     @Test
     void getImage_notStorageException() throws RuntimeException{
-        when(resourcePictureService.loadAsResource(anyString(), anyString()))
+        when(resourcePictureService.getPicture(TypePicture.ORIGINAL, anyString()))
                 .thenThrow(new StorageFileNotFoundException("Could not read file: "));
         mockMvc.perform(get("/picture/{type}/{*file}" , "original", "life.jpg")
                         .contentType(MediaType.APPLICATION_JSON))
