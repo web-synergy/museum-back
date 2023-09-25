@@ -5,6 +5,7 @@ import baza.trainee.exceptions.StorageException;
 import baza.trainee.services.PictureTempService;
 import baza.trainee.util.ImageCompressor;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
@@ -25,7 +26,8 @@ import java.util.UUID;
 
 @Service
 public class PictureTempServiceImpl implements PictureTempService {
-
+    /**Name destination directory.*/
+    private static final String NAME_DEST = "nameDest";
     /**
      * Name root directory for write files.
      */
@@ -36,10 +38,7 @@ public class PictureTempServiceImpl implements PictureTempService {
      */
     @Value("${dir.temp}")
     private String temp;
-    /**
-     * Name destination directory for write files.
-     */
-    private String destDir;
+
     /**
      * Full path of root directory.
      */
@@ -59,7 +58,7 @@ public class PictureTempServiceImpl implements PictureTempService {
      * @param newPicture file from form
      * @param userId     Id user
      * @param dest       uuid directory
-     * @return Short path of rootLocation/temp/userId/{type} directory
+     * @return Short path: /{uuid}/{filename}
      */
     @Override
     public String addPicture(final MultipartFile newPicture,
@@ -128,32 +127,39 @@ public class PictureTempServiceImpl implements PictureTempService {
 
     /**
      * Move  files in temp directory to rootLocation/{type} directory.
+     * Set destination directory as null for create new uuid.
      *
      * @param sourcePathsFile List of short paths in temp directory
      * @param userId          Id user
      **/
     @Override
     public void moveFilesInTempToFolder(final List<String> sourcePathsFile,
-                                        final String userId) {
+                                        final String userId,
+                                        final HttpSession session) {
         Path pathSourceDir = rootLocation.resolve(temp).resolve(
                 userId);
         moveFilesToFolder(sourcePathsFile, pathSourceDir, rootLocation);
-        destDir = null;
+        session.setAttribute(NAME_DEST, null);
     }
 
     /**
      * Move files in rootLocation/{type} directory to temp directory.
+     * Set path destination directory as first name folder from
+     * short path(uuid).
      *
      * @param sourcePathsFile List of short paths in temp directory
      * @param userId          Userid
+     * @param session Session
      **/
     @Override
     public void moveFilesInFolderToTemp(final List<String> sourcePathsFile,
-                                        final String userId) {
+                                        final String userId,
+                                        final HttpSession session) {
         Path pathDestDir = rootLocation.resolve(temp).resolve(
                 userId);
         moveFilesToFolder(sourcePathsFile, rootLocation, pathDestDir);
-        destDir = Path.of(sourcePathsFile.get(0)).getName(0).toString();
+        session.setAttribute(NAME_DEST,
+                Path.of(sourcePathsFile.get(0)).getName(0).toString());
     }
 
     /**
@@ -203,13 +209,12 @@ public class PictureTempServiceImpl implements PictureTempService {
     /**
      * Delete directories in folder rootLocation/{type} and temp.
      *
-     * @param pathDeleteDir short path directory in directory
-     *                      rootLocation/{type}.
+     * @param pathDeleteDir name directory for delete
      * @param userId        User id
      */
     @Override
     public void deleteDirectory(final String pathDeleteDir,
-                                final String userId) {
+                                final String userId, final HttpSession session) {
         StringBuilder errors = new StringBuilder();
         for (TypePicture value : TypePicture.values()) {
             Path pathDirInRoot =
@@ -229,7 +234,7 @@ public class PictureTempServiceImpl implements PictureTempService {
         if (!errors.isEmpty()) {
             throw new StorageException(errors.toString());
         }
-        destDir = null;
+        session.setAttribute(NAME_DEST, null);
     }
 
     /**
@@ -255,10 +260,7 @@ public class PictureTempServiceImpl implements PictureTempService {
      */
     @Override
     public String getDir() {
-        if (destDir == null) {
-            destDir = UUID.randomUUID().toString();
-        }
-        return destDir;
+        return UUID.randomUUID().toString();
     }
 
 }

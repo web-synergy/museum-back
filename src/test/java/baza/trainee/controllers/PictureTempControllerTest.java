@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PictureTempController.class)
@@ -62,8 +63,9 @@ class PictureTempControllerTest {
         when(resourcePictureService.getPictureFromTemp(anyString(),any(
                 TypePicture.class), anyString())).thenReturn(img);
         mockMvc.perform(get("/admin/picture/original/{*file}" , "noImages.jpg")
-                        .contentType(MediaType.IMAGE_JPEG)
-                        .content(img))
-                .andDo(print()).andExpect(status().isOk());
+                        .contentType(MediaType.IMAGE_JPEG_VALUE))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.IMAGE_JPEG))
+                .andExpect(content().bytes(img));
     }
 }

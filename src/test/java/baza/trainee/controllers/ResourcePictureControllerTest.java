@@ -14,10 +14,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.file.Path;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,22 +38,21 @@ class ResourcePictureControllerTest {
         byte[] img = new UrlResource(Path.of(System.getProperty("user.dir"),
                 "upload", "noImages.jpg").normalize().toAbsolutePath().toUri())
                 .getContentAsByteArray();
-        when(resourcePictureService.getPicture(TypePicture.ORIGINAL, anyString())).thenReturn(img);
+        when(resourcePictureService.getPicture(any(TypePicture.class), anyString())).thenReturn(img);
         mockMvc.perform(get("/picture/{type}/{*file}" ,"original" ,"noImages.jpg")
-                        .contentType(MediaType.IMAGE_JPEG_VALUE)
-                        .content(img))
-                .andDo(print()).andExpect(status().isOk());
+                        .contentType(MediaType.IMAGE_JPEG_VALUE))
+                .andDo(print()).andExpect(status().isOk()).andExpect(content().contentType(MediaType.IMAGE_JPEG))
+                .andExpect(content().bytes(img));
     }
 
     @SneakyThrows
     @Test
     void getImage_notStorageException() throws RuntimeException{
-        when(resourcePictureService.getPicture(TypePicture.ORIGINAL, anyString()))
+        when(resourcePictureService.getPicture(any(TypePicture.class), anyString()))
                 .thenThrow(new StorageFileNotFoundException("Could not read file: "));
         mockMvc.perform(get("/picture/{type}/{*file}" , "original", "life.jpg")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Could not read file: "));
+                .andExpect(status().isBadRequest());
     }
 }

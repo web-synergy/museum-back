@@ -3,6 +3,7 @@ package baza.trainee.controllers;
 import baza.trainee.enums.TypePicture;
 import baza.trainee.services.PictureTempService;
 import baza.trainee.services.ResourcePictureService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class PictureTempController {
+    /**Name destination directory.*/
+    private static final String NAME_DEST = "nameDest";
     /**
      * Service for add picture.
      */
@@ -42,19 +45,24 @@ public class PictureTempController {
      * Add picture in  directory rootLocation/temp.
      *
      * @param newFile Picture from form
+     * @param session Session
      * @return short path of file, example:/{uuid}/look.jpg
      */
     @PostMapping("/addTempFile")
-    public String addPicture(final MultipartFile newFile) {
-        String nameDest = pictureService.getDir();
-        return pictureService.addPicture(newFile, "userId", nameDest);
+    public String addPicture(final MultipartFile newFile,
+                             final HttpSession session) {
+        if (session.getAttribute(NAME_DEST) == null) {
+            session.setAttribute(NAME_DEST, pictureService.getDir());
+        }
+        return pictureService.addPicture(newFile, "userId",
+                (String) session.getAttribute(NAME_DEST));
     }
 
 
     /**
      * Get file in directory temp.
      *
-     * @param filename path in directory rootLocation/temp
+     * @param filename path file:{/uuid/filename}
      * @param type     Type picture
      * @return picture
      */
