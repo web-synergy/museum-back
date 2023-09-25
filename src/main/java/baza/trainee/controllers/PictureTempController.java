@@ -1,6 +1,6 @@
 package baza.trainee.controllers;
 
-import baza.trainee.enums.TypePicture;
+import baza.trainee.domain.enums.TypePicture;
 import baza.trainee.services.PictureTempService;
 import baza.trainee.services.ResourcePictureService;
 import jakarta.servlet.http.HttpSession;

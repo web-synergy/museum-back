@@ -1,6 +1,6 @@
 package baza.trainee.services.impls;
 
-import baza.trainee.enums.TypePicture;
+import baza.trainee.domain.enums.TypePicture;
 import baza.trainee.exceptions.StorageException;
 import baza.trainee.services.PictureTempService;
 import baza.trainee.util.ImageCompressor;

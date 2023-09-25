@@ -1,6 +1,6 @@
 package baza.trainee.config;
 
-import baza.trainee.enums.TypePicture;
+import baza.trainee.domain.enums.TypePicture;
 import org.springframework.core.convert.converter.Converter;
 
 /**

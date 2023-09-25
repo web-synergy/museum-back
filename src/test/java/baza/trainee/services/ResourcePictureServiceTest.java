@@ -1,6 +1,6 @@
 package baza.trainee.services;
 
-import baza.trainee.enums.TypePicture;
+import baza.trainee.domain.enums.TypePicture;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

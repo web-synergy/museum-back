@@ -1,4 +1,4 @@
-package baza.trainee.enums;
+package baza.trainee.domain.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,5 @@
 package baza.trainee.services;
 
-import baza.trainee.enums.TypePicture;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

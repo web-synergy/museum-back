@@ -1,6 +1,6 @@
 package baza.trainee.services.impls;
 
-import baza.trainee.enums.TypePicture;
+import baza.trainee.domain.enums.TypePicture;
 import baza.trainee.exceptions.StorageFileNotFoundException;
 import baza.trainee.services.ResourcePictureService;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,6 +1,6 @@
 package baza.trainee.controllers;
 
-import baza.trainee.enums.TypePicture;
+import baza.trainee.domain.enums.TypePicture;
 import baza.trainee.exceptions.StorageFileNotFoundException;
 import baza.trainee.services.ResourcePictureService;
 import lombok.SneakyThrows;
