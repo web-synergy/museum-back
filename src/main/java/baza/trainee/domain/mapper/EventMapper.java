@@ -21,7 +21,7 @@ public interface EventMapper {
      */
     @Mapping(target = "updated", ignore = true)
     @Mapping(target = "created", ignore = true)
-    @Mapping(target = "bannerURI", ignore = true)
+    @Mapping(target = "bannerURI", source = "bannerTempURI")
     @Mapping(target = "bannerPreviewURI", ignore = true)
     @Mapping(target = "id", ignore = true)
     Event toEvent(EventPublication publication);

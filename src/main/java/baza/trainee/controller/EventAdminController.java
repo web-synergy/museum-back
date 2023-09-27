@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,13 +48,14 @@ public class EventAdminController {
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     public Event createEvent(
+            HttpSession httpSession,
             @Parameter(description = "Event data to be created")
             @RequestBody @Valid final EventPublication request,
             final BindingResult bindingResult
     ) {
         handleFieldsErrors(bindingResult);
 
-        return eventService.save(request);
+        return eventService.save(request, httpSession.getId());
     }
 
     /**

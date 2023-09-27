@@ -7,10 +7,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -27,6 +24,7 @@ import static baza.trainee.constants.EventConstant.MIN_TITLE_SIZE;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @Document
 public class Event implements Post {

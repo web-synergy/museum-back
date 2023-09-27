@@ -15,14 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,6 +46,7 @@ public class EventAdminControllerTest {
     @Test
     public void testCreateEventStatusIsCreated() throws Exception {
         // given:
+        MockHttpSession session = new MockHttpSession(null, "httpSessionId");
         var eventDto = new EventPublication(
                 "Title",
                 "Short Description",
@@ -57,22 +58,25 @@ public class EventAdminControllerTest {
                 LocalDate.now().plusDays(1)
         );
         String eventDtoJson = objectMapper.writeValueAsString(eventDto);
+        var event = eventMapper.toEvent(eventDto);
 
         // when:
-        when(eventService.save(any(EventPublication.class))).thenReturn(any(Event.class));
+        when(eventService.save(any(EventPublication.class), anyString())).thenReturn(event);
 
         // then:
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/admin/events")
+                        .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(eventDtoJson))
-                .andExpect(status().isCreated());
+                        .andExpect(status().isCreated());
     }
 
     @ParameterizedTest
     @NullAndEmptySource
     public void testCreateEventStatusBadRequest(String validatedField) throws Exception {
         // given:
+        MockHttpSession session = new MockHttpSession(null, "httpSessionId");
         var eventDto = new EventPublication(
                 validatedField,
                 validatedField,
@@ -87,7 +91,7 @@ public class EventAdminControllerTest {
         var event = eventMapper.toEvent(eventDto);
 
         // when:
-        when(eventService.save(eventDto)).thenReturn(event);
+        when(eventService.save(eventDto, session.getId())).thenReturn(event);
 
         // then:
         mockMvc.perform(MockMvcRequestBuilders

@@ -1,14 +1,18 @@
 package baza.trainee.service.impl;
 
 import baza.trainee.domain.dto.event.EventPublication;
+import baza.trainee.domain.enums.BlockType;
 import baza.trainee.domain.mapper.EventMapper;
 import baza.trainee.domain.model.Event;
 import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.repository.EventRepository;
 import baza.trainee.service.EventService;
+import baza.trainee.service.ImageService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -16,9 +20,12 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
 
-    public EventServiceImpl(EventRepository eventRepository, EventMapper eventMapper) {
+    private final ImageService imageService;
+
+    public EventServiceImpl(EventRepository eventRepository, EventMapper eventMapper, ImageService imageService) {
         this.eventRepository = eventRepository;
         this.eventMapper = eventMapper;
+        this.imageService = imageService;
     }
 
     @Override
@@ -33,10 +40,18 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event save(EventPublication newEvent) {
-        Event event = eventMapper.toEvent(newEvent);
+    public Event save(EventPublication newEvent, String sessionId) {
+        Event eventToSave = eventMapper.toEvent(newEvent);
 
-        return eventRepository.save(event);
+        var fileNames = newEvent.content().stream()
+                .filter(cb -> cb.getBlockType().equals(BlockType.PICTURE_BLOCK)
+                || cb.getBlockType().equals(BlockType.PICTURE_TEXT_BLOCK))
+                .map(cb-> cb.getPictureLink())
+                .collect(Collectors.toList());
+
+        imageService.persist(fileNames, sessionId);
+
+        return eventRepository.save(eventToSave);
     }
 
     @Override
