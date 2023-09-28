@@ -12,31 +12,38 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.IOException;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class ResourcePictureServiceTest {
-    @Value("upload.path")
-    static String upload;
-    @Value("dir.temp")
-    static String temp;
+
     @Autowired
     ResourcePictureService service;
-    static Path rootPath = Path.of(System.getProperty("user.dir"), upload);
+    static Path rootPath;
 
     @BeforeAll
     static void init() throws IOException {
+        final Path pathSourceFile = Path.of(System.getProperty("user.dir"), "upload",
+                "noImages.jpg").normalize().toAbsolutePath();
+        rootPath = Path.of(System.getProperty("user.dir"), "test");
+        Files.createDirectories(rootPath.resolve(TypePicture.ORIGINAL.name().toLowerCase())
+                .normalize().toAbsolutePath());
         final Path absolutePathGuestFile =
                 rootPath.resolve(TypePicture.ORIGINAL.name().toLowerCase())
                         .resolve("noImages.jpg").normalize().toAbsolutePath();
-        Files.createFile(absolutePathGuestFile);
-        final Path absolutePathTempFile = rootPath.resolve(temp).resolve("userId")
+        Files.copy(pathSourceFile, absolutePathGuestFile, StandardCopyOption.REPLACE_EXISTING);
+        Files.createDirectories(rootPath.resolve("temp").resolve("userId")
+                .resolve(TypePicture.ORIGINAL.name().toLowerCase())
+                .normalize().toAbsolutePath());
+        final Path absolutePathTempFile = rootPath.resolve("temp").resolve("userId")
                 .resolve(TypePicture.ORIGINAL.name().toLowerCase())
                 .resolve("noImages.jpg").normalize().toAbsolutePath();
-        Files.createFile(absolutePathTempFile);
+        Files.copy(pathSourceFile, absolutePathTempFile, StandardCopyOption.REPLACE_EXISTING);
     }
     @AfterAll
     static void destroy() throws IOException {

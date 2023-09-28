@@ -26,7 +26,9 @@ import java.util.UUID;
 
 @Service
 public class PictureTempServiceImpl implements PictureTempService {
-    /**Name destination directory.*/
+    /**
+     * Name destination directory.
+     */
     private static final String NAME_DEST = "nameDest";
     /**
      * Name root directory for write files.
@@ -149,7 +151,7 @@ public class PictureTempServiceImpl implements PictureTempService {
      *
      * @param sourcePathsFile List of short paths in temp directory
      * @param userId          Userid
-     * @param session Session
+     * @param session         Session
      **/
     @Override
     public void moveFilesInFolderToTemp(final List<String> sourcePathsFile,
@@ -163,6 +165,7 @@ public class PictureTempServiceImpl implements PictureTempService {
     }
 
     /**
+     * Create destination directory
      * Move files in source directory to destination directory and
      * delete source directory.
      *
@@ -176,15 +179,18 @@ public class PictureTempServiceImpl implements PictureTempService {
                                    final Path destinationDir) {
         StringBuilder errors = new StringBuilder();
         for (TypePicture value : TypePicture.values()) {
+            Path pathDestDir = destinationDir
+                    .resolve(value.name().toLowerCase())
+                    .normalize().toAbsolutePath();
+            createDir(pathDestDir);
             sourcePathsFile.forEach(path -> {
                 Path absoluteOldPath = sourceDir
                         .resolve(value.name().toLowerCase())
                         .resolve(path)
                         .normalize().toAbsolutePath();
-                Path absoluteNewPath =
-                        destinationDir.resolve(value.name().toLowerCase())
-                                .resolve(path)
-                                .normalize().toAbsolutePath();
+                Path absoluteNewPath = pathDestDir
+                        .resolve(path)
+                        .normalize().toAbsolutePath();
                 try {
                     Files.move(absoluteOldPath, absoluteNewPath);
                 } catch (IOException e) {
