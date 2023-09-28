@@ -214,7 +214,8 @@ public class PictureTempServiceImpl implements PictureTempService {
      */
     @Override
     public void deleteDirectory(final String pathDeleteDir,
-                                final String userId, final HttpSession session) {
+                                final String userId,
+                                final HttpSession session) {
         StringBuilder errors = new StringBuilder();
         for (TypePicture value : TypePicture.values()) {
             Path pathDirInRoot =
