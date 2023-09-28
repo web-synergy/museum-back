@@ -58,7 +58,6 @@ public class PictureTempController {
                 (String) session.getAttribute(NAME_DEST));
     }
 
-
     /**
      * Get file in directory temp.
      *
@@ -68,10 +67,11 @@ public class PictureTempController {
      */
     @GetMapping(value = "/picture/{type}/{*filename}",
             produces = MediaType.IMAGE_JPEG_VALUE)
-    public byte[] getImage(@PathVariable("type") final TypePicture type,
-                           @PathVariable("filename") final String filename) {
+    public byte[] getImage(@PathVariable final TypePicture type,
+                           @PathVariable final String filename) {
         return resourcePictureService.getPictureFromTemp("userId", type,
                 filename);
     }
+
 
 }

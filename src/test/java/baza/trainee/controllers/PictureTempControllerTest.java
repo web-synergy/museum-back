@@ -18,6 +18,7 @@ import java.nio.file.Path;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -47,7 +48,7 @@ class PictureTempControllerTest {
         byte[] imageBytes = new UrlResource(absolutePathFile.toUri()).getContentAsByteArray();
         MockMultipartFile mockFile = new MockMultipartFile("file", "noImages.jpg",
                 "image/jpeg", imageBytes);
-        when(pictureTempService.addPicture(mockFile, anyString(), anyString())).thenReturn("noImages.jpg");
+        when(pictureTempService.addPicture(eq(mockFile), anyString(), anyString())).thenReturn("noImages.jpg");
         mockMvc.perform(multipart("/admin/addTempFile").file(mockFile))
                 .andExpect(status().isOk());
     }

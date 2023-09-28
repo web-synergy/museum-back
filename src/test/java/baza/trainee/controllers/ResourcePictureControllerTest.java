@@ -50,9 +50,8 @@ class ResourcePictureControllerTest {
     void getImage_notStorageException() throws RuntimeException{
         when(resourcePictureService.getPicture(any(TypePicture.class), anyString()))
                 .thenThrow(new StorageFileNotFoundException("Could not read file: "));
-        mockMvc.perform(get("/picture/{type}/{*file}" , "original", "life.jpg")
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/picture/{type}/{*file}" , "original", "life.jpg"))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 }

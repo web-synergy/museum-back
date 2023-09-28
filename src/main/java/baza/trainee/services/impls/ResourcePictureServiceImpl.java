@@ -17,6 +17,9 @@ public class ResourcePictureServiceImpl implements ResourcePictureService {
      */
     @Value("${uploads.path}")
     private String uploadPath;
+    /**Name temp directory.*/
+    @Value("${dir.temp}")
+    private String temp;
 
     /**
      * Load resource from upload/{type}/{filename}.
@@ -70,7 +73,7 @@ public class ResourcePictureServiceImpl implements ResourcePictureService {
                                      final TypePicture type,
                                      final String filename) {
         Path path = Path.of(System.getProperty("user.dir"), uploadPath,
-                        userId, type.name().toLowerCase(),
+                        temp, userId, type.name().toLowerCase(),
                         getFilenameForType(type, filename))
                 .normalize().toAbsolutePath();
         return loadAsResource(path);

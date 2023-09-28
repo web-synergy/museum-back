@@ -1,0 +1,9 @@
+uploads:
+  path: /test
+
+prefix:
+  response: /picture
+
+
+dir:
+  temp: /temp
