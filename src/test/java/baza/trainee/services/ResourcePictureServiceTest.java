@@ -6,13 +6,10 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.UrlResource;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.IOException;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -52,8 +49,15 @@ class ResourcePictureServiceTest {
 
     @Test
     @SneakyThrows
-    void loadAsResource() {
+    void getPicture() {
         byte[] content = service.getPicture(TypePicture.ORIGINAL, "noImages.jpg");
+        assertTrue(content.length > 0);
+    }
+
+    @Test
+    void getPictureFromTemp() {
+        byte[] content = service.getPictureFromTemp("userId", TypePicture.ORIGINAL,
+                "noImages.jpg");
         assertTrue(content.length > 0);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -110,7 +111,7 @@ public class PictureTempServiceImpl implements PictureTempService {
             } catch (IOException e) {
                 throw new StorageException(
                         "Not compression " + value.name().toLowerCase()
-                                + " file " + newPicture.getName());
+                                + " file " + newPicture.getOriginalFilename());
             }
         }
     }
@@ -178,28 +179,36 @@ public class PictureTempServiceImpl implements PictureTempService {
                                    final Path sourceDir,
                                    final Path destinationDir) {
         StringBuilder errors = new StringBuilder();
-        for (TypePicture value : TypePicture.values()) {
+        for (TypePicture type : TypePicture.values()) {
             Path pathDestDir = destinationDir
-                    .resolve(value.name().toLowerCase())
+                    .resolve(type.name().toLowerCase())
                     .normalize().toAbsolutePath();
-            createDir(pathDestDir);
+            createDir(pathDestDir.resolve(Path.of(sourcePathsFile.get(0))
+                    .getParent()).normalize().toAbsolutePath());
             sourcePathsFile.forEach(path -> {
+                String currentNameFile;
+                if (type != TypePicture.ORIGINAL) {
+                    currentNameFile = replaceFileExtension(path);
+                } else {
+                    currentNameFile = path;
+                }
                 Path absoluteOldPath = sourceDir
-                        .resolve(value.name().toLowerCase())
-                        .resolve(path)
+                        .resolve(type.name().toLowerCase())
+                        .resolve(currentNameFile)
                         .normalize().toAbsolutePath();
                 Path absoluteNewPath = pathDestDir
-                        .resolve(path)
+                        .resolve(currentNameFile)
                         .normalize().toAbsolutePath();
                 try {
-                    Files.move(absoluteOldPath, absoluteNewPath);
+                    Files.move(absoluteOldPath, absoluteNewPath,
+                            StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     errors.append("Not move file ").append(absoluteOldPath)
                             .append(" \\n");
                 }
             });
 
-            Path pathRootDir = Path.of(value.name().toLowerCase()).resolve(
+            Path pathRootDir = Path.of(type.name().toLowerCase()).resolve(
                     Path.of(sourcePathsFile.get(0)).getName(0));
             Path pathDeleteDir = sourceDir.resolve(pathRootDir)
                     .normalize().toAbsolutePath();
@@ -210,6 +219,10 @@ public class PictureTempServiceImpl implements PictureTempService {
         if (!errors.isEmpty()) {
             throw new StorageException(errors.toString());
         }
+    }
+
+    private String replaceFileExtension(final String path) {
+        return path.replaceFirst("\\..+$", ".webp");
     }
 
     /**
@@ -223,17 +236,19 @@ public class PictureTempServiceImpl implements PictureTempService {
                                 final String userId,
                                 final HttpSession session) {
         StringBuilder errors = new StringBuilder();
-        for (TypePicture value : TypePicture.values()) {
+        for (TypePicture type : TypePicture.values()) {
             Path pathDirInRoot =
-                    rootLocation.resolve(value.name().toLowerCase()).
+                    rootLocation.resolve(type.name().toLowerCase()).
                             resolve(pathDeleteDir).normalize().toAbsolutePath();
             if (Files.exists(pathDirInRoot)) {
                 deletePartDir(errors, pathDirInRoot);
             }
 
-            Path pathDirInTemp = rootLocation.resolve(userId)
-                    .resolve(value.name().toLowerCase()).resolve(pathDeleteDir)
-                    .normalize().toAbsolutePath();
+            Path pathDirInTemp =
+                    rootLocation.resolve(temp).resolve(userId)
+                            .resolve(type.name().toLowerCase())
+                            .resolve(pathDeleteDir)
+                            .normalize().toAbsolutePath();
             if (Files.exists(pathDirInTemp)) {
                 deletePartDir(errors, pathDirInTemp);
             }

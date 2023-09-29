@@ -1,12 +1,12 @@
 uploads:
-  path: /uploads
+  path: uploads
 
 prefix:
-  response: /picture
+  response: picture
 
 
 dir:
-  temp: /temp
+  temp: temp
 
 spring:
   servlet:

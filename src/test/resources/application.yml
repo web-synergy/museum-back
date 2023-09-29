@@ -1,9 +1,9 @@
 uploads:
-  path: /test
+  path: test
 
 prefix:
-  response: /picture
+  response: picture
 
 
 dir:
-  temp: /temp
+  temp: temp
