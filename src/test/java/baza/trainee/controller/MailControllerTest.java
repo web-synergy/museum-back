@@ -74,7 +74,7 @@ public class MailControllerTest {
     }
 
     @Test
-    public void SubmitContactFormWithSendingError() throws Exception {
+    public void submitContactFormWithSendingError() throws Exception {
         doThrow(new EmailSendingException(FAIL_SEND_MSG))
                 .when(mailService).sendEmail(any(), any(),any());
 

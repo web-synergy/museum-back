@@ -1,4 +1,4 @@
-package baza.trainee.controller;
+package baza.trainee.controller.admin;
 
 import baza.trainee.domain.dto.event.EventPublication;
 import baza.trainee.domain.model.Event;
