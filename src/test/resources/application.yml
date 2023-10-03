@@ -25,7 +25,7 @@ mail:
       user: templates/msg_for_user.html
       museum: templates/msg_for_museum.html
   museum:
-    email: ${MAIL_USER}
+    email: ${MAIL_USER:museum@gmail.com}
     label: Museum.ua
 
 resources:
