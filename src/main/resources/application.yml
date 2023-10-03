@@ -1,4 +1,3 @@
-#Mail
 spring:
   data:
     redis:
@@ -36,7 +35,8 @@ logging:
   pattern:
     file: "%replace(%msg){'\\u001B\\[[;\\d]*m', ''}%n"
   level:
-    root: error
+    root: info
+    web: info
 
 resources:
   files:
@@ -45,3 +45,9 @@ resources:
       original: 'original'
       compressed: 'compressed'
       temporary: 'temp'
+
+users:
+  root:
+    credentials:
+      username: 'root'
+      password: 'password'

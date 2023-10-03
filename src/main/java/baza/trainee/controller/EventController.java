@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Oleksandr Korkach
  */
 @RestController
-@RequestMapping("/events")
+@RequestMapping("/api/events")
 @RequiredArgsConstructor
 public class EventController {
 

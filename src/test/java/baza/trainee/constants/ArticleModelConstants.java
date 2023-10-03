@@ -23,7 +23,7 @@ public class ArticleModelConstants {
     public static final Integer MODEL_VALIDATION_ERROR_COUNT;
 
     static {
-        GET_BY_TITLE_URL = "/api/article/{title}";
+        GET_BY_TITLE_URL = "/api/articles/{title}";
 
         VALID_ARTICLE = Article.builder()
                 .id("testId")

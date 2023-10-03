@@ -3,10 +3,12 @@ package baza.trainee.controller;
 import baza.trainee.domain.model.Event;
 import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.exceptions.custom.MethodArgumentNotValidException;
+import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.EventService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,13 +18,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(EventController.class)
-public class EventControllerTest {
+@SpringBootTest(webEnvironment = MOCK)
+@AutoConfigureMockMvc
+class EventControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -30,8 +32,11 @@ public class EventControllerTest {
     @MockBean
     private EventService eventService;
 
+    @MockBean
+    RootUserInitializer rootUserInitializer;
+
     @Test
-    public void testGetEvents() throws Exception {
+    void testGetEvents() throws Exception {
         // given:
         var pageable = Pageable.ofSize(10).withPage(0);
         Page<Event> events = Page.empty(pageable);
@@ -40,7 +45,7 @@ public class EventControllerTest {
         when(eventService.getAll(pageable)).thenReturn(events);
 
         // then:
-        mockMvc.perform(get("/events")
+        mockMvc.perform(get("/api/events")
                         .param("size", "10")
                         .param("page", "0")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -49,7 +54,7 @@ public class EventControllerTest {
     }
 
     @Test
-    public void testGetEvent() throws Exception {
+    void testGetEvent() throws Exception {
         // given:
         final LocalDate begin = LocalDate.of(2023, 9, 3);
         final LocalDate end = LocalDate.of(2023, 9, 12);
@@ -69,14 +74,14 @@ public class EventControllerTest {
         when(eventService.getById(eventId)).thenReturn(event);
 
         // then:
-        mockMvc.perform(get("/events/{id}", eventId)
+        mockMvc.perform(get("/api/events/{id}", eventId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(eventId));
     }
 
     @Test
-    public void testGetEventWithInvalidId() throws Exception {
+    void testGetEventWithInvalidId() throws Exception {
         // given:
         final String invalidEventId = "999";
         final String expectedMessage = "Event with `id: 999` was not found!";
@@ -86,14 +91,14 @@ public class EventControllerTest {
                 new EntityNotFoundException("Event", "id: " + invalidEventId));
 
         // then:
-        mockMvc.perform(get("/events/{id}", invalidEventId))
+        mockMvc.perform(get("/api/events/{id}", invalidEventId))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(expectedMessage));
     }
 
     @Test
-    public void testBadRequest() throws Exception {
+    void testBadRequest() throws Exception {
         // given:
         String id = "ID";
         String message = "Event not valid!";
@@ -103,7 +108,7 @@ public class EventControllerTest {
                 new MethodArgumentNotValidException(message));
 
         // then:
-        mockMvc.perform(get("/events/{id}", id))
+        mockMvc.perform(get("/api/events/{id}", id))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(message));

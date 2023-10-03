@@ -1,9 +1,11 @@
 package baza.trainee.controller;
 
+import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.ImageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -16,12 +18,14 @@ import java.io.File;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ImageController.class)
+@SpringBootTest(webEnvironment = MOCK)
+@AutoConfigureMockMvc
 class ImageControllerTest {
 
     @Autowired
@@ -29,6 +33,9 @@ class ImageControllerTest {
 
     @MockBean
     private ImageService imageService;
+
+    @MockBean
+    private RootUserInitializer rootUserInitializer;
 
     @Test
     void testGetImage() throws Exception {
@@ -48,7 +55,7 @@ class ImageControllerTest {
     }
 
     @Test
-    public void testGetTempImage() throws Exception {
+    void testGetTempImage() throws Exception {
         var file = new File("src/test/resources/test-images/test.jpg");
         var resource = new UrlResource(file.toURI());
         byte[] imageBytes = resource.getContentAsByteArray();
@@ -67,7 +74,7 @@ class ImageControllerTest {
     }
 
     @Test
-    public void testSaveImage() throws Exception {
+    void testSaveImage() throws Exception {
         MockHttpSession session = new MockHttpSession(null, "session123");
 
         var file = new File("src/test/resources/test-images/test.jpg");

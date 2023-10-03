@@ -6,6 +6,7 @@ import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.exceptions.custom.MethodArgumentNotValidException;
 import baza.trainee.exceptions.custom.NullEntityReferenceException;
 import baza.trainee.exceptions.errors.ErrorResponse;
+import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.EventService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class GlobalExceptionHandlerTests {
 
     @MockBean
     private EventService eventService;
+
+    @MockBean
+    private RootUserInitializer rootUserInitializer;
 
     @Test
     public void testNotFoundExceptionHandling() {

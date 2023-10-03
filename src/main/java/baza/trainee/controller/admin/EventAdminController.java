@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import static baza.trainee.utils.ControllerUtils.handleFieldsErrors;
 
@@ -28,8 +29,9 @@ import static baza.trainee.utils.ControllerUtils.handleFieldsErrors;
  *
  * @author Oleksandr Korkach
  */
+@SecurityRequirement(name = "basicAuth")
 @RestController
-@RequestMapping("/admin/events")
+@RequestMapping("/api/admin/events")
 @RequiredArgsConstructor
 public class EventAdminController {
 
