@@ -11,7 +11,10 @@ import org.springframework.context.annotation.Configuration;
 public class StorageProperties {
 
     @Value("${resources.files.images.root}")
-    private String rootImageLocation = "images";
+    private String rootImageLocation = "files";
+
+    @Value("${resources.files.images.root}")
+    private String persistImageLocation = "images";
 
     @Value("${resources.files.images.original}")
     private String originalImagesLocation = "original";

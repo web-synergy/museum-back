@@ -51,3 +51,11 @@ users:
     credentials:
       username: 'root'
       password: 'password'
+
+images:
+  desktop:
+    width: 1024
+    quality: 1
+  preview:
+    width: 640
+    quality: 0.5

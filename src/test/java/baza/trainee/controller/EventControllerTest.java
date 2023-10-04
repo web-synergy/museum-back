@@ -33,7 +33,7 @@ class EventControllerTest {
     private EventService eventService;
 
     @MockBean
-    RootUserInitializer rootUserInitializer;
+    private RootUserInitializer rootUserInitializer;
 
     @Test
     void testGetEvents() throws Exception {

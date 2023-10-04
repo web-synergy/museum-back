@@ -10,7 +10,7 @@ public interface ImageService {
      * Load image from file storage as array of bytes.
      *
      * @param filename name of the loaded image.
-     * @param type type of the image.
+     * @param type     type of the image.
      * @return image as an array of bytes.
      */
     byte[] loadResource(String filename, String type);
@@ -18,17 +18,18 @@ public interface ImageService {
     /**
      * Load image from temporary file storage as array of bytes.
      *
-     * @param filename name of the loaded image.
+     * @param filename  name of the loaded image.
      * @param sessionId ID of local session.
+     * @param type      type of the image.
      * @return image as an array of bytes.
      */
-    byte[] loadTempResource(String filename, String sessionId);
+    byte[] loadTempResource(String filename, String sessionId, String type);
 
     /**
      * Store {@link MultipartFile} as File to temporary file storage
      * with random filename.
      *
-     * @param file {@link MultipartFile} to store.
+     * @param file      {@link MultipartFile} to store.
      * @param sessionId ID of local session.
      * @return name of the saved file.
      */

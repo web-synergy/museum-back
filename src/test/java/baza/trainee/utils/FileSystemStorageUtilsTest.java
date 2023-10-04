@@ -27,15 +27,18 @@ class FileSystemStorageUtilsTest {
     }
 
     @Test
-    void loadPathTest() {
+    void loadFilePathTest() {
 
         // given:
         var filename = testImage.getName();
         var expected = testImage.toPath();
+        System.out.println(expected);
         var parent = Paths.get(testImage.getParent());
+        System.out.println(parent);
 
         // when:
-        var actual = FileSystemStorageUtils.loadPath(filename, parent);
+        var actual = FileSystemStorageUtils.loadFilePath(parent);
+        System.out.println(actual);
 
         // then:
         assertEquals(expected, actual);
@@ -48,7 +51,7 @@ class FileSystemStorageUtilsTest {
         var filename = "notExistingFile.jpeg";
 
         // then:
-        assertThrows(StorageException.class, () -> FileSystemStorageUtils.loadPath(filename, path),
+        assertThrows(StorageException.class, () -> FileSystemStorageUtils.loadFilePath(path),
                 "Failed to find files");
     }
 

@@ -1,28 +1,26 @@
 package baza.trainee.service.impl;
 
+import baza.trainee.config.ImageCompressionConfig;
 import baza.trainee.config.StorageProperties;
-import baza.trainee.exceptions.custom.StorageException;
-import baza.trainee.exceptions.custom.StorageFileNotFoundException;
 import baza.trainee.service.ImageService;
-import baza.trainee.utils.CustomMultipartFile;
 import baza.trainee.utils.FileSystemStorageUtils;
 import baza.trainee.utils.ImageCompressor;
-import org.springframework.core.io.UrlResource;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
+import static baza.trainee.service.impl.ImageServiceImpl.ImageType.DESKTOP;
+import static baza.trainee.service.impl.ImageServiceImpl.ImageType.PREVIEW;
 
 /**
- * Implementation of the {@link ImageService} interface for managing image-related operations.
+ * Implementation of the {@link ImageService} interface for managing
+ * image-related operations.
  * This service handles loading, storing, and processing images.
  *
  * @author Evhen Malysh
@@ -30,146 +28,165 @@ import java.util.stream.Collectors;
 @Service
 public class ImageServiceImpl implements ImageService {
 
-    private static final int TARGET_WIDTH = 680;
-    private static final float QUALITY = 0.5F;
+    private final int previewWidth;
+    private final float previewQuality;
+    private final int desktopWidth;
+    private final float desktopQuality;
 
-    private final Path rootLocation;
-    private final Path originalLocation;
-    private final Path previewLocation;
-    private final Path tempLocation;
+    private final Path rootPath;
+    private final Path imagesPath;
+    private final Path tempPath;
+
+    private final String originalDirName;
+    private final String previewDirName;
 
     /**
      * Constructs an instance of the ImageServiceImpl class.
      *
      * @param storageProperties Image storage configuration properties.
+     * @param compressionConfig Image compression properties.
      */
-    public ImageServiceImpl(final StorageProperties storageProperties) {
-        this.rootLocation = Paths.get(storageProperties.getRootImageLocation());
-        this.originalLocation = rootLocation.resolve(storageProperties.getOriginalImagesLocation()).normalize();
-        this.previewLocation = rootLocation.resolve(storageProperties.getCompressedImagesLocation()).normalize();
-        this.tempLocation = rootLocation.resolve(storageProperties.getTempImagesLocation()).normalize();
+    public ImageServiceImpl(
+            final StorageProperties storageProperties,
+            final ImageCompressionConfig compressionConfig
+    ) {
+        this.rootPath = Paths.get(storageProperties.getRootImageLocation());
+        this.imagesPath = rootPath.resolve(storageProperties.getPersistImageLocation());
+        this.tempPath = rootPath.resolve(storageProperties.getTempImagesLocation()).normalize();
 
-        FileSystemStorageUtils.init(rootLocation, originalLocation, previewLocation, tempLocation);
+        this.originalDirName = storageProperties.getOriginalImagesLocation();
+        this.previewDirName = storageProperties.getCompressedImagesLocation();
+
+        this.previewWidth = compressionConfig.getPreviewWidth();
+        this.previewQuality = compressionConfig.getPreviewQuality();
+        this.desktopWidth = compressionConfig.getDesktopWidth();
+        this.desktopQuality = compressionConfig.getDesktopQuality();
+
+        FileSystemStorageUtils.init(rootPath, tempPath);
     }
 
     /**
      * Load a resource (image) by filename and type.
      *
-     * @param filename The name of the file.
-     * @param type     The type of the resource (either "preview" or "original").
+     * @param fileId The name of the file.
+     * @param type   The type of the resource (either "preview" or "original").
      * @return A byte array containing the resource data.
-     * @throws StorageFileNotFoundException If the resource file cannot be found or read.
      */
     @Override
-    public byte[] loadResource(final String filename, final String type) {
-        var currentPath = type.equals("preview") ? previewLocation : originalLocation;
-        return getResourceFromPath(filename, currentPath);
+    public byte[] loadResource(final String fileId, final String type) {
+        var currentPath = getCurrentPath(imagesPath, fileId, type);
+
+        return getResourceFromPath(currentPath);
     }
 
     /**
      * Load a temporary resource (image) by filename and session ID.
      *
-     * @param filename  The name of the file.
-     * @param sessionId The ID of the session associated with the temporary resource.
+     * @param fileId    The name of the file.
+     * @param sessionId The ID of the session associated with the temporary
+     *                  resource.
      * @return A byte array containing the temporary resource data.
-     * @throws StorageFileNotFoundException If the resource file cannot be found or read.
      */
     @Override
-    public byte[] loadTempResource(final String filename, final String sessionId) {
-        Path tempPath = tempLocation.resolve(sessionId).normalize();
-        return getResourceFromPath(filename, tempPath);
+    public byte[] loadTempResource(
+            final String fileId,
+            final String sessionId,
+            final String type
+    ) {
+        var tempSessionPath = tempPath.resolve(sessionId);
+        var currentPath = getCurrentPath(tempSessionPath, fileId, type);
+
+        return getResourceFromPath(currentPath);
     }
 
     /**
-     * Store a multipart file as a temporary resource.
+     * Convert and store an image from multipart file as a temporary resources.
      *
-     * @param file      The {@link MultipartFile} to store.
-     * @param sessionId The ID of the session associated with the temporary resource.
-     * @return The name of the stored file.
-     * @throws StorageException If an error occurs while storing the file.
+     * @param file      The image as {@link MultipartFile} to store.
+     * @param sessionId The ID of the session associated with the temporary
+     *                  resource.
+     * @return The ID of the stored file that represent name of subfolder
+     * with converted images.
      */
     @Override
     public String storeToTemp(final MultipartFile file, final String sessionId) {
-        String name = UUID.randomUUID() + file.getName();
-        Path sessionTempPath = this.tempLocation
-                .resolve(Paths.get(sessionId))
-                .normalize();
+        var imageId = UUID.randomUUID().toString();
+        var sessionTempPath = this.tempPath.resolve(sessionId).resolve(imageId);
+        convertAndStore(sessionTempPath, file, DESKTOP, PREVIEW);
 
-        try {
-            var updatedFile = new CustomMultipartFile(
-                    name,
-                    name,
-                    file.getContentType(),
-                    file.getInputStream());
-            FileSystemStorageUtils.storeToPath(updatedFile, sessionTempPath);
-
-            return name;
-        } catch (IOException e) {
-            throw new StorageException("Failed to read MultipartFile data.");
-        }
+        return imageId;
     }
-
 
     /**
      * Persist and process a list of filenames associated with a session.
      *
-     * @param filenames The list of filenames to persist and process.
+     * @param imageIds  The list of filenames to persist and process.
      * @param sessionId The ID of the session associated with the files.
-     * @throws StorageException If an error occurs while persisting or processing the files.
      */
     @Override
-    public void persist(final List<String> filenames, final String sessionId) {
-        Path tempPath = tempLocation.resolve(sessionId).normalize();
-        var tempFilePaths = filenames.stream()
-                .map((String filename) -> FileSystemStorageUtils.loadPath(filename, tempPath))
-                .collect(Collectors.toList());
-        try {
-            for (Path fp : tempFilePaths) {
-                var imageFile = new File(String.valueOf(fp));
-                CustomMultipartFile inputFile = new CustomMultipartFile(
-                        imageFile.getName(),
-                        imageFile.getName(),
-                        "image/jpeg",
-                        new FileInputStream(imageFile));
-                FileSystemStorageUtils.storeToPath(inputFile, originalLocation);
+    public void persist(final List<String> imageIds, final String sessionId) {
+        var sessionPath = tempPath.resolve(sessionId);
 
-                var compressedFile = ImageCompressor.compress(
-                        inputFile,
-                        TARGET_WIDTH,
-                        QUALITY);
-                FileSystemStorageUtils.storeToPath(compressedFile, previewLocation);
-            }
-        } catch (IOException e) {
-            throw new StorageException("Failed to read stored files");
+        for (var imageId : imageIds) {
+            var imageTempPath = FileSystemStorageUtils.loadPath(sessionPath).resolve(imageId);
+            var destPath = imagesPath.resolve(imageId);
+            FileSystemStorageUtils.copyRecursively(imageTempPath, destPath);
         }
-        try {
-            FileSystemUtils.deleteRecursively(tempPath);
-        } catch (IOException e) {
-            throw new StorageException("Could not delete session temp folder");
+        FileSystemStorageUtils.deleteRecursively(sessionPath);
+    }
+
+    private Path getCurrentPath(final Path root, final String fileId, final String type) {
+        var imageType = ImageType.fromString(type);
+
+        var currentDir = switch (imageType) {
+            case DESKTOP -> originalDirName;
+            case PREVIEW -> previewDirName;
+        };
+
+        return root.resolve(fileId).resolve(currentDir);
+    }
+
+    private void convertAndStore(Path basePath, MultipartFile image, ImageType... types) {
+        for (var imageType : types) {
+            Path directPath = switch (imageType) {
+                case DESKTOP -> basePath.resolve(originalDirName);
+                case PREVIEW -> basePath.resolve(previewDirName);
+            };
+            MultipartFile compressedFile = switch (imageType) {
+                case DESKTOP -> ImageCompressor.compress(
+                        image,
+                        desktopWidth,
+                        desktopQuality);
+                case PREVIEW -> ImageCompressor.compress(
+                        image,
+                        previewWidth,
+                        previewQuality);
+            };
+            FileSystemStorageUtils.storeToPath(compressedFile, directPath);
         }
     }
 
-    /**
-     * Retrieve a resource from the specified path and return it as a byte array.
-     *
-     * @param filename    The name of the resource file.
-     * @param currentPath The path where the resource is located.
-     * @return A byte array containing the resource data.
-     * @throws StorageFileNotFoundException If the resource file cannot be found or read.
-     */
-    private static byte[] getResourceFromPath(final String filename, final Path currentPath) {
-        try {
-            var file = FileSystemStorageUtils.loadPath(filename, currentPath);
-            var resource = new UrlResource(file.toUri());
+    private byte[] getResourceFromPath(final Path currentPath) {
+        var file = FileSystemStorageUtils.loadFilePath(currentPath);
+        var resource = FileSystemStorageUtils.getResource(file.toUri());
 
-            if (resource.exists() || resource.isReadable()) {
-                return resource.getContentAsByteArray();
-            } else {
-                throw new StorageFileNotFoundException(
-                        "Could not read file: " + filename);
-            }
-        } catch (IOException e) {
-            throw new StorageFileNotFoundException("Could not read file: " + filename);
+        return FileSystemStorageUtils.getByteArrayFromResource(resource);
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    public enum ImageType {
+        DESKTOP("original"),
+        PREVIEW("preview");
+
+        private final String value;
+
+        public static ImageType fromString(String val) {
+            return switch (val) {
+                case "original" -> ImageType.DESKTOP;
+                case "preview" -> ImageType.PREVIEW;
+                default -> throw new IllegalArgumentException("No enum of value: " + val);
+            };
         }
     }
 
