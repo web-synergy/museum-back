@@ -10,6 +10,10 @@ servers:
   - url: http://127.0.0.1/api
     description: Service for managing website of the Kavaleridze museum
 
+security:
+  - basicAuth:
+      - basicAuth
+
 tags:
   - name: Admin Event Controller
     description: |
@@ -51,6 +55,9 @@ tags:
 paths:
   /admin/events:
     post:
+      security:
+        - basicAuth:
+            - basicAuth
       tags:
         - Admin Event Controller
       summary: Create a new Event
@@ -75,6 +82,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         500:
           description: Internal Server Error
           content:
@@ -83,6 +96,9 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
   /admin/events/{id}:
     put:
+      security:
+        - basicAuth:
+            - basicAuth
       tags:
         - Admin Event Controller
       summary: Update an existing Event
@@ -114,6 +130,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         404:
           description: Event not found
           content:
@@ -127,6 +149,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
+      security:
+        - basicAuth:
+            - basicAuth
       tags:
         - Admin Event Controller
       summary: Delete an existing Event
@@ -148,6 +173,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         404:
           description: Event not found
           content:
@@ -162,6 +193,9 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
   /admin/images:
     post:
+      security:
+        - basicAuth:
+            - basicAuth
       tags:
         - Admin Images Controller
       operationId: saveImage
@@ -187,6 +221,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         500:
           description: Internal Server Error
           content:
@@ -195,6 +235,9 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
   /admin/images/temp:
     get:
+      security:
+        - basicAuth:
+            - basicAuth
       tags:
         - Admin Images Controller
       operationId: getTempImage
@@ -226,6 +269,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         404:
           description: Entity not found
           content:
@@ -240,6 +289,9 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
   /admin/museum_data:
     post:
+      security:
+        - basicAuth:
+            - basicAuth
       tags:
         - Admin Museum Data Controller
       description: 'Adds new museum data'
@@ -262,6 +314,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         500:
           description: Internal Server Error
           content:
@@ -269,6 +327,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
+      security:
+        - basicAuth:
+            - basicAuth
       tags:
         - Admin Museum Data Controller
       description:  'Updates existing museum data.'
@@ -287,6 +348,12 @@ paths:
                 $ref: '#/components/schemas/MuseumInfo'
         400:
           description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
           content:
             application/json:
               schema:
@@ -842,3 +909,7 @@ components:
         funicularRoute:
           description: 'The funicular route information for reaching the museum'
           type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
