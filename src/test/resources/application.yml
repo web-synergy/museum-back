@@ -15,8 +15,8 @@ spring:
           connectiontimeout: '5000'
           writetimeout: '5000'
     host: smtp.meta.ua
-    username: ${MAIL_USER}
-    password: ${MAIL_PASSWORD}
+    username: ${MAIL_USER:museum@gmail.com}
+    password: ${MAIL_PASSWORD:password}
     port: '465'
 
 mail:
