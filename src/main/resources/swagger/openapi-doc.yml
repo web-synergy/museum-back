@@ -51,6 +51,9 @@ tags:
     description: |
       Endpoints for retrieving museum data in the public API.
       This controller handles public operations with museum data.
+  - name: Authentication controller
+    description: |
+      Endpoints for user authentication.
 
 paths:
   /admin/events:
@@ -632,6 +635,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /auth/login:
+    post:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Authentication controller
+      description: User login endpoint
+      operationId: login
+      responses:
+        200:
+          description: Authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessAuthResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/logout:
+    post:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Authentication controller
+      description: User logout endpoint
+      operationId: logout
+      responses:
+        204:
+          description: Logout successfully
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -909,6 +952,15 @@ components:
         funicularRoute:
           description: 'The funicular route information for reaching the museum'
           type: string
+    SuccessAuthResponse:
+      description: Login success response
+      type: object
+      properties:
+        roles:
+          description: Authenticated user roles
+          type: array
+          items:
+            type: string
   securitySchemes:
     basicAuth:
       type: http
