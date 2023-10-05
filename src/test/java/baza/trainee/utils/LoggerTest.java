@@ -32,19 +32,19 @@ public class LoggerTest {
             LOG_TITLE, LOG_MSG);
 
     @Test
-    public void testLogErrorMessage(CapturedOutput output) {
+    void testLogErrorMessage(CapturedOutput output) {
         Logger.error(LOG_TITLE, LOG_MSG);
         assertTrue(output.getOut().contains(ERROR_MESSAGE));
     }
 
     @Test
-    public void testLogInfoMessage(CapturedOutput output) {
+    void testLogInfoMessage(CapturedOutput output) {
         Logger.info(LOG_TITLE, LOG_MSG);
         assertTrue(output.getOut().contains(INFO_MSG));
     }
 
     @Test
-    public void testLogWarningMessage(CapturedOutput output) {
+    void testLogWarningMessage(CapturedOutput output) {
         Logger.warning(LOG_TITLE, LOG_MSG);
         assertTrue(output.getOut().contains(WARN_MSG));
     }

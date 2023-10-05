@@ -1,9 +1,8 @@
 package baza.trainee.service.impl;
 
-import baza.trainee.domain.dto.SearchResponse;
-import baza.trainee.domain.enums.ContentType;
 import baza.trainee.domain.model.Event;
 import baza.trainee.domain.model.Post;
+import baza.trainee.dto.SearchResponse;
 import baza.trainee.service.SearchService;
 import com.redis.om.spring.search.stream.EntityStream;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static baza.trainee.dto.SearchResponse.ContentTypeEnum.ARTICLE;
+import static baza.trainee.dto.SearchResponse.ContentTypeEnum.EVENT;
 
 /**
  * Service that implements {@link SearchService} contract.
@@ -56,8 +58,8 @@ public class SearchServiceImpl implements SearchService {
 
     private <T extends Post> Predicate<T> searchPredicate(CharSequence sequence) {
         return post -> matchSequence(post.getTitle(), sequence)
-                || matchSequence(post.getDescription(), sequence)
-                || post.getContent().stream().anyMatch(c -> matchSequence(c.getTextContent(), sequence));
+                || matchSequence(post.getSummary(), sequence)
+                || matchSequence(post.getDescription(), sequence);
     }
 
     private boolean matchSequence(String string, CharSequence sequence) {
@@ -65,7 +67,13 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private SearchResponse toSearchResponse(Post post) {
-        var type = post instanceof Event ? ContentType.EVENT : ContentType.ARTICLE;
-        return new SearchResponse(post.getId(), post.getTitle(), post.getDescription(), type);
+        var type = post instanceof Event ? EVENT : ARTICLE;
+        SearchResponse response = new SearchResponse();
+        response.id(post.getId());
+        response.title(post.getTitle());
+        response.description(post.getSummary());
+        response.contentType(type);
+
+        return response;
     }
 }

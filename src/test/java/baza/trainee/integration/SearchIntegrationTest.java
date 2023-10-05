@@ -1,14 +1,14 @@
 package baza.trainee.integration;
 
-import baza.trainee.service.ArticleService;
-import baza.trainee.service.EventService;
 import baza.trainee.service.SearchService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Import({ EventTestDataInitializer.class })
 class SearchIntegrationTest extends AbstractIntegrationTest {
@@ -17,10 +17,7 @@ class SearchIntegrationTest extends AbstractIntegrationTest {
     private SearchService searchService;
 
     @MockBean
-    private EventService eventService;
-
-    @MockBean
-    private ArticleService articleService;
+    private HttpServletRequest httpServletRequest;
 
     @Test
     void validQueryTest() {
@@ -60,10 +57,10 @@ class SearchIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void byContentTest() {
-        var q = "Унікальний контент 0 - 0";
+        var q = "Унікальний контент";
 
         var responses = searchService.search(q);
 
-        assertEquals(1, responses.size());
+        assertEquals(20, responses.size());
     }
 }

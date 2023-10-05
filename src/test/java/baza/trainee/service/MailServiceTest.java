@@ -1,9 +1,11 @@
 package baza.trainee.service;
 
+import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.impl.MailServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,6 +14,9 @@ class MailServiceTest {
 
     @Autowired
     private MailServiceImpl mailService;
+
+    @MockBean
+    RootUserInitializer rootUserInitializer;
 
     @Test
     void testBuildMsgForUser() {

@@ -1,0 +1,967 @@
+openapi: 3.0.1
+
+info:
+  title: Kavaleridze Museum API
+  description: |
+    The Kavaleridze Museum API is a comprehensive RESTful API that serves as the backbone of the Kavaleridze Museum's digital platform. It provides a wide range of endpoints for managing museum events, images, articles, email communications, and search functionalities. This API empowers administrators, visitors, and staff to interact with museum-related content, enhancing the overall visitor experience and facilitating efficient museum management.
+  version: v0.0.1
+
+servers:
+  - url: http://127.0.0.1/api
+    description: Service for managing website of the Kavaleridze museum
+
+security:
+  - basicAuth:
+      - basicAuth
+
+tags:
+  - name: Admin Event Controller
+    description: |
+      Endpoints for administrators to manage museum events.
+      Includes creating, updating, deleting events, and more.
+  - name: Admin Images Controller
+    description: |
+      Endpoints for administrators to manage images on the website.
+      Provides operations for uploading, deleting, and organizing images.
+  - name: Event Controller
+    description: |
+      Endpoints for retrieving museum events.
+      Allows users to view event details, search for events, and more.
+  - name: Image Controller
+    description: |
+      Endpoints to retrieve and display images from the storage.
+      Provides access to images for use on the website.
+  - name: Mail Controller
+    description: |
+      Endpoints for email communications, including sending feedback and inquiries.
+      Enables communication with museum staff.
+  - name: Search Controller
+    description: |
+      Endpoints for performing searches on the website.
+      Allows users to search for events, articles, and more.
+  - name: Article Controller
+    description: |
+      Endpoints for performing article-related operations.
+      Provides access to articles and allows users to interact with them.
+  - name: Admin Museum Data Controller
+    description: |
+      Endpoints for managing museum data in the admin API.
+      This controller handles operations such as adding and updating museum data.
+  - name: Museum Data Controller
+    description: |
+      Endpoints for retrieving museum data in the public API.
+      This controller handles public operations with museum data.
+  - name: Authentication controller
+    description: |
+      Endpoints for user authentication.
+
+paths:
+  /admin/events:
+    post:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Admin Event Controller
+      summary: Create a new Event
+      description: Creates a new Event with the provided information.
+      operationId: createEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventPublication'
+        required: true
+      responses:
+        201:
+          description: Event created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/events/{id}:
+    put:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Admin Event Controller
+      summary: Update an existing Event
+      description: Updates an existing Event with the provided information.
+      operationId: updateEvent
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the Event to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventPublication'
+        required: true
+      responses:
+        200:
+          description: Event updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Admin Event Controller
+      summary: Delete an existing Event
+      description: Deletes an existing Event by its unique identifier.
+      operationId: deleteEvent
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the Event to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Event deleted successfully
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/images:
+    post:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Admin Images Controller
+      operationId: saveImage
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveImageResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/images/temp:
+    get:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Admin Images Controller
+      operationId: getTempImage
+      parameters:
+        - name: filename
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - ORIGINAL
+              - PREVIEW
+      responses:
+        200:
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: byte
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/museum_data:
+    post:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Admin Museum Data Controller
+      description: 'Adds new museum data'
+      operationId: addData
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MuseumInfo'
+      responses:
+        201:
+          description: Museum data is posted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MuseumInfo'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Admin Museum Data Controller
+      description:  'Updates existing museum data.'
+      operationId: updateData
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MuseumInfo'
+      responses:
+        200:
+          description: Museum data is updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MuseumInfo'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /images:
+    get:
+      tags:
+        - Image Controller
+      operationId: getImage
+      parameters:
+        - name: filename
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - ORIGINAL
+              - PREVIEW
+      responses:
+        200:
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: byte
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /feedback/submit:
+    post:
+      tags:
+        - Mail Controller
+      operationId: submitContactForm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MailDto'
+        required: true
+      responses:
+        200:
+          description: Email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /events:
+    get:
+      tags:
+        - Event Controller
+      summary: Get a page of events
+      description: Retrieves a page of events with the specified size and page number.
+      operationId: getAll
+      parameters:
+        - name: size
+          in: query
+          description: Size of the page
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        200:
+          description: Page of events retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageEvent'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /events/{id}:
+    get:
+      tags:
+        - Event Controller
+      summary: Get an Event by ID
+      description: Retrieves an Event by its unique identifier.
+      operationId: getById
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the Event
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Event retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /articles/{title}:
+    get:
+      tags:
+        - Article Controller
+      summary: Find article by title
+      description: Returns an article by its title.
+      operationId: findByTitle
+      parameters:
+        - name: title
+          in: path
+          description: Title of the article
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Found the article
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        400:
+          description: Title request is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /search/{query}:
+    get:
+      tags:
+        - Search Controller
+      summary: Perform a full text search search
+      description: Performs a full text search search in the website content based on the provided query string.
+      operationId: search
+      parameters:
+        - name: query
+          in: path
+          description: Search query string
+          required: true
+          schema:
+            minLength: 3
+            maxLength: 120
+            type: string
+      responses:
+        200:
+          description: Search results retrieved successfully or an empty payload
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchResponse'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /museum_data:
+    get:
+      tags:
+        - Museum Data Controller
+      description: 'Retrieves available museum data'
+      operationId: getMuseumData
+      responses:
+        200:
+          description: Data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MuseumInfo'
+        404:
+          description: Data not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/login:
+    post:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Authentication controller
+      description: User login endpoint
+      operationId: login
+      responses:
+        200:
+          description: Authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessAuthResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/logout:
+    post:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Authentication controller
+      description: User logout endpoint
+      operationId: logout
+      responses:
+        204:
+          description: Logout successfully
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ErrorResponse:
+      description: Error message with timestamp
+      type: object
+      properties:
+        message:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+    EventPublication:
+      description: Event publication form
+      required:
+        - title
+        - description
+        - type
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: false
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          nullable: false
+          minLength: 1
+          maxLength: 2000
+        summary:
+          type: string
+          maxLength: 150
+        type:
+          type: string
+          nullable: false
+          enum:
+            - EXHIBITION
+            - EXCURSION
+            - PRESENTATION
+            - CONTEST
+            - LECTURE
+            - MASTER_CLASS
+            - CREATIVE_EVENING
+            - OTHER
+        banner:
+          type: string
+        begin:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+    EventResponse:
+      description: Event information
+      required:
+        - title
+        - description
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          maxLength: 100
+          nullable: false
+        summary:
+          type: string
+          nullable: false
+          maxLength: 150
+        description:
+          type: string
+          nullable: false
+          maxLength: 2000
+        type:
+          type: string
+          nullable: false
+          enum:
+            - EXHIBITION
+            - EXCURSION
+            - PRESENTATION
+            - CONTEST
+            - LECTURE
+            - MASTER_CLASS
+            - CREATIVE_EVENING
+            - OTHER
+        banner:
+          type: string
+        begin:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+    MailDto:
+      description: Feedback form
+      required:
+        - email
+        - firstName
+        - lastName
+        - message
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 30
+          nullable: false
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 30
+          nullable: false
+        email:
+          type: string
+          format: email
+          nullable: false
+        message:
+          type: string
+          minLength: 10
+          maxLength: 300
+          nullable: false
+    SaveImageResponse:
+      description: Id of saved image
+      type: object
+      properties:
+        imageId:
+          type: string
+    ArticleResponse:
+      required:
+        - content
+        - description
+        - title
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          minLength: 3
+          maxLength: 300
+        description:
+          type: string
+          minLength: 3
+          maxLength: 300
+        content:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ContentBlock'
+        created:
+          type: string
+          format: date
+        updated:
+          type: string
+          format: date
+    ContentBlock:
+      required:
+        - blockType
+        - columns
+        - order
+      type: object
+      properties:
+        id:
+          type: string
+        order:
+          type: integer
+          format: int32
+        columns:
+          type: integer
+          format: int32
+        blockType:
+          type: string
+          enum:
+            - TEXT_BLOCK
+            - PICTURE_BLOCK
+            - PICTURE_TEXT_BLOCK
+        textContent:
+          type: string
+        pictureLink:
+          type: string
+    PageEvent:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        first:
+          type: boolean
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        last:
+          type: boolean
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventResponse'
+        number:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        offset:
+          type: integer
+          format: int64
+    SortObject:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean
+    SearchResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        contentType:
+          type: string
+          enum:
+            - ARTICLE
+            - EVENT
+    MuseumInfo:
+      description: 'Represents museum data'
+      type: object
+      properties:
+        id:
+          description: 'The unique identifier for the museum data'
+          type: string
+        phoneNumber:
+          description: 'The phone number associated with the museum'
+          type: string
+        email:
+          description: 'The email address associated with the museum'
+          type: string
+          format: email
+        subwayRoute:
+          description: 'The subway route information for reaching the museum'
+          type: string
+        busRoute:
+          description: 'The bus route information for reaching the museum'
+          type: string
+        funicularRoute:
+          description: 'The funicular route information for reaching the museum'
+          type: string
+    SuccessAuthResponse:
+      description: Login success response
+      type: object
+      properties:
+        roles:
+          description: Authenticated user roles
+          type: array
+          items:
+            type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic

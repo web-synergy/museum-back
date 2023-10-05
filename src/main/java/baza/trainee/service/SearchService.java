@@ -1,6 +1,7 @@
 package baza.trainee.service;
 
-import baza.trainee.domain.dto.SearchResponse;
+
+import baza.trainee.dto.SearchResponse;
 
 import java.util.List;
 

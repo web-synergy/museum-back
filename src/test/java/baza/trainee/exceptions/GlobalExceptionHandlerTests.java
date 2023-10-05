@@ -1,11 +1,8 @@
 package baza.trainee.exceptions;
 
-import baza.trainee.exceptions.custom.BasicApplicationException;
-import baza.trainee.exceptions.custom.EntityAlreadyExistsException;
-import baza.trainee.exceptions.custom.EntityNotFoundException;
-import baza.trainee.exceptions.custom.MethodArgumentNotValidException;
-import baza.trainee.exceptions.custom.NullEntityReferenceException;
+import baza.trainee.exceptions.custom.*;
 import baza.trainee.exceptions.errors.ErrorResponse;
+import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.EventService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-public class GlobalExceptionHandlerTests {
+class GlobalExceptionHandlerTests {
 
     @Autowired
     private GlobalExceptionHandler globalExceptionHandler;
@@ -25,8 +22,11 @@ public class GlobalExceptionHandlerTests {
     @MockBean
     private EventService eventService;
 
+    @MockBean
+    private RootUserInitializer rootUserInitializer;
+
     @Test
-    public void testNotFoundExceptionHandling() {
+    void testNotFoundExceptionHandling() {
         BasicApplicationException
                 exception = new EntityNotFoundException("Event", "Id: 25");
 
@@ -41,7 +41,7 @@ public class GlobalExceptionHandlerTests {
     }
 
     @Test
-    public void testAlreadyExistsExceptionHandling() {
+    void testAlreadyExistsExceptionHandling() {
         BasicApplicationException
                 exception = new EntityAlreadyExistsException("Event", "Id: 25");
 
@@ -56,7 +56,7 @@ public class GlobalExceptionHandlerTests {
     }
 
     @Test
-    public void testNullEntityReferenceExceptionHandling() {
+    void testNullEntityReferenceExceptionHandling() {
         BasicApplicationException
                 exception = new NullEntityReferenceException("Event");
 
@@ -71,7 +71,7 @@ public class GlobalExceptionHandlerTests {
     }
 
     @Test
-    public void testMethodArgumentNotValidExceptionHandling() {
+    void testMethodArgumentNotValidExceptionHandling() {
         BasicApplicationException
                 exception =
                 new MethodArgumentNotValidException("Invalid input params!");
@@ -87,7 +87,7 @@ public class GlobalExceptionHandlerTests {
     }
 
     @Test
-    public void testServerExceptionHandling() {
+    void testServerExceptionHandling() {
         Exception exception =
                 new NumberFormatException("Invalid path variable!");
 

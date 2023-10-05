@@ -3,7 +3,6 @@ spring:
     redis:
       host: localhost
       port: 6379
-
   mail:
     properties:
       mail:
@@ -11,15 +10,14 @@ spring:
           starttls:
             enable: 'true'
           ssl:
-            trust: '*'
-          timeout: '3000'
+            enable: 'true'
           auth: 'true'
           connectiontimeout: '5000'
           writetimeout: '5000'
-    host: smtp.gmail.com
+    host: smtp.meta.ua
     username: ${MAIL_USER}
     password: ${MAIL_PASSWORD}
-    port: '587'
+    port: '465'
 
 mail:
   template:
@@ -27,5 +25,28 @@ mail:
       user: templates/msg_for_user.html
       museum: templates/msg_for_museum.html
   museum:
-    email: museum@gmail.com
+    email: ${MAIL_USER:museum@gmail.com}
     label: Museum.ua
+
+resources:
+  files:
+    images:
+      root: 'files'
+      images: 'images'
+      original: 'original'
+      compressed: 'compressed'
+      temporary: 'temp'
+
+users:
+  root:
+    credentials:
+      username: 'root'
+      password: 'password'
+
+images:
+  desktop:
+    width: 1024
+    quality: 1
+  preview:
+    width: 640
+    quality: 0.5

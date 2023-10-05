@@ -39,4 +39,27 @@ logging:
   pattern:
     file: "%replace(%msg){'\\u001B\\[[;\\d]*m', ''}%n"
   level:
-    root: error
+    root: info
+    web: info
+
+resources:
+  files:
+    images:
+      root: 'images'
+      original: 'original'
+      compressed: 'compressed'
+      temporary: 'temp'
+
+users:
+  root:
+    credentials:
+      username: 'root'
+      password: 'password'
+
+images:
+  desktop:
+    width: 1024
+    quality: 1
+  preview:
+    width: 640
+    quality: 0.5
