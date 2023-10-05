@@ -2,6 +2,7 @@ package baza.trainee.service.impl;
 
 import baza.trainee.config.ImageCompressionConfig;
 import baza.trainee.config.StorageProperties;
+import baza.trainee.dto.SaveImageResponse;
 import baza.trainee.service.ImageService;
 import baza.trainee.utils.FileSystemStorageUtils;
 import baza.trainee.utils.ImageCompressor;
@@ -15,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
-import static baza.trainee.service.impl.ImageServiceImpl.ImageType.DESKTOP;
+import static baza.trainee.service.impl.ImageServiceImpl.ImageType.ORIGINAL;
 import static baza.trainee.service.impl.ImageServiceImpl.ImageType.PREVIEW;
 
 /**
@@ -109,12 +110,15 @@ public class ImageServiceImpl implements ImageService {
      * with converted images.
      */
     @Override
-    public String storeToTemp(final MultipartFile file, final String sessionId) {
+    public SaveImageResponse storeToTemp(final MultipartFile file, final String sessionId) {
         var imageId = UUID.randomUUID().toString();
         var sessionTempPath = this.tempPath.resolve(sessionId).resolve(imageId);
-        convertAndStore(sessionTempPath, file, DESKTOP, PREVIEW);
+        convertAndStore(sessionTempPath, file, ORIGINAL, PREVIEW);
 
-        return imageId;
+        var response = new SaveImageResponse();
+        response.setImageId(imageId);
+
+        return response;
     }
 
     /**
@@ -139,7 +143,7 @@ public class ImageServiceImpl implements ImageService {
         var imageType = ImageType.fromString(type);
 
         var currentDir = switch (imageType) {
-            case DESKTOP -> originalDirName;
+            case ORIGINAL -> originalDirName;
             case PREVIEW -> previewDirName;
         };
 
@@ -149,11 +153,11 @@ public class ImageServiceImpl implements ImageService {
     private void convertAndStore(Path basePath, MultipartFile image, ImageType... types) {
         for (var imageType : types) {
             Path directPath = switch (imageType) {
-                case DESKTOP -> basePath.resolve(originalDirName);
+                case ORIGINAL -> basePath.resolve(originalDirName);
                 case PREVIEW -> basePath.resolve(previewDirName);
             };
             MultipartFile compressedFile = switch (imageType) {
-                case DESKTOP -> ImageCompressor.compress(
+                case ORIGINAL -> ImageCompressor.compress(
                         image,
                         desktopWidth,
                         desktopQuality);
@@ -176,15 +180,15 @@ public class ImageServiceImpl implements ImageService {
     @Getter
     @RequiredArgsConstructor
     public enum ImageType {
-        DESKTOP("original"),
-        PREVIEW("preview");
+        ORIGINAL("ORIGINAL"),
+        PREVIEW("PREVIEW");
 
         private final String value;
 
         public static ImageType fromString(String val) {
             return switch (val) {
-                case "original" -> ImageType.DESKTOP;
-                case "preview" -> ImageType.PREVIEW;
+                case "ORIGINAL" -> ImageType.ORIGINAL;
+                case "PREVIEW" -> ImageType.PREVIEW;
                 default -> throw new IllegalArgumentException("No enum of value: " + val);
             };
         }

@@ -1,10 +1,12 @@
 package baza.trainee.service.impl;
 
 import baza.trainee.domain.model.MuseumData;
-import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.repository.MuseumDataRepository;
 import baza.trainee.service.MuseumDataService;
 import lombok.RequiredArgsConstructor;
+
+import static baza.trainee.utils.ExceptionUtils.getNotFoundExceptionSupplier;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,6 +28,6 @@ public class MuseumDataServiceImpl implements MuseumDataService {
     @Override
     public MuseumData getData() {
         return museumDataRepo.findAll().stream().findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("MuseumData", "no details"));
+                .orElseThrow(getNotFoundExceptionSupplier(MuseumData.class, "no details"));
     }
 }

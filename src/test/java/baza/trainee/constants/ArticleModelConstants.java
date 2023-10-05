@@ -1,7 +1,7 @@
 package baza.trainee.constants;
 
 import baza.trainee.domain.model.Article;
-import baza.trainee.domain.model.ContentBlock;
+import baza.trainee.dto.ContentBlock;
 
 import java.time.LocalDate;
 import java.util.HashSet;

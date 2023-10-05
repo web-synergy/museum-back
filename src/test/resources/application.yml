@@ -37,6 +37,12 @@ resources:
       compressed: 'compressed'
       temporary: 'temp'
 
+users:
+  root:
+    credentials:
+      username: 'root'
+      password: 'password'
+
 images:
   desktop:
     width: 1024

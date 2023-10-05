@@ -2,6 +2,8 @@ package baza.trainee.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import baza.trainee.dto.SaveImageResponse;
+
 import java.util.List;
 
 public interface ImageService {
@@ -31,9 +33,9 @@ public interface ImageService {
      *
      * @param file      {@link MultipartFile} to store.
      * @param sessionId ID of local session.
-     * @return name of the saved file.
+     * @return Response with the image name of the saved file.
      */
-    String storeToTemp(MultipartFile file, String sessionId);
+    SaveImageResponse storeToTemp(MultipartFile file, String sessionId);
 
     /**
      * Store all files by filenames from temporary file storage to

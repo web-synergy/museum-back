@@ -3,13 +3,16 @@ package baza.trainee.controller;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.io.File;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import baza.trainee.dto.SaveImageResponse;
 import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.ImageService;
 
@@ -72,13 +76,17 @@ public class ImageAdminControllerTest {
 
         MockMultipartFile mockFile = new MockMultipartFile("file", "example.jpg", "image/jpeg", imageBytes);
 
-        when(imageService.storeToTemp(eq(mockFile), anyString())).thenReturn("example.jpg");
+        var imageId = UUID.randomUUID().toString();
+        var response = new SaveImageResponse();
+        response.setImageId(imageId);
+
+        when(imageService.storeToTemp(eq(mockFile), anyString())).thenReturn(response);
 
         mockMvc.perform(
                 multipart("/api/admin/images")
                         .file(mockFile)
                         .session(session))
                 .andExpect(status().isCreated())
-                .andExpect(content().string("example.jpg"));
+                .andExpect(jsonPath("$.imageId", is(imageId)));
     }
 }

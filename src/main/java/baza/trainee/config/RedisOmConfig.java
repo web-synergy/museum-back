@@ -7,7 +7,6 @@ import baza.trainee.repository.MuseumDataRepository;
 import com.redis.om.spring.annotations.EnableRedisDocumentRepositories;
 
 import baza.trainee.domain.model.Article;
-import baza.trainee.domain.model.ContentBlock;
 import baza.trainee.repository.ArticleRepository;
 
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +18,6 @@ import org.springframework.context.annotation.Configuration;
         MuseumData.class,
         Event.class,
         Article.class,
-        ContentBlock.class,
         MuseumDataRepository.class
 })
 public class RedisOmConfig {

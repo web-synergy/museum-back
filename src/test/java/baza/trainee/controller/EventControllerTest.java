@@ -1,16 +1,20 @@
 package baza.trainee.controller;
 
+import baza.trainee.domain.mapper.EventMapper;
 import baza.trainee.domain.model.Event;
+import baza.trainee.dto.EventResponse;
+import baza.trainee.dto.PageEvent;
 import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.exceptions.custom.MethodArgumentNotValidException;
 import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.EventService;
+import baza.trainee.service.MailService;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,11 +39,18 @@ class EventControllerTest {
     @MockBean
     private RootUserInitializer rootUserInitializer;
 
+    @MockBean
+    private MailService mailService;
+
+    @Autowired
+    private EventMapper eventMapper;
+
     @Test
     void testGetEvents() throws Exception {
         // given:
         var pageable = Pageable.ofSize(10).withPage(0);
-        Page<Event> events = Page.empty(pageable);
+        PageEvent events = new PageEvent();
+        events.setPageable(pageable);
 
         // when:
         when(eventService.getAll(pageable)).thenReturn(events);
@@ -63,15 +74,16 @@ class EventControllerTest {
         Event event = new Event(
                 eventId,
                 "cool title",
+                "shortSumm",
                 "shortDesc",
-                "CINEMA",
+                EventResponse.TypeEnum.CONTEST.getValue(),
                 "/images/image1.jpeg",
-                "/images/compressed/image1.jpeg",
                 begin,
                 end);
+        var response = eventMapper.toResponse(event);
 
         // when:
-        when(eventService.getById(eventId)).thenReturn(event);
+        when(eventService.getById(eventId)).thenReturn(response);
 
         // then:
         mockMvc.perform(get("/api/events/{id}", eventId)

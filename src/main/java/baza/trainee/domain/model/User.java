@@ -7,8 +7,6 @@ import com.redis.om.spring.annotations.Document;
 import com.redis.om.spring.annotations.Indexed;
 
 import baza.trainee.domain.enums.Role;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -22,12 +20,9 @@ public class User {
     @Indexed
     private String id;
 
-    @NotBlank
-    @Email
     @Indexed
     private String email;
 
-    @NotBlank
     private String password;
 
     @Setter(AccessLevel.PROTECTED)

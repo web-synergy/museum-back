@@ -1,5 +1,6 @@
 package baza.trainee.controller;
 
+import baza.trainee.domain.mapper.ArticleMapper;
 import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.ArticleService;
@@ -25,6 +26,9 @@ class ArticleControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @Autowired
+    ArticleMapper articleMapper;
+
     @MockBean
     ArticleService articleService;
 
@@ -33,7 +37,7 @@ class ArticleControllerTest {
 
     @Test
     void findById() throws Exception {
-        when(articleService.findByTitle(VALID_ARTICLE.getTitle())).thenReturn(VALID_ARTICLE);
+        when(articleService.findByTitle(VALID_ARTICLE.getTitle())).thenReturn(articleMapper.toResponse(VALID_ARTICLE));
 
         mockMvc.perform(get(GET_BY_TITLE_URL, VALID_ARTICLE.getTitle()))
                 .andDo(print())

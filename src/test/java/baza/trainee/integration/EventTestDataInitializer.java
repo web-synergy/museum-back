@@ -1,8 +1,7 @@
 package baza.trainee.integration;
 
-import baza.trainee.domain.enums.BlockType;
-import baza.trainee.domain.model.ContentBlock;
 import baza.trainee.domain.model.Event;
+import baza.trainee.dto.EventResponse;
 import baza.trainee.repository.EventRepository;
 import lombok.Getter;
 import org.springframework.boot.CommandLineRunner;
@@ -37,57 +36,31 @@ class EventTestDataInitializer {
                 String title = EventTitles.values()[i].getValue();
                 event.setTitle(title);
 
-                String description = EventDescription.values()[i].getValue();
-                event.setDescription(description);
+                String summary = EventSummary.values()[i].getValue();
+                event.setSummary(summary);
 
-                EventType[] types = EventType.values();
+                String description = EventDescription.values()[i].getValue();
+                event.setSummary(description);
+
+                var types = EventResponse.TypeEnum.values();
                 int typeIndex = ThreadLocalRandom.current().nextInt(types.length);
                 event.setType(types[typeIndex].getValue());
 
-                event.setBannerPreviewURI("null");
-                event.setBannerURI("null");
+                event.setBanner("null");
 
                 LocalDate begin = LocalDate.now().plusDays(i);
                 event.setBegin(begin);
                 event.setEnd(begin.plusDays(i));
 
-                event.addTag("null");
-
                 IntStream.range(0, CONTENT_BLOCKS_COUNT).forEach(j -> {
-                    var block = new ContentBlock();
-
-                    block.setOrder(j);
-
-                    var type = (j % 2 == 0) ? BlockType.PICTURE_BLOCK
-                            : BlockType.PICTURE_TEXT_BLOCK;
-                    block.setBlockType(type);
-
-                    int column = ThreadLocalRandom.current().nextInt(1) + 1;
-                    block.setColumns(column);
-
-                    block.setPictureLink("https://example.com/api/image/" + j);
-                    block.setTextContent("Унікальний контент " + i + " - " + j);
-
-                    event.addContentBlock(block);
+                    String content = "Унікальний контент " + i + j;
+                    event.setDescription(content);
+                    System.out.println(content);
                 });
 
                 repository.save(event);
             });
         };
-    }
-
-    @Getter
-    private enum EventType {
-        TYPE_1("Виставка"),
-        TYPE_2("Лекція"),
-        TYPE_3("Фотовиставка"),
-        TYPE_4("Форум");
-
-        private final String value;
-
-        EventType(String value) {
-            this.value = value;
-        }
     }
 
     @Getter
@@ -119,6 +92,36 @@ class EventTestDataInitializer {
             this.value = value;
         }
 
+    }
+
+        @Getter
+    public enum EventSummary {
+        EVENT_1("На цій події будуть представлені найкращі архітектурні творіння."),
+        EVENT_2("Дізнайтеся більше про життя і внесок Кавалерідзе в архітектуру."),
+        EVENT_3("Приєднуйтесь до нас для захоплюючої екскурсії містом і його архітектурою."),
+        EVENT_4("Опануйте навички малювання архітектурних макетів під керівництвом професіоналів."),
+        EVENT_5("Перегляньте цікаві фільми про архітектуру та дизайн."),
+        EVENT_6("Долучайтеся до обговорення майбутнього архітектурного дизайну."),
+        EVENT_7("Відвідайте фотовиставку, присвячену спадщині Кавалерідзе."),
+        EVENT_8("Проведіть час в інтелектуальному діалозі про архітектуру та історію."),
+        EVENT_9("Дізнайтеся, як архітектура взаємодіє з природою та довкіллям."),
+        EVENT_10("Прийміть участь у конкурсі архітектурного дизайну і покажіть свої таланти."),
+        EVENT_11("Дізнайтеся про інноваційні підходи до сталого будівництва."),
+        EVENT_12("Відвідайте виставку та обговорення архітектури в поп-культурі."),
+        EVENT_13("Глибше розберіться в філософії архітектури на лекції та дискусії."),
+        EVENT_14("Обговорюйте майбутнє планування міст на форумі."),
+        EVENT_15("Запечатліть красу архітектурного силуету міста на фотографіях."),
+        EVENT_16("Оцініть творчість Кавалерідзе в контексті архітектури та світла."),
+        EVENT_17("Дізнайтеся більше про матеріали, використовувані в архітектурі."),
+        EVENT_18("Глибше розберіться в історії архітектури на дискусії."),
+        EVENT_19("Обговоріть вплив архітектури на життя місцевої спільноти."),
+        EVENT_20("Дізнайтеся про останні інновації у будівництві та архітектурі.");
+
+        private final String value;
+
+        EventSummary(String summary) {
+            this.value = summary;
+        }
     }
 
     @Getter

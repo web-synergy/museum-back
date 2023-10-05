@@ -85,16 +85,16 @@ class ImageServiceTest {
         var generatedFileName = imageService.storeToTemp(file, sessionId);
 
         // then:
-        assertFalse(generatedFileName.isBlank());
+        assertFalse(generatedFileName.getImageId().isBlank());
 
         // when:
         var createdDesktopFile = sessionDir
-                .resolve(generatedFileName)
+                .resolve(generatedFileName.getImageId())
                 .resolve(desktopDir)
                 .resolve(filename.replaceFirst("\\..+$", ".webp"))
                 .toFile();
         var createdPreviewFile = sessionDir
-                .resolve(generatedFileName)
+                .resolve(generatedFileName.getImageId())
                 .resolve(previewDir)
                 .resolve(filename.replaceFirst("\\..+$", ".webp"))
                 .toFile();
@@ -122,7 +122,7 @@ class ImageServiceTest {
         // Path => /root/images/image-UUID/desktop/file.webp
         var createdDesktopFile = rootImageLocation
                 .resolve(imagesDir)
-                .resolve(generatedFileId)
+                .resolve(generatedFileId.getImageId())
                 .resolve(desktopDir)
                 .resolve(filename.replaceFirst("\\..+$", ".webp"))
                 .toFile();
@@ -130,13 +130,13 @@ class ImageServiceTest {
         // Path => /root/images/image-UUID/preview/file.webp
         var createdPreviewFile = rootImageLocation
                 .resolve(imagesDir)
-                .resolve(generatedFileId)
+                .resolve(generatedFileId.getImageId())
                 .resolve(previewDir)
                 .resolve(filename.replaceFirst("\\..+$", ".webp"))
                 .toFile();
 
         // when:
-        imageService.persist(List.of(generatedFileId), sessionId);
+        imageService.persist(List.of(generatedFileId.getImageId()), sessionId);
 
         // then:
         assertTrue(createdDesktopFile.exists());
@@ -157,8 +157,8 @@ class ImageServiceTest {
 
         // when:
         String type = ImageType.PREVIEW.getValue();
-        String generatedFileName = imageService.storeToTemp(file, sessionId);
-        byte[] tempResource = imageService.loadTempResource(generatedFileName, sessionId, type);
+        var generatedFileName = imageService.storeToTemp(file, sessionId);
+        byte[] tempResource = imageService.loadTempResource(generatedFileName.getImageId(), sessionId, type);
 
         // then:
         assertTrue(tempResource.length > 0);
@@ -177,12 +177,13 @@ class ImageServiceTest {
         var sessionId = "fakeSessionId";
 
         // when:
-        String generatedFileName = imageService.storeToTemp(file, sessionId);
-        System.out.println(generatedFileName);
-        imageService.persist(List.of(generatedFileName), sessionId);
+        var generatedFileName = imageService.storeToTemp(file, sessionId);
+        
+        String imageId = generatedFileName.getImageId();
+        imageService.persist(List.of(imageId), sessionId);
 
-        byte[] previewsResource = imageService.loadResource(generatedFileName, "preview");
-        byte[] originalsResource = imageService.loadResource(generatedFileName, "original");
+        byte[] previewsResource = imageService.loadResource(imageId, ImageType.PREVIEW.getValue());
+        byte[] originalsResource = imageService.loadResource(imageId, ImageType.ORIGINAL.getValue());
 
         // then:
         assertTrue(previewsResource.length > 0);

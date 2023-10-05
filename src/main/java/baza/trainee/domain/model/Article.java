@@ -3,10 +3,8 @@ package baza.trainee.domain.model;
 
 import com.redis.om.spring.annotations.Document;
 import com.redis.om.spring.annotations.Indexed;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+
+import baza.trainee.dto.ContentBlock;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,11 +17,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-
-import static baza.trainee.constants.EventConstant.MAX_DESCRIPTION_SIZE;
-import static baza.trainee.constants.EventConstant.MAX_TITLE_SIZE;
-import static baza.trainee.constants.EventConstant.MIN_DESCRIPTION_SIZE;
-import static baza.trainee.constants.EventConstant.MIN_TITLE_SIZE;
 
 /**
  * The domain model of the static content of a web page.
@@ -49,22 +42,17 @@ public class Article {
      * Article title.
      */
     @Indexed
-    @NotBlank
-    @Size(min = MIN_TITLE_SIZE, max = MAX_TITLE_SIZE)
     private String title;
 
     /**
      * Brief description of the article.
      */
     @Indexed
-    @NotBlank
-    @Size(min = MIN_DESCRIPTION_SIZE, max = MAX_DESCRIPTION_SIZE)
     private String description;
 
     /**
      * Article content.
      */
-    @NotEmpty
     @Builder.Default
     private Set<ContentBlock> content = new HashSet<>();
 
@@ -84,7 +72,7 @@ public class Article {
      * Add block of content to the article.
      * @param block block of content
      */
-    public void addContentBlock(@Valid final ContentBlock block) {
+    public void addContentBlock(final ContentBlock block) {
         this.content.add(block);
     }
 }

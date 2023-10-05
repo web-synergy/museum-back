@@ -1,72 +1,81 @@
 package baza.trainee.service.impl;
 
-import baza.trainee.domain.dto.event.EventPublication;
-import baza.trainee.domain.enums.BlockType;
+
 import baza.trainee.domain.mapper.EventMapper;
+import baza.trainee.domain.mapper.PageEventMapper;
 import baza.trainee.domain.model.Event;
-import baza.trainee.exceptions.custom.EntityNotFoundException;
+import baza.trainee.dto.EventPublication;
+import baza.trainee.dto.EventResponse;
+import baza.trainee.dto.PageEvent;
 import baza.trainee.repository.EventRepository;
 import baza.trainee.service.EventService;
 import baza.trainee.service.ImageService;
-import org.springframework.data.domain.Page;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Collectors;
+import static baza.trainee.utils.ExceptionUtils.getNotFoundExceptionSupplier;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
-    private final EventMapper eventMapper;
-
     private final ImageService imageService;
+    private final EventMapper eventMapper;
+    private final PageEventMapper pageMapper;
 
-    public EventServiceImpl(EventRepository eventRepository, EventMapper eventMapper, ImageService imageService) {
-        this.eventRepository = eventRepository;
-        this.eventMapper = eventMapper;
-        this.imageService = imageService;
+    @Override
+    public PageEvent getAll(Pageable pageable) {
+        return pageMapper.toPageEvent(eventRepository.findAll(pageable)
+                .map(eventMapper::toResponse));
     }
 
     @Override
-    public Page<Event> getAll(Pageable pageable) {
-        return eventRepository.findAll(pageable);
+    public EventResponse getById(String id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(getNotFoundExceptionSupplier(Event.class ,"ID: " + id));
+        return eventMapper.toResponse(event);
     }
 
     @Override
-    public Event getById(String id) {
-        return eventRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Event", "ID: " + id));
-    }
-
-    @Override
-    public Event save(EventPublication newEvent, String sessionId) {
+    @Transactional
+    public EventResponse save(EventPublication newEvent, String sessionId) {
         Event eventToSave = eventMapper.toEvent(newEvent);
 
-        var fileNames = newEvent.content().stream()
-                .filter(cb -> cb.getBlockType().equals(BlockType.PICTURE_BLOCK)
-                || cb.getBlockType().equals(BlockType.PICTURE_TEXT_BLOCK))
-                .map(cb-> cb.getPictureLink())
-                .collect(Collectors.toList());
+        var fileNames = newEvent.getBanner();
 
-        imageService.persist(fileNames, sessionId);
+        imageService.persist(List.of(fileNames), sessionId);
+        Event savedEvent = eventRepository.save(eventToSave);
 
-        return eventRepository.save(eventToSave);
+        return eventMapper.toResponse(savedEvent);
     }
 
     @Override
-    public Event update(String id, EventPublication updatedEvent) {
-        var eventToUpdate = getById(id);
-        var eventForUpdate = eventMapper.toEvent(updatedEvent);
+    @Transactional
+    public EventResponse update(String id, EventPublication publication, String sessionId) {
+        var eventToUpdate = eventRepository.findById(id)
+                .orElseThrow(getNotFoundExceptionSupplier(Event.class ,"ID: " + id));
+        var eventForUpdate = eventMapper.toEvent(publication);
         eventForUpdate.setId(eventToUpdate.getId());
         eventForUpdate.setCreated(eventToUpdate.getCreated());
 
-        return eventRepository.update(eventForUpdate);
+        Optional.ofNullable(eventForUpdate.getBanner())
+                .ifPresent(i -> imageService.persist(List.of(i), sessionId));
+
+        var updatedEvent = eventRepository.update(eventForUpdate);
+
+        return eventMapper.toResponse(updatedEvent);
     }
 
     @Override
+    @Transactional
     public void deleteEventById(String id) {
-        var event = getById(id);
-        eventRepository.delete(event);
+        getById(id);
+        eventRepository.deleteById(id);
     }
 }
