@@ -803,6 +803,8 @@ components:
       properties:
         imageId:
           type: string
+        originalUrl:
+          type: string
     ArticleResponse:
       required:
         - content
