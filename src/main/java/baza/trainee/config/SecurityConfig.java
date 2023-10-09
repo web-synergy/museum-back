@@ -1,5 +1,7 @@
 package baza.trainee.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -36,8 +38,8 @@ public class SecurityConfig {
     CorsConfigurationSource corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-
-        config.addAllowedOriginPattern("http://localhost:[8080, 5174]");
+    
+        config.setAllowedOrigins(List.of("http://127.0.0.1:8080", "http://127.0.0.1:5174"));
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
 
@@ -57,8 +59,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").authenticated()
                         .requestMatchers("/api/auth/**").authenticated()
                         .requestMatchers("/api/auth/**").hasAnyRole("ADMIN", "ROOT")
-                        .requestMatchers("/api/**").permitAll()
-                )
+                        .requestMatchers("/api/**").permitAll())
                 .httpBasic(Customizer.withDefaults())
                 .logout(flc -> flc.logoutUrl("/api/auth/logout"))
                 .build();
