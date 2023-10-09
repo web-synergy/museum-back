@@ -44,7 +44,6 @@ public class ImageAdminControllerTest {
     private RootUserInitializer rootUserInitializer;
 
     @Test
-    @WithMockUser(roles = {"ADMIN"})
     public void testGetTempImage() throws Exception {
         var file = new File("src/test/resources/test-images/test.jpg");
         var resource = new UrlResource(file.toURI());
@@ -55,7 +54,7 @@ public class ImageAdminControllerTest {
         MockHttpSession session = new MockHttpSession(null, "session123");
 
         mockMvc.perform(
-                get("/api/admin/images/temp")
+                get("/api/images/temp")
                         .session(session)
                         .param("filename", "temp.jpg")
                         .param("type", "test")

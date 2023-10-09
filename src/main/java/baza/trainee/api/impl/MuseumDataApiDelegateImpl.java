@@ -17,6 +17,6 @@ public class MuseumDataApiDelegateImpl implements MuseumDataApiDelegate {
     
     @Override
     public ResponseEntity<MuseumData> getMuseumData() {
-        return new ResponseEntity<MuseumData>(museumDataService.getData(), HttpStatus.OK);
+        return new ResponseEntity<>(museumDataService.getData(), HttpStatus.OK);
     }
 }

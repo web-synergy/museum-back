@@ -210,6 +210,7 @@
                 <version>7.0.1</version>
                 <executions>
                     <execution>
+                        <id>USER_API</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -224,6 +225,7 @@
                                 ApiUtil.java
                             </supportingFilesToGenerate>
                             <configOptions>
+                                <useTags>true</useTags>
                                 <useJakartaEe>true</useJakartaEe>
                                 <delegatePattern>true</delegatePattern>
                                 <serializableModel>true</serializableModel>
@@ -233,6 +235,34 @@
                             <typeMappings>
                                 <typeMapping>PageableObject=org.springframework.data.domain.Pageable</typeMapping>
                                 <typeMapping>SortObject=org.springframework.data.domain.Sort</typeMapping>
+                                <typeMapping>MuseumInfo=baza.trainee.domain.model.MuseumData</typeMapping>
+                            </typeMappings>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>ADMIN_API</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/swagger/openapi-admin-doc.yml
+                            </inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>baza.trainee.api</apiPackage>
+                            <modelPackage>baza.trainee.dto</modelPackage>
+                            <supportingFilesToGenerate>
+                                ApiUtil.java
+                            </supportingFilesToGenerate>
+                            <configOptions>
+                                <useTags>true</useTags>
+                                <useJakartaEe>true</useJakartaEe>
+                                <delegatePattern>true</delegatePattern>
+                                <serializableModel>true</serializableModel>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                            </configOptions>
+                            <typeMappings>
                                 <typeMapping>MuseumInfo=baza.trainee.domain.model.MuseumData</typeMapping>
                             </typeMappings>
                         </configuration>

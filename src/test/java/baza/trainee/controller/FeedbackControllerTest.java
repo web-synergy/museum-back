@@ -62,7 +62,7 @@ class FeedbackControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(validMailDto)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
 
         verify(mailService).sendEmail(validMailDto.getEmail(), "Message for user", MUSEUM_SUBJECT);

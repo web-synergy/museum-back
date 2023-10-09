@@ -8,11 +8,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import baza.trainee.api.AuthApiDelegate;
+import baza.trainee.api.AuthenticationApiDelegate;
 import baza.trainee.dto.SuccessAuthResponse;
 
 @Service
-public class AuthApiDelegateImpl implements AuthApiDelegate {
+public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate {
 
     @Override
     public ResponseEntity<SuccessAuthResponse> login() {
