@@ -40,6 +40,7 @@ logging:
 
 resources:
   files:
+    root: 'files'
     images:
       root: 'images'
       original: 'original'

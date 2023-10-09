@@ -30,9 +30,9 @@ mail:
 
 resources:
   files:
+    root: 'files'
     images:
-      root: 'files'
-      images: 'images'
+      root: 'images'
       original: 'original'
       compressed: 'compressed'
       temporary: 'temp'
@@ -45,8 +45,8 @@ users:
 
 images:
   desktop:
-    width: 1024
+    width: 1280
     quality: 1
   preview:
-    width: 640
-    quality: 0.5
+    width: 768
+    quality: 1
