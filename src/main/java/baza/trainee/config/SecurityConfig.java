@@ -37,7 +37,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.addAllowedOrigin("*");
+        config.addAllowedOriginPattern("http://localhost:[8080, 5174]");
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
 
