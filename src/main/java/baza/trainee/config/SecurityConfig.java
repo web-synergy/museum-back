@@ -42,6 +42,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("http://127.0.0.1:8080", "http://127.0.0.1:5174"));
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
 
         source.registerCorsConfiguration("/**", config);
 
