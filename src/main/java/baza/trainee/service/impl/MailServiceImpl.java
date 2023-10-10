@@ -57,6 +57,14 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
+    public String buildMsgForChangeLogin(final String code) {
+        String emailTemplate = readHtmlTemplateFromFile(museumTemplatePath);
+
+        emailTemplate = emailTemplate.replace("{{code}}", code);
+        return emailTemplate;
+    }
+
+    @Override
     public String buildMsgForMuseum(final String firstName, final String lastName,
                                     final String email, final String message) {
         String emailTemplate = readHtmlTemplateFromFile(museumTemplatePath);
@@ -76,7 +84,7 @@ public class MailServiceImpl implements MailService {
         try {
             byteArray = FileCopyUtils.copyToByteArray(resource.getInputStream());
         } catch (IOException e) {
-            throw new RuntimeException("Impossible to read the file with the letter template.");
+            throw new EmailSendingException("Impossible to read the file with the letter template.");
         }
         return new String(byteArray, StandardCharsets.UTF_8);
     }
