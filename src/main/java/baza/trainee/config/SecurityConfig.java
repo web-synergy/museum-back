@@ -2,6 +2,9 @@ package baza.trainee.config;
 
 import java.util.List;
 
+import javax.crypto.spec.SecretKeySpec;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -11,10 +14,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +38,9 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Value("${jwt.key}")
+    private String jwtKey;
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -58,11 +71,25 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/api/user/register").permitAll()
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "ROOT")
                         .requestMatchers("/api/admin/**").authenticated()
-                        .requestMatchers("/api/auth/**").authenticated()
-                        .requestMatchers("/api/auth/**").hasAnyRole("ADMIN", "ROOT")
                         .requestMatchers("/api/**").permitAll())
+                .oauth2ResourceServer(t -> t.jwt(Customizer.withDefaults()))
                 .httpBasic(Customizer.withDefaults())
-                .logout(flc -> flc.logoutUrl("/api/auth/logout"))
+                .logout(flc -> flc.logoutUrl("/api/admin/auth/logout"))
+                .build();
+    }
+
+    @Bean
+    JwtEncoder jwtEncoder() {
+        return new NimbusJwtEncoder(new ImmutableSecret<>(jwtKey.getBytes()));
+    }
+
+    @Bean
+    JwtDecoder jwtDecoder() {
+        byte[] bytes = jwtKey.getBytes();
+        var originalKey = new SecretKeySpec(bytes, 0, bytes.length, "RSA");
+        return NimbusJwtDecoder
+                .withSecretKey(originalKey)
+                .macAlgorithm(MacAlgorithm.HS512)
                 .build();
     }
 

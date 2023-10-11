@@ -521,6 +521,9 @@ components:
           type: array
           items:
             type: string
+        token:
+          description: Symmetric JWT token
+          type: string
   securitySchemes:
     basicAuth:
       type: http
