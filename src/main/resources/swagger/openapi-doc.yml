@@ -1,248 +1,49 @@
 openapi: 3.0.1
 
 info:
-  title: Kavaleridze Museum API
+  title: Kavaleridze Museum Website API
   description: |
-    The Kavaleridze Museum API is a comprehensive RESTful API that serves as the backbone of the Kavaleridze Museum's digital platform. It provides a wide range of endpoints for managing museum events, images, articles, email communications, and search functionalities. This API empowers administrators, visitors, and staff to interact with museum-related content, enhancing the overall visitor experience and facilitating efficient museum management.
+    The Kavaleridze Museum API is a comprehensive RESTful API
+    that serves as the backbone of the Kavaleridze Museum's digital platform.
+    This API empowers visitors to interact with museum-related content,
+    enhancing the overall visitor experience.
   version: v0.0.1
 
 servers:
-  - url: http://127.0.0.1/api
-    description: Service for managing website of the Kavaleridze museum
-
-security:
-  - basicAuth:
-      - basicAuth
+  - url: http://127.0.0.1:8081/api
+    description: Service for  website API of the Kavaleridze museum
 
 tags:
-  - name: Admin Event Controller
-    description: |
-      Endpoints for administrators to manage museum events.
-      Includes creating, updating, deleting events, and more.
-  - name: Admin Images Controller
-    description: |
-      Endpoints for administrators to manage images on the website.
-      Provides operations for uploading, deleting, and organizing images.
-  - name: Event Controller
+  - name: Events
     description: |
       Endpoints for retrieving museum events.
       Allows users to view event details, search for events, and more.
-  - name: Image Controller
+  - name: Images
     description: |
       Endpoints to retrieve and display images from the storage.
       Provides access to images for use on the website.
-  - name: Mail Controller
+  - name: Feedback
     description: |
       Endpoints for email communications, including sending feedback and inquiries.
       Enables communication with museum staff.
-  - name: Search Controller
+  - name: Search
     description: |
       Endpoints for performing searches on the website.
       Allows users to search for events, articles, and more.
-  - name: Article Controller
+  - name: Articles
     description: |
       Endpoints for performing article-related operations.
       Provides access to articles and allows users to interact with them.
-  - name: Admin Museum Data Controller
-    description: |
-      Endpoints for managing museum data in the admin API.
-      This controller handles operations such as adding and updating museum data.
-  - name: Museum Data Controller
+  - name: Museum Data
     description: |
       Endpoints for retrieving museum data in the public API.
-      This controller handles public operations with museum data.
-  - name: Authentication controller
-    description: |
-      Endpoints for user authentication.
+      This API handles public operations with museum data.
 
 paths:
-  /admin/events:
-    post:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Admin Event Controller
-      summary: Create a new Event
-      description: Creates a new Event with the provided information.
-      operationId: createEvent
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EventPublication'
-        required: true
-      responses:
-        201:
-          description: Event created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EventResponse'
-        400:
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /admin/events/{id}:
-    put:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Admin Event Controller
-      summary: Update an existing Event
-      description: Updates an existing Event with the provided information.
-      operationId: updateEvent
-      parameters:
-        - name: id
-          in: path
-          description: Unique identifier of the Event to be updated
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EventPublication'
-        required: true
-      responses:
-        200:
-          description: Event updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EventResponse'
-        400:
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        404:
-          description: Event not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    delete:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Admin Event Controller
-      summary: Delete an existing Event
-      description: Deletes an existing Event by its unique identifier.
-      operationId: deleteEvent
-      parameters:
-        - name: id
-          in: path
-          description: Unique identifier of the Event to be deleted
-          required: true
-          schema:
-            type: string
-      responses:
-        204:
-          description: Event deleted successfully
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        404:
-          description: Event not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /admin/images:
-    post:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Admin Images Controller
-      operationId: saveImage
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-      responses:
-        201:
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SaveImageResponse'
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /admin/images/temp:
+  /images/temp:
     get:
-      security:
-        - basicAuth:
-            - basicAuth
       tags:
-        - Admin Images Controller
+        - Images
       operationId: getTempImage
       parameters:
         - name: filename
@@ -272,12 +73,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         404:
           description: Entity not found
           content:
@@ -289,88 +84,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /admin/museum_data:
-    post:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Admin Museum Data Controller
-      description: 'Adds new museum data'
-      operationId: addData
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MuseumInfo'
-      responses:
-        201:
-          description: Museum data is posted successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MuseumInfo'
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    put:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Admin Museum Data Controller
-      description:  'Updates existing museum data.'
-      operationId: updateData
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MuseumInfo'
-      responses:
-        200:
-          description: Museum data is updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MuseumInfo'
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ErrorResponse'  
   /images:
     get:
       tags:
-        - Image Controller
+        - Images
       operationId: getImage
       parameters:
         - name: filename
@@ -415,7 +133,7 @@ paths:
   /feedback/submit:
     post:
       tags:
-        - Mail Controller
+        - Feedback
       operationId: submitContactForm
       requestBody:
         content:
@@ -424,12 +142,8 @@ paths:
               $ref: '#/components/schemas/MailDto'
         required: true
       responses:
-        200:
+        204:
           description: Email sent successfully
-          content:
-            application/json:
-              schema:
-                type: object
         400:
           description: Invalid input
           content:
@@ -451,7 +165,7 @@ paths:
   /events:
     get:
       tags:
-        - Event Controller
+        - Events
       summary: Get a page of events
       description: Retrieves a page of events with the specified size and page number.
       operationId: getAll
@@ -498,7 +212,7 @@ paths:
   /events/{id}:
     get:
       tags:
-        - Event Controller
+        - Events
       summary: Get an Event by ID
       description: Retrieves an Event by its unique identifier.
       operationId: getById
@@ -537,7 +251,7 @@ paths:
   /articles/{title}:
     get:
       tags:
-        - Article Controller
+        - Articles
       summary: Find article by title
       description: Returns an article by its title.
       operationId: findByTitle
@@ -576,7 +290,7 @@ paths:
   /search/{query}:
     get:
       tags:
-        - Search Controller
+        - Search
       summary: Perform a full text search search
       description: Performs a full text search search in the website content based on the provided query string.
       operationId: search
@@ -613,7 +327,7 @@ paths:
   /museum_data:
     get:
       tags:
-        - Museum Data Controller
+        - Museum Data
       description: 'Retrieves available museum data'
       operationId: getMuseumData
       responses:
@@ -635,46 +349,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /auth/login:
-    post:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Authentication controller
-      description: User login endpoint
-      operationId: login
-      responses:
-        200:
-          description: Authenticated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessAuthResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /auth/logout:
-    post:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Authentication controller
-      description: User logout endpoint
-      operationId: logout
-      responses:
-        204:
-          description: Logout successfully
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -687,47 +361,6 @@ components:
         timestamp:
           type: integer
           format: int64
-    EventPublication:
-      description: Event publication form
-      required:
-        - title
-        - description
-        - type
-      type: object
-      properties:
-        title:
-          type: string
-          nullable: false
-          minLength: 1
-          maxLength: 100
-        description:
-          type: string
-          nullable: false
-          minLength: 1
-          maxLength: 2000
-        summary:
-          type: string
-          maxLength: 150
-        type:
-          type: string
-          nullable: false
-          enum:
-            - EXHIBITION
-            - EXCURSION
-            - PRESENTATION
-            - CONTEST
-            - LECTURE
-            - MASTER_CLASS
-            - CREATIVE_EVENING
-            - OTHER
-        banner:
-          type: string
-        begin:
-          type: string
-          format: date
-        end:
-          type: string
-          format: date
     EventResponse:
       description: Event information
       required:
@@ -802,6 +435,8 @@ components:
       type: object
       properties:
         imageId:
+          type: string
+        originalUrl:
           type: string
     ArticleResponse:
       required:
@@ -952,16 +587,3 @@ components:
         funicularRoute:
           description: 'The funicular route information for reaching the museum'
           type: string
-    SuccessAuthResponse:
-      description: Login success response
-      type: object
-      properties:
-        roles:
-          description: Authenticated user roles
-          type: array
-          items:
-            type: string
-  securitySchemes:
-    basicAuth:
-      type: http
-      scheme: basic

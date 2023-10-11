@@ -22,7 +22,7 @@ spring:
     host: smtp.meta.ua
     username: ${MAIL_USER}
     password: ${MAIL_PASSWORD}
-    port: '465'
+    port: 465
 
 mail:
   template:
@@ -44,6 +44,7 @@ logging:
 
 resources:
   files:
+    root: 'files'
     images:
       root: 'images'
       original: 'original'
@@ -58,8 +59,12 @@ users:
 
 images:
   desktop:
-    width: 1024
+    width: 1280
     quality: 1
   preview:
-    width: 640
-    quality: 0.5
+    width: 768
+    quality: 1
+
+jwt:
+  key: ${JWT_KEY:FDCE463BB7CBE40F45CCE6AB930DFC43849921CA3E0648369ADC203284BE2E68}
+  expirationTime: 2

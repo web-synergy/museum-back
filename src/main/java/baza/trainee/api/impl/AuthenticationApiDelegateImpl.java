@@ -8,11 +8,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import baza.trainee.api.AuthApiDelegate;
+import baza.trainee.api.AuthenticationApiDelegate;
 import baza.trainee.dto.SuccessAuthResponse;
+import baza.trainee.security.TokenService;
+import lombok.RequiredArgsConstructor;
 
 @Service
-public class AuthApiDelegateImpl implements AuthApiDelegate {
+@RequiredArgsConstructor
+public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate {
+
+    private final TokenService tokenService;
 
     @Override
     public ResponseEntity<SuccessAuthResponse> login() {
@@ -23,6 +28,9 @@ public class AuthApiDelegateImpl implements AuthApiDelegate {
                 .collect(Collectors.toList());
         var response = new SuccessAuthResponse();
         response.roles(authorities);
+
+        var generatedToken = tokenService.generateToken(authentication);
+        response.setToken(generatedToken);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
