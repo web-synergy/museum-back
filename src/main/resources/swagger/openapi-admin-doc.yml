@@ -347,7 +347,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginDTO'
+              $ref: '#/components/schemas/LoginDto'
       responses:
         204:
           description: Save logins and code. Send letter.
@@ -370,7 +370,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
   /changeLogin:
-    post:
+    put:
       security:
         - basicAuth:
             - basicAuth
@@ -378,14 +378,13 @@ paths:
         - Admin Change Login
       description: 'Check entered code by saved code. Find admin in date base by saved login.
       Change admin login to new login.'
-      operationId: saveLogin
-      requestBody:
-        parameters:
-          - name: code
-            in: query
-            required: true
-            schema:
-              type: string
+      operationId: changeLogin
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
       responses:
         204:
           description: Save logins and code. Send letter.
@@ -625,26 +624,26 @@ components:
         funicularRoute:
           description: 'The funicular route information for reaching the museum'
           type: string
-      LoginDto:
-        description: Login form
-        required:
-          - oldLogin
-          - newLogin
-          - duplicateNewLogin
-        type: object
-        properties:
-          oldLogin:
-            type: string
-            format: email
-            nullable: false
-          newLogin:
-            type: string
-            format: email
-            nullable: false
-          duplicateNewLogin:
-            type: string
-            format: email
-            nullable: false
+    LoginDto:
+      description: Login form
+      required:
+        - oldLogin
+        - newLogin
+        - duplicateNewLogin
+      type: object
+      properties:
+        oldLogin:
+          type: string
+          format: email
+          nullable: false
+        newLogin:
+          type: string
+          format: email
+          nullable: false
+        duplicateNewLogin:
+          type: string
+          format: email
+          nullable: false
     SuccessAuthResponse:
       description: Login success response
       type: object
