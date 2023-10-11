@@ -1,27 +1,26 @@
 package baza.trainee.service;
 
-import baza.trainee.domain.dto.LoginDto;
+import baza.trainee.dto.LoginDto;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.security.core.userdetails.UserDetails;
 
 public interface AdminLoginService {
     /**
      * Check login.
      *
-     * @param oldLogin    Login for check
-     * @param userDetails Current user
+     * @param enteredLogin    Login from form
+     * @param userLogin Current user login
      */
-    void checkLogin(String oldLogin, UserDetails userDetails);
+    void checkLogin(String enteredLogin, String userLogin);
 
     /**
      * Save setting login for change login, build link
      * and send link to new user email.
      *
      * @param loginDto    Logins for change
-     * @param userDetails Current user
+     * @param userLogin Current user
      * @param session     {@link HttpSession}
      */
-    void checkAndSaveSettingLogin(LoginDto loginDto, UserDetails userDetails,
+    void checkAndSaveSettingLogin(LoginDto loginDto, String userLogin,
                                   HttpSession session);
     /**
      * Change old login to new login.

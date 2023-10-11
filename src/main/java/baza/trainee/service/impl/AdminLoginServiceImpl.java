@@ -1,7 +1,7 @@
 package baza.trainee.service.impl;
 
-import baza.trainee.domain.dto.LoginDto;
 import baza.trainee.domain.model.User;
+import baza.trainee.dto.LoginDto;
 import baza.trainee.exceptions.custom.LoginNotValidException;
 import baza.trainee.repository.UserRepository;
 import baza.trainee.service.AdminLoginService;
@@ -9,7 +9,6 @@ import baza.trainee.service.MailService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -30,12 +29,12 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     /**
      * Check login.
      *
-     * @param oldLogin    Login for check
-     * @param userDetails Current user
+     * @param enteredLogin    Login for check
+     * @param userLogin Current user
      */
     @Override
-    public void checkLogin(String oldLogin, UserDetails userDetails) {
-        if (!oldLogin.equals(userDetails.getUsername())) {
+    public void checkLogin(String enteredLogin, String userLogin) {
+        if (!enteredLogin.equals(userLogin)) {
             throw new LoginNotValidException("Entered old login is not valid");
         }
     }
@@ -51,18 +50,19 @@ public class AdminLoginServiceImpl implements AdminLoginService {
      * and send link to new user email.
      *
      * @param loginDto    Logins for change
-     * @param userDetails Current user
+     * @param userLogin Current user login
      * @param session     {@link HttpSession}
      */
     @Override
-    public void checkAndSaveSettingLogin(LoginDto loginDto, UserDetails userDetails,
+    public void checkAndSaveSettingLogin(LoginDto loginDto, String userLogin,
                                          HttpSession session) {
-        checkLogin(loginDto.oldLogin(), userDetails);
-        checkMatchesNewLoginAndDuplicate(loginDto.newLogin(), loginDto.duplicateNewLogin());
-        checkDuplicateLoginInBase(loginDto.newLogin());
-        String cod = createCodeChange();
-        sendEmail(cod, loginDto.newLogin());
-        saveSettingLogin(loginDto, cod, session);
+        checkLogin(loginDto.getOldLogin(), userLogin);
+        checkMatchesNewLoginAndDuplicate(loginDto.getNewLogin(),
+                loginDto.getDuplicateNewLogin());
+        checkDuplicateLoginInBase(loginDto.getNewLogin());
+        String code = createCodeChange();
+        sendEmail(code, loginDto.getNewLogin());
+        saveSettingLogin(loginDto, code, session);
     }
 
     private void checkDuplicateLoginInBase(final String login) {
@@ -85,8 +85,8 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     }
 
     private void saveSettingLogin(LoginDto loginDto, String code, HttpSession session) {
-        session.setAttribute(OLD_LOGIN, loginDto.oldLogin());
-        session.setAttribute(NEW_LOGIN, loginDto.newLogin());
+        session.setAttribute(OLD_LOGIN, loginDto.getOldLogin());
+        session.setAttribute(NEW_LOGIN, loginDto.getNewLogin());
         session.setAttribute(CODE_CHANGE, code);
     }
 
