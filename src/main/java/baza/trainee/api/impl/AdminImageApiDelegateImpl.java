@@ -2,13 +2,13 @@ package baza.trainee.api.impl;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import baza.trainee.api.AdminImagesApiDelegate;
 import baza.trainee.dto.SaveImageResponse;
 import baza.trainee.service.ImageService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -16,13 +16,12 @@ import lombok.RequiredArgsConstructor;
 public class AdminImageApiDelegateImpl implements AdminImagesApiDelegate {
 
     private final ImageService imageService;
-    private final HttpServletRequest httpServletRequest;
 
     @Override
     public ResponseEntity<SaveImageResponse> saveImage(MultipartFile file) {
-        var sessionId = httpServletRequest.getSession().getId();
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return new ResponseEntity<>(
-                imageService.storeToTemp(file, sessionId),
+                imageService.storeToTemp(file, username),
                 HttpStatus.CREATED);
     }
     

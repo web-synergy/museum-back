@@ -2,13 +2,13 @@ package baza.trainee.api.impl;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import baza.trainee.api.AdminEventsApiDelegate;
 import baza.trainee.dto.EventPublication;
 import baza.trainee.dto.EventResponse;
 import baza.trainee.service.EventService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -16,21 +16,20 @@ import lombok.RequiredArgsConstructor;
 public class AdminEventsDelegateImpl implements AdminEventsApiDelegate {
 
     private final EventService eventService;
-    private final HttpServletRequest httpServletRequest;
 
     @Override
     public ResponseEntity<EventResponse> createEvent(EventPublication eventPublication) {
-        var sessionId = httpServletRequest.getSession().getId();
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return new ResponseEntity<>(
-                eventService.save(eventPublication, sessionId),
+                eventService.save(eventPublication, username),
                 HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity<EventResponse> updateEvent(String id, EventPublication eventPublication) {
-        var sessionId = httpServletRequest.getSession().getId();
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return new ResponseEntity<>(
-                eventService.update(id, eventPublication, sessionId),
+                eventService.update(id, eventPublication, username),
                 HttpStatus.OK);
     }
 
