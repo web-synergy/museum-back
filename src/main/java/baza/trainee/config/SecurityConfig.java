@@ -1,6 +1,6 @@
 package baza.trainee.config;
 
-import java.util.List;
+import java.util.Arrays;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -42,6 +42,21 @@ public class SecurityConfig {
     @Value("${jwt.key}")
     private String jwtKey;
 
+    @Value("${web.cors.allowed-origins}")
+    private String[] allowedOrigins;
+
+    @Value("${web.cors.allowed-methods}")
+    private String[] allowedMethods;
+
+    @Value("${web.cors.max-age}")
+    private int maxAge;
+
+    @Value("${web.cors.allowed-headers}")
+    private String[] allowedHeaders;
+
+    @Value("${web.cors.exposed-headers}")
+    private String[] exposedHeaders;
+
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -52,9 +67,11 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
     
-        config.setAllowedOrigins(List.of("http://127.0.0.1:8080", "http://127.0.0.1:5174"));
-        config.addAllowedMethod("*");
-        config.addAllowedHeader("*");
+        config.setAllowedOrigins(Arrays.asList(allowedOrigins));
+        config.setAllowedMethods(Arrays.asList(allowedMethods));
+        config.setAllowedHeaders(Arrays.asList(allowedHeaders));
+        config.setExposedHeaders(Arrays.asList(exposedHeaders));
+
         config.setAllowCredentials(true);
 
         source.registerCorsConfiguration("/**", config);
