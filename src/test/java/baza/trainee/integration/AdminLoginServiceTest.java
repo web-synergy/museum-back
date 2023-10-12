@@ -9,7 +9,6 @@ import baza.trainee.service.impl.AdminLoginServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
@@ -23,7 +22,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Import({EventTestDataInitializer.class})
+
 class AdminLoginServiceTest extends AbstractIntegrationTest{
     String oldLogin = "oldLogin@email.com";
     String newLogin = "newLogin@email.com";
