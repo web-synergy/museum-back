@@ -37,15 +37,16 @@ class AdminChangeLoginApiControllerTest {
     @SneakyThrows
     @Test
     void changeLogin() {
-        mockMvc.perform(put("/admin/changeLogin")
-                        .requestAttr("code", "123456"))
+        String code = "123456";
+        mockMvc.perform(put("/api/admin/changeLogin")
+                        .param("code", code))
                 .andDo(print()).andExpect(status().isNoContent());
     }
 
     @SneakyThrows
     @Test
-    void checkLogin() {
-        mockMvc.perform(get("/admin/checkOldLogin")
+    void checkCurrentLoginToNew() {
+        mockMvc.perform(get("/api/admin/checkOldLogin")
                         .param("oldLogin", "oldLogin@email.com"))
                 .andDo(print()).andExpect(status().isNoContent());
     }
@@ -55,8 +56,8 @@ class AdminChangeLoginApiControllerTest {
     void saveLogin() {
         LoginDto loginDto = new LoginDto("oldLogin@email.com",
                 "newLogin@email.com",
-                "duplicateNewLogin@email.com");
-        mockMvc.perform(post("/admin/saveSettingLogin")
+                "newLogin@email.com");
+        mockMvc.perform(post("/api/admin/saveSettingLogin")
                         .requestAttr("loginDto", loginDto))
                 .andDo(print()).andExpect(status().isNoContent());
     }
