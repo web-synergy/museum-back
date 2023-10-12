@@ -28,6 +28,9 @@ public class MailServiceImpl implements MailService {
     @Value("${mail.template.path.user}")
     private String userTemplatePath;
 
+    @Value("${mail.template.path.change_login}")
+    private String changeLoginTemplatePath;
+
     @Value("${mail.museum.email}")
     private String museumEmail;
 
@@ -58,7 +61,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public String buildMsgForChangeLogin(final String code) {
-        String emailTemplate = readHtmlTemplateFromFile(museumTemplatePath);
+        String emailTemplate = readHtmlTemplateFromFile(changeLoginTemplatePath);
 
         emailTemplate = emailTemplate.replace("{{code}}", code);
         return emailTemplate;

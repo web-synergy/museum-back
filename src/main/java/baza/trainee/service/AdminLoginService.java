@@ -1,7 +1,6 @@
 package baza.trainee.service;
 
 import baza.trainee.dto.LoginDto;
-import jakarta.servlet.http.HttpSession;
 
 public interface AdminLoginService {
     /**
@@ -18,15 +17,12 @@ public interface AdminLoginService {
      *
      * @param loginDto    Logins for change
      * @param userLogin Current user
-     * @param session     {@link HttpSession}
      */
-    void checkAndSaveSettingLogin(LoginDto loginDto, String userLogin,
-                                  HttpSession session);
+    void checkAndSaveSettingLogin(LoginDto loginDto, String userLogin);
     /**
      * Change old login to new login.
      *
      * @param cod    Activation cod for change login
-     * @param session     {@link HttpSession}
      */
-    void changeLogin(String cod, HttpSession session);
+    void changeLogin(String cod);
 }

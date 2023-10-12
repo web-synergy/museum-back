@@ -3,7 +3,6 @@ package baza.trainee.api.impl;
 import baza.trainee.api.AdminChangeLoginApiDelegate;
 import baza.trainee.dto.LoginDto;
 import baza.trainee.service.AdminLoginService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +13,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AdminChangeLoginApiDelegateImpl implements AdminChangeLoginApiDelegate {
     private final AdminLoginService adminLoginService;
-    private final HttpServletRequest httpServletRequest;
+
     @Override
     public ResponseEntity<Void> changeLogin(String code) {
-        adminLoginService.changeLogin(code, httpServletRequest.getSession());
+        adminLoginService.changeLogin(code);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -31,8 +30,7 @@ public class AdminChangeLoginApiDelegateImpl implements AdminChangeLoginApiDeleg
     @Override
     public ResponseEntity<Void> saveLogin(LoginDto loginDto) {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        adminLoginService.checkAndSaveSettingLogin(loginDto, username,
-                httpServletRequest.getSession());
+        adminLoginService.checkAndSaveSettingLogin(loginDto, username);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
