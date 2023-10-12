@@ -2,6 +2,7 @@ package baza.trainee.integration;
 
 import baza.trainee.domain.model.User;
 import baza.trainee.dto.LoginDto;
+import baza.trainee.exceptions.custom.EmailSendingException;
 import baza.trainee.exceptions.custom.LoginNotValidException;
 import baza.trainee.repository.UserRepository;
 import baza.trainee.service.MailService;
@@ -15,6 +16,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import java.util.Optional;
 
 import static baza.trainee.constants.MailConstants.ACTIVATION_COD;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -57,7 +59,7 @@ class AdminLoginServiceTest extends AbstractIntegrationTest{
     void checkAndSaveSettingLogin() {
         LoginDto loginDto = new LoginDto(oldLogin, newLogin,
                 newLogin);
-        when(userRepository.findByEmail(newLogin)).thenReturn(Optional.of(new User()));
+        when(userRepository.findByEmail(newLogin)).thenReturn(Optional.empty());
 
         String message = "Code 123456";
         when(mailService.buildMsgForChangeLogin(verificationCodeValue)).thenReturn(message);
@@ -66,9 +68,51 @@ class AdminLoginServiceTest extends AbstractIntegrationTest{
 
         assertDoesNotThrow(() -> adminLoginService.checkAndSaveSettingLogin(loginDto,
                 oldLogin));
-        assertEquals(template.opsForValue().get(OLD_LOGIN_KEY), oldLogin);
-        assertEquals(template.opsForValue().get(NEW_LOGIN_KEY), newLogin);
-        assertEquals(template.opsForValue().get(VERIFICATION_CODE_KEY), verificationCodeValue);
+        assertAll("Test keys",
+                () -> assertEquals(template.opsForValue().get(OLD_LOGIN_KEY), oldLogin),
+                () -> assertEquals(template.opsForValue().get(NEW_LOGIN_KEY), newLogin),
+                () -> assertEquals(template.opsForValue().get(VERIFICATION_CODE_KEY),
+                        verificationCodeValue));
+        
+    }
+
+    @Test
+    void checkAndSaveSettingLoginNotValidOldLogin() {
+        LoginDto loginDto = new LoginDto(newLogin, newLogin,
+                newLogin);
+        assertThrows(LoginNotValidException.class,
+                () -> adminLoginService.checkAndSaveSettingLogin(loginDto, oldLogin));
+    }
+
+    @Test
+    void checkAndSaveSettingLoginNotMatchesNewLoginAndDuplicate() {        
+        LoginDto loginDto = new LoginDto(oldLogin, newLogin,
+                oldLogin);
+        assertThrows(LoginNotValidException.class,
+                () -> adminLoginService.checkAndSaveSettingLogin(loginDto, oldLogin));
+    }
+
+    @Test
+    void checkAndSaveSettingLoginExistUser() {
+        LoginDto loginDto = new LoginDto(oldLogin, newLogin,
+                newLogin);
+        when(userRepository.findByEmail(newLogin)).thenReturn(Optional.of(new User()));
+        assertThrows(LoginNotValidException.class,
+                () -> adminLoginService.checkAndSaveSettingLogin(loginDto, oldLogin));
+    }
+
+    @Test
+    void checkAndSaveSettingLoginNotSendLetter() {
+        LoginDto loginDto = new LoginDto(oldLogin, newLogin,
+                newLogin);
+        when(userRepository.findByEmail(newLogin)).thenReturn(Optional.empty());
+
+        String message = "Code 123456";
+        when(mailService.buildMsgForChangeLogin(verificationCodeValue)).thenReturn(message);
+        when(mailService.sendEmail(newLogin, message, ACTIVATION_COD))
+                .thenThrow(EmailSendingException.class);
+        assertThrows(EmailSendingException.class,
+                () -> adminLoginService.checkAndSaveSettingLogin(loginDto, oldLogin));
     }
 
     @Test
@@ -82,7 +126,31 @@ class AdminLoginServiceTest extends AbstractIntegrationTest{
         when(userRepository.findByEmail(oldLogin)).thenReturn(Optional.of(user));
         assertDoesNotThrow(() -> adminLoginService.changeLogin(verificationCodeValue));
 
-        user.setEmail(newLogin);
         verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    void changeLoginNotValidCode() {
+        String fakeCode = "000000";
+        ValueOperations<String, String> opsForValue = template.opsForValue();        
+        opsForValue.set(VERIFICATION_CODE_KEY, verificationCodeValue);
+        
+        assertThrows(LoginNotValidException.class, 
+                () -> adminLoginService.changeLogin(fakeCode));
+        
+    }
+
+    @Test
+    void changeLoginNotValidUser() {
+        ValueOperations<String, String> opsForValue = template.opsForValue();
+        opsForValue.set(OLD_LOGIN_KEY, oldLogin);
+        opsForValue.set(NEW_LOGIN_KEY, newLogin);
+        opsForValue.set(VERIFICATION_CODE_KEY, verificationCodeValue);
+
+        when(userRepository.findByEmail(oldLogin)).thenReturn(Optional.empty());
+
+        assertThrows(LoginNotValidException.class,
+                () -> adminLoginService.changeLogin(verificationCodeValue));
+
     }
 }
