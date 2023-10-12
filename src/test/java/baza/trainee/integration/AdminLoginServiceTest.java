@@ -33,12 +33,13 @@ class AdminLoginServiceTest extends AbstractIntegrationTest{
 
     @Autowired
     private AdminLoginServiceImpl adminLoginService;
+    @Autowired
+    private RedisTemplate<String, String> template;
+
     @MockBean
     private MailService mailService;
     @MockBean
     private UserRepository userRepository;
-    @MockBean
-    private RedisTemplate<String, String> template;
 
 
     @Test
