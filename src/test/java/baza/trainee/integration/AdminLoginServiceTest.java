@@ -63,6 +63,7 @@ class AdminLoginServiceTest extends AbstractIntegrationTest{
         when(mailService.buildMsgForChangeLogin(verificationCodeValue)).thenReturn(message);
 
         verify(mailService, times(1)).sendEmail(newLogin, message, ACTIVATION_COD);
+
         assertDoesNotThrow(() -> adminLoginService.checkAndSaveSettingLogin(loginDto,
                 oldLogin));
         assertEquals(template.opsForValue().get(OLD_LOGIN_KEY), oldLogin);
