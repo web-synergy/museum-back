@@ -1,11 +1,14 @@
 package baza.trainee.controller.admin;
 
 import baza.trainee.dto.LoginDto;
+import baza.trainee.security.RootUserInitializer;
+import baza.trainee.service.AdminLoginService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,13 +28,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AdminChangeLoginApiControllerTest {
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    private AdminLoginService adminLoginService;
+
+    @MockBean
+    private RootUserInitializer rootUserInitializer;
 
     @SneakyThrows
     @Test
     void changeLogin() {
         mockMvc.perform(put("/admin/changeLogin")
                         .requestAttr("code", "123456"))
-                .andDo(print()).andExpect(status().isOk());
+                .andDo(print()).andExpect(status().isNoContent());
     }
 
     @SneakyThrows
@@ -39,7 +47,7 @@ class AdminChangeLoginApiControllerTest {
     void checkLogin() {
         mockMvc.perform(get("/admin/checkOldLogin")
                         .param("oldLogin", "oldLogin@email.com"))
-                .andDo(print()).andExpect(status().isOk());
+                .andDo(print()).andExpect(status().isNoContent());
     }
 
     @SneakyThrows
@@ -50,6 +58,6 @@ class AdminChangeLoginApiControllerTest {
                 "duplicateNewLogin@email.com");
         mockMvc.perform(post("/admin/saveSettingLogin")
                         .requestAttr("loginDto", loginDto))
-                .andDo(print()).andExpect(status().isOk());
+                .andDo(print()).andExpect(status().isNoContent());
     }
 }
