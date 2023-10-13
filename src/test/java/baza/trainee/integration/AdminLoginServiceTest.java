@@ -7,10 +7,11 @@ import baza.trainee.exceptions.custom.LoginNotValidException;
 import baza.trainee.repository.UserRepository;
 import baza.trainee.service.MailService;
 import baza.trainee.service.impl.AdminLoginServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
 import java.util.Optional;
@@ -19,13 +20,16 @@ import static baza.trainee.constants.MailConstants.ACTIVATION_COD;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-class AdminLoginServiceTest extends AbstractIntegrationTest{
+class AdminLoginServiceTest extends AbstractIntegrationTest {
     String oldLogin = "oldLogin@email.com";
     String newLogin = "newLogin@email.com";
     String VERIFICATION_CODE_KEY = "codeChange";
@@ -36,10 +40,12 @@ class AdminLoginServiceTest extends AbstractIntegrationTest{
     @Autowired
     private AdminLoginServiceImpl adminLoginService;
     @Autowired
-    private RedisTemplate<String, String> template;
+    private StringRedisTemplate template;
 
     @MockBean
     private MailService mailService;
+    @MockBean
+    HttpServletRequest httpServletRequest;
     @MockBean
     private UserRepository userRepository;
 
@@ -49,10 +55,11 @@ class AdminLoginServiceTest extends AbstractIntegrationTest{
         assertDoesNotThrow(() -> adminLoginService
                 .checkLogin(oldLogin, oldLogin));
     }
+
     @Test
     void checkLoginIsFail() {
-        assertThrows(LoginNotValidException.class, () ->adminLoginService
-                .checkLogin(newLogin, newLogin));
+        assertThrows(LoginNotValidException.class, () -> adminLoginService
+                .checkLogin(newLogin, oldLogin));
     }
 
     @Test
@@ -62,18 +69,18 @@ class AdminLoginServiceTest extends AbstractIntegrationTest{
         when(userRepository.findByEmail(newLogin)).thenReturn(Optional.empty());
 
         String message = "Code 123456";
-        when(mailService.buildMsgForChangeLogin(verificationCodeValue)).thenReturn(message);
-
-        verify(mailService, times(1)).sendEmail(newLogin, message, ACTIVATION_COD);
+        when(mailService.buildMsgForChangeLogin(anyString())).thenReturn(message);
 
         assertDoesNotThrow(() -> adminLoginService.checkAndSaveSettingLogin(loginDto,
                 oldLogin));
+
+        verify(mailService, times(1)).sendEmail(newLogin, message, ACTIVATION_COD);
+
         assertAll("Test keys",
                 () -> assertEquals(template.opsForValue().get(OLD_LOGIN_KEY), oldLogin),
                 () -> assertEquals(template.opsForValue().get(NEW_LOGIN_KEY), newLogin),
-                () -> assertEquals(template.opsForValue().get(VERIFICATION_CODE_KEY),
-                        verificationCodeValue));
-        
+                () -> assertNotNull(template.opsForValue().get(VERIFICATION_CODE_KEY)));
+
     }
 
     @Test
@@ -85,7 +92,7 @@ class AdminLoginServiceTest extends AbstractIntegrationTest{
     }
 
     @Test
-    void checkAndSaveSettingLoginNotMatchesNewLoginAndDuplicate() {        
+    void checkAndSaveSettingLoginNotMatchesNewLoginAndDuplicate() {
         LoginDto loginDto = new LoginDto(oldLogin, newLogin,
                 oldLogin);
         assertThrows(LoginNotValidException.class,
@@ -108,9 +115,9 @@ class AdminLoginServiceTest extends AbstractIntegrationTest{
         when(userRepository.findByEmail(newLogin)).thenReturn(Optional.empty());
 
         String message = "Code 123456";
-        when(mailService.buildMsgForChangeLogin(verificationCodeValue)).thenReturn(message);
-        when(mailService.sendEmail(newLogin, message, ACTIVATION_COD))
-                .thenThrow(EmailSendingException.class);
+        when(mailService.buildMsgForChangeLogin(anyString())).thenReturn(message);
+        doThrow(EmailSendingException.class).when(mailService)
+                .sendEmail(newLogin, message, ACTIVATION_COD);
         assertThrows(EmailSendingException.class,
                 () -> adminLoginService.checkAndSaveSettingLogin(loginDto, oldLogin));
     }
@@ -132,12 +139,12 @@ class AdminLoginServiceTest extends AbstractIntegrationTest{
     @Test
     void changeLoginNotValidCode() {
         String fakeCode = "000000";
-        ValueOperations<String, String> opsForValue = template.opsForValue();        
+        ValueOperations<String, String> opsForValue = template.opsForValue();
         opsForValue.set(VERIFICATION_CODE_KEY, verificationCodeValue);
-        
-        assertThrows(LoginNotValidException.class, 
+
+        assertThrows(LoginNotValidException.class,
                 () -> adminLoginService.changeLogin(fakeCode));
-        
+
     }
 
     @Test

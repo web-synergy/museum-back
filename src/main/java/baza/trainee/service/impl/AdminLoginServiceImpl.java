@@ -7,7 +7,7 @@ import baza.trainee.repository.UserRepository;
 import baza.trainee.service.AdminLoginService;
 import baza.trainee.service.MailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +26,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     private final MailService mailService;
     private final UserRepository userRepository;
-    private final RedisTemplate<String, String> template;
+    private final StringRedisTemplate template;
 
 
     /**
