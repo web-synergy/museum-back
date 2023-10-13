@@ -4,14 +4,6 @@ import baza.trainee.dto.LoginDto;
 
 public interface AdminLoginService {
     /**
-     * Check login.
-     *
-     * @param enteredLogin    Login from form
-     * @param userLogin Current user login
-     */
-    void checkLogin(String enteredLogin, String userLogin);
-
-    /**
      * Save setting login for change login, build link
      * and send link to new user email.
      *

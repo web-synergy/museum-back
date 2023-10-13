@@ -9,6 +9,7 @@ import baza.trainee.service.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -28,20 +29,6 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     private final UserRepository userRepository;
     private final StringRedisTemplate template;
 
-
-    /**
-     * Check login.
-     *
-     * @param enteredLogin Login for check
-     * @param userLogin    Current user
-     */
-    @Override
-    public void checkLogin(String enteredLogin, String userLogin) {
-        if (!enteredLogin.equals(userLogin)) {
-            throw new LoginNotValidException("Entered old login is not valid");
-        }
-    }
-
     private void checkMatchesNewLoginAndDuplicate(String newLogin, String duplicateNewLogin) {
         if (!newLogin.equals(duplicateNewLogin)) {
             throw new LoginNotValidException("Logins do not match");
@@ -57,7 +44,6 @@ public class AdminLoginServiceImpl implements AdminLoginService {
      */
     @Override
     public void checkAndSaveSettingLogin(LoginDto loginDto, String userLogin) {
-        checkLogin(loginDto.getOldLogin(), userLogin);
         checkMatchesNewLoginAndDuplicate(loginDto.getNewLogin(),
                 loginDto.getDuplicateNewLogin());
         isNotExistUserByLogin(loginDto.getNewLogin());
@@ -87,7 +73,8 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     }
 
     private void saveSettingLogin(LoginDto loginDto, String code) {
-        template.opsForValue().set(OLD_LOGIN_KEY, loginDto.getOldLogin());
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+        template.opsForValue().set(OLD_LOGIN_KEY, username);
         template.opsForValue().set(NEW_LOGIN_KEY, loginDto.getNewLogin());
         template.opsForValue().set(VERIFICATION_CODE_KEY, code);
     }

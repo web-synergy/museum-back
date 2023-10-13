@@ -21,13 +21,6 @@ public class AdminChangeLoginApiDelegateImpl implements AdminChangeLoginApiDeleg
     }
 
     @Override
-    public ResponseEntity<Void> checkLogin(String oldLogin) {
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        adminLoginService.checkLogin(oldLogin, username);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @Override
     public ResponseEntity<Void> saveLogin(LoginDto loginDto) {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         adminLoginService.checkAndSaveSettingLogin(loginDto, username);

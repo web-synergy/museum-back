@@ -297,42 +297,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /checkOldLogin:
-    get:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Admin Change Login
-      description: 'Check entered admin login in form by field OldLogin'
-      operationId: checkLogin
-      parameters:
-        - name: oldLogin
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        204:
-          description: Login is valid
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+
   /saveSettingLogin:
     post:
       security:
@@ -627,15 +592,10 @@ components:
     LoginDto:
       description: Login form
       required:
-        - oldLogin
         - newLogin
         - duplicateNewLogin
       type: object
       properties:
-        oldLogin:
-          type: string
-          format: email
-          nullable: false
         newLogin:
           type: string
           format: email
