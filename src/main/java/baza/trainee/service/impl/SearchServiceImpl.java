@@ -8,7 +8,6 @@ import com.redis.om.spring.search.stream.EntityStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -37,13 +36,11 @@ public class SearchServiceImpl implements SearchService {
     public List<SearchResponse> search(String query) {
         final CharSequence sequence = query.toLowerCase();
 
-        var events = entityStream.of(Event.class)
-                .collect(Collectors.toList());
+        try (var eventSearchStream = entityStream.of(Event.class)) {
+            var posts = eventSearchStream.collect(Collectors.toList());
 
-        var posts = new ArrayList<Post>();
-        posts.addAll(events);
-
-        return filterBySequence(posts, sequence);
+            return filterBySequence(posts, sequence);
+        }
     }
 
     private <T extends Post> List<SearchResponse> filterBySequence(
@@ -53,7 +50,7 @@ public class SearchServiceImpl implements SearchService {
         return posts.parallelStream()
                 .filter(searchPredicate(sequence))
                 .map(this::toSearchResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private <T extends Post> Predicate<T> searchPredicate(CharSequence sequence) {
@@ -63,12 +60,12 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private boolean matchSequence(String string, CharSequence sequence) {
-        return string.toLowerCase().contains(sequence);
+        return string.toLowerCase().contains(sequence) || string.matches(sequence.toString());
     }
 
     private SearchResponse toSearchResponse(Post post) {
         var type = post instanceof Event ? EVENT : ARTICLE;
-        SearchResponse response = new SearchResponse();
+        var response = new SearchResponse();
         response.id(post.getId());
         response.title(post.getTitle());
         response.description(post.getSummary());
