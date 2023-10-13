@@ -21,6 +21,7 @@ import java.util.stream.IntStream;
 class EventTestDataInitializer {
 
     private static final int EVENT_COUNT = 20;
+    private static final int CONTENT_BLOCKS_COUNT = 5;
 
     @Bean
     CommandLineRunner testDataInitializer(EventRepository repository) {
@@ -39,7 +40,7 @@ class EventTestDataInitializer {
                 event.setSummary(summary);
 
                 String description = EventDescription.values()[i].getValue();
-                event.setDescription(description);
+                event.setSummary(description);
 
                 var types = EventResponse.TypeEnum.values();
                 int typeIndex = ThreadLocalRandom.current().nextInt(types.length);
@@ -51,13 +52,19 @@ class EventTestDataInitializer {
                 event.setBegin(begin);
                 event.setEnd(begin.plusDays(i));
 
+                IntStream.range(0, CONTENT_BLOCKS_COUNT).forEach(j -> {
+                    String content = "Унікальний контент " + i + j;
+                    event.setDescription(content);
+                    System.out.println(content);
+                });
+
                 repository.save(event);
             });
         };
     }
 
     @Getter
-    protected enum EventTitles {
+    private enum EventTitles {
         EVENT_1("Виставка архітектурних творінь"),
         EVENT_2("Лекція про життя і творчість Кавалерідзе"),
         EVENT_3("Архітектурна екскурсія"),
@@ -87,8 +94,8 @@ class EventTestDataInitializer {
 
     }
 
-    @Getter
-    protected enum EventSummary {
+        @Getter
+    public enum EventSummary {
         EVENT_1("На цій події будуть представлені найкращі архітектурні творіння."),
         EVENT_2("Дізнайтеся більше про життя і внесок Кавалерідзе в архітектуру."),
         EVENT_3("Приєднуйтесь до нас для захоплюючої екскурсії містом і його архітектурою."),
@@ -118,7 +125,7 @@ class EventTestDataInitializer {
     }
 
     @Getter
-    protected enum EventDescription {
+    public enum EventDescription {
         EVENT_1("На цій події будуть представлені найкращі архітектурні творіння."),
         EVENT_2("Дізнайтеся більше про життя і внесок Кавалерідзе в архітектуру."),
         EVENT_3("Приєднуйтесь до нас для захоплюючої екскурсії містом і його архітектурою."),
