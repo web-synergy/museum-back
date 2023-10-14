@@ -50,22 +50,11 @@ class AdminLoginServiceTest extends AbstractIntegrationTest {
     private UserRepository userRepository;
 
 
-    @Test
-    void checkLoginIsSuccessful() {
-        assertDoesNotThrow(() -> adminLoginService
-                .checkLogin(oldLogin, oldLogin));
-    }
 
-    @Test
-    void checkLoginIsFail() {
-        assertThrows(LoginNotValidException.class, () -> adminLoginService
-                .checkLogin(newLogin, oldLogin));
-    }
 
     @Test
     void checkAndSaveSettingLogin() {
-        LoginDto loginDto = new LoginDto(oldLogin, newLogin,
-                newLogin);
+        LoginDto loginDto = new LoginDto(newLogin, newLogin);
         when(userRepository.findByEmail(newLogin)).thenReturn(Optional.empty());
 
         String message = "Code 123456";
@@ -84,34 +73,18 @@ class AdminLoginServiceTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void checkAndSaveSettingLoginNotValidOldLogin() {
-        LoginDto loginDto = new LoginDto(newLogin, newLogin,
-                newLogin);
-        assertThrows(LoginNotValidException.class,
-                () -> adminLoginService.checkAndSaveSettingLogin(loginDto, oldLogin));
-    }
-
-    @Test
     void checkAndSaveSettingLoginNotMatchesNewLoginAndDuplicate() {
-        LoginDto loginDto = new LoginDto(oldLogin, newLogin,
+        LoginDto loginDto = new LoginDto(newLogin,
                 oldLogin);
         assertThrows(LoginNotValidException.class,
                 () -> adminLoginService.checkAndSaveSettingLogin(loginDto, oldLogin));
     }
 
-    @Test
-    void checkAndSaveSettingLoginExistUser() {
-        LoginDto loginDto = new LoginDto(oldLogin, newLogin,
-                newLogin);
-        when(userRepository.findByEmail(newLogin)).thenReturn(Optional.of(new User()));
-        assertThrows(LoginNotValidException.class,
-                () -> adminLoginService.checkAndSaveSettingLogin(loginDto, oldLogin));
-    }
+
 
     @Test
     void checkAndSaveSettingLoginNotSendLetter() {
-        LoginDto loginDto = new LoginDto(oldLogin, newLogin,
-                newLogin);
+        LoginDto loginDto = new LoginDto(newLogin, newLogin);
         when(userRepository.findByEmail(newLogin)).thenReturn(Optional.empty());
 
         String message = "Code 123456";

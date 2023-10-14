@@ -9,7 +9,6 @@ import baza.trainee.service.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -49,7 +48,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         isNotExistUserByLogin(loginDto.getNewLogin());
         String code = createCodeChange();
         sendEmail(code, loginDto.getNewLogin());
-        saveSettingLogin(loginDto, code);
+        saveSettingLogin(userLogin, loginDto.getNewLogin(), code);
     }
 
     private void isNotExistUserByLogin(final String username) {
@@ -72,10 +71,9 @@ public class AdminLoginServiceImpl implements AdminLoginService {
 
     }
 
-    private void saveSettingLogin(LoginDto loginDto, String code) {
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        template.opsForValue().set(OLD_LOGIN_KEY, username);
-        template.opsForValue().set(NEW_LOGIN_KEY, loginDto.getNewLogin());
+    private void saveSettingLogin(String userLogin, String newLogin, String code) {
+        template.opsForValue().set(OLD_LOGIN_KEY, userLogin);
+        template.opsForValue().set(NEW_LOGIN_KEY, newLogin);
         template.opsForValue().set(VERIFICATION_CODE_KEY, code);
     }
 

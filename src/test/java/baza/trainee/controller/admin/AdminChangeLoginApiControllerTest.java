@@ -9,14 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -43,29 +39,22 @@ class AdminChangeLoginApiControllerTest {
                 .andDo(print()).andExpect(status().isNoContent());
     }
 
-    @WithMockUser(roles = {"ADMIN"})
-    @SneakyThrows
-    @Test
-    void checkEnteredLoginToCurrentLogin() {
-        mockMvc.perform(get("/api/admin/checkOldLogin")
-                        .param("oldLogin", "oldLogin@email.com"))
-                .andDo(print()).andExpect(status().isNoContent());
-    }
 
     @WithMockUser(roles = {"ADMIN"})
     @SneakyThrows
     @Test
     void saveSettingForChangeLogin() {
-        LoginDto loginDto = new LoginDto("oldLogin@email.com",
+        LoginDto loginDto = new LoginDto(
                 "newLogin@email.com",
                 "newLogin@email.com");
         mockMvc.perform(post("/api/admin/saveSettingLogin")
                         .requestAttr("loginDto", loginDto))
                 .andDo(print()).andExpect(status().isNoContent());
     }
+
     @SneakyThrows
     @Test
-    void changeLoginNotAuthorizeUser() {
+    void changeCurrentLoginToNewLoginNotAuthorizeUser() {
         String code = "123456";
         mockMvc.perform(put("/api/admin/changeLogin")
                         .param("code", code))
@@ -74,17 +63,8 @@ class AdminChangeLoginApiControllerTest {
 
     @SneakyThrows
     @Test
-    void checkCurrentLoginNotAuthorizeUser() {
-        mockMvc.perform(get("/api/admin/checkOldLogin")
-                        .param("oldLogin", "oldLogin@email.com"))
-                .andDo(print()).andExpect(status().isUnauthorized());
-    }
-
-    @SneakyThrows
-    @Test
     void saveSettingsNotAuthorizeUser() {
-        LoginDto loginDto = new LoginDto("oldLogin@email.com",
-                "newLogin@email.com",
+        LoginDto loginDto = new LoginDto("newLogin@email.com",
                 "newLogin@email.com");
         mockMvc.perform(post("/api/admin/saveSettingLogin")
                         .requestAttr("loginDto", loginDto))
