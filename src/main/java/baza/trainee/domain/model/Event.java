@@ -19,7 +19,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @Document
-public class Event implements Post {
+public class Event implements Searchable {
 
     @Id
     @Indexed
@@ -65,6 +65,11 @@ public class Event implements Post {
         this.banner = bannerId;
         this.begin = begin;
         this.end = end;
+    }
+
+    @Override
+    public String getContent() {
+        return this.getSummary() + " " + this.getDescription();
     }
 
     @Override
