@@ -1,6 +1,7 @@
 package baza.trainee.controller;
 
 import baza.trainee.security.RootUserInitializer;
+import baza.trainee.service.ArticleService;
 import baza.trainee.service.SearchService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +33,9 @@ class SearchControllerTest {
 
     @MockBean
     RootUserInitializer rootUserInitializer;
+
+    @MockBean
+    ArticleService articleService;
 
     @Test
     @SneakyThrows

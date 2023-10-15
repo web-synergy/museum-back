@@ -7,6 +7,7 @@ import baza.trainee.dto.PageEvent;
 import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.exceptions.custom.MethodArgumentNotValidException;
 import baza.trainee.security.RootUserInitializer;
+import baza.trainee.service.ArticleService;
 import baza.trainee.service.EventService;
 import baza.trainee.service.MailService;
 
@@ -44,6 +45,9 @@ class EventControllerTest {
 
     @Autowired
     private EventMapper eventMapper;
+
+    @MockBean
+    ArticleService articleService;
 
     @Test
     void testGetEvents() throws Exception {

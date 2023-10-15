@@ -2,6 +2,7 @@ package baza.trainee.controller.admin;
 
 import baza.trainee.domain.model.MuseumData;
 import baza.trainee.security.RootUserInitializer;
+import baza.trainee.service.ArticleService;
 import baza.trainee.service.MuseumDataService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -44,6 +45,9 @@ public class MuseumDataAdminControllerTest {
 
     @MockBean
     private RootUserInitializer initializer;
+
+    @MockBean
+    ArticleService articleService;
 
     private MuseumData museumData;
 

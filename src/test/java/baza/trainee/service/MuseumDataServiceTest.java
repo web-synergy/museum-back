@@ -32,6 +32,9 @@ public class MuseumDataServiceTest {
     @MockBean
     private RootUserInitializer rootUserInitializer;
 
+    @MockBean
+    ArticleService articleService;
+
     private MuseumData museumData;
 
     @BeforeAll

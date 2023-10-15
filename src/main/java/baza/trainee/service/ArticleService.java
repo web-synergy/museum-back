@@ -1,14 +1,14 @@
 package baza.trainee.service;
 
-import baza.trainee.dto.ArticleResponse;
+import baza.trainee.domain.model.Article;
+
+import java.util.List;
 
 public interface ArticleService {
 
     /**
-     * Finds an existing article by given title.
-     *
-     * @param title title to get an existing article.
-     * @return {@link ArticleResponse} object containing an existing article with its full content.
+     * Saves static articles' content to DB while starting the application.
+     * @return List of saved static articles.
      */
-    ArticleResponse findByTitle(String title);
+    List<Article> saveStaticArticles();
 }
