@@ -1,6 +1,6 @@
 package baza.trainee.controller.admin;
 
-import baza.trainee.dto.LoginDto;
+import baza.trainee.dto.UpdateLoginRequest;
 import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.AdminLoginService;
 import lombok.SneakyThrows;
@@ -21,8 +21,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = MOCK)
 @AutoConfigureMockMvc
 class AdminChangeLoginApiControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
+
     @MockBean
     private AdminLoginService adminLoginService;
 
@@ -44,11 +46,11 @@ class AdminChangeLoginApiControllerTest {
     @SneakyThrows
     @Test
     void saveSettingForChangeLogin() {
-        LoginDto loginDto = new LoginDto(
+        UpdateLoginRequest updateLoginRequest = new UpdateLoginRequest(
                 "newLogin@email.com",
                 "newLogin@email.com");
         mockMvc.perform(post("/api/admin/saveSettingLogin")
-                        .requestAttr("loginDto", loginDto))
+                        .requestAttr("updateLoginRequest", updateLoginRequest))
                 .andDo(print()).andExpect(status().isNoContent());
     }
 
@@ -64,10 +66,10 @@ class AdminChangeLoginApiControllerTest {
     @SneakyThrows
     @Test
     void saveSettingsNotAuthorizeUser() {
-        LoginDto loginDto = new LoginDto("newLogin@email.com",
+        UpdateLoginRequest updateLoginRequest = new UpdateLoginRequest("newLogin@email.com",
                 "newLogin@email.com");
         mockMvc.perform(post("/api/admin/saveSettingLogin")
-                        .requestAttr("loginDto", loginDto))
+                        .requestAttr("updateLoginRequest", updateLoginRequest))
                 .andDo(print()).andExpect(status().isUnauthorized());
     }
 }
