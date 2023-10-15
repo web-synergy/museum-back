@@ -37,13 +37,12 @@ public class SearchServiceImpl implements SearchService {
     public List<SearchResponse> search(String query) {
         final CharSequence sequence = query.toLowerCase();
 
-        var events = entityStream.of(Event.class)
-                .collect(Collectors.toList());
+        try (var eventStream = entityStream.of(Event.class)) {
+            var events = eventStream.collect(Collectors.toList());
+            var posts = new ArrayList<Searchable>(events);
 
-        var posts = new ArrayList<Searchable>();
-        posts.addAll(events);
-
-        return filterBySequence(posts, sequence);
+            return filterBySequence(posts, sequence);
+        }
     }
 
     private <T extends Searchable> List<SearchResponse> filterBySequence(
@@ -61,7 +60,8 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private boolean matchSequence(String string, CharSequence sequence) {
-        return string.toLowerCase().contains(sequence);
+        return string.toLowerCase().contains(sequence)
+                || string.toLowerCase().matches(sequence.toString());
     }
 
     private SearchResponse toSearchResponse(Searchable post) {

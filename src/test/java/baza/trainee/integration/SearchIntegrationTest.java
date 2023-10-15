@@ -1,12 +1,19 @@
 package baza.trainee.integration;
 
 import baza.trainee.service.SearchService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import static baza.trainee.integration.EventTestDataInitializer.EventDescription;
+import static baza.trainee.integration.EventTestDataInitializer.EventSummary;
+import static baza.trainee.integration.EventTestDataInitializer.EventTitles;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -15,9 +22,6 @@ class SearchIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private SearchService searchService;
-
-    @MockBean
-    private HttpServletRequest httpServletRequest;
 
     @Test
     void validQueryTest() {
@@ -37,30 +41,42 @@ class SearchIntegrationTest extends AbstractIntegrationTest {
         assertFalse(responses.isEmpty());
     }
 
-    @Test
-    void byTitleTest() {
-        var q = "Виставка архітектурних творінь";
-
-        var responses = searchService.search(q);
-
+    @ParameterizedTest
+    @MethodSource
+    void searchByFullDescriptionTest(String result) {
+        var responses = searchService.search(result);
         assertEquals(1, responses.size());
     }
 
-    @Test
-    void byDescriptionTest() {
-        var q = "Запечатліть красу архітектурного силуету міста на фотографіях.";
+    public static Stream<Arguments> searchByFullDescriptionTest() {
+        return Arrays.stream(EventDescription.values())
+                .map(EventDescription::getValue)
+                .map(Arguments::of);
+    }
 
-        var responses = searchService.search(q);
-
+    @ParameterizedTest
+    @MethodSource
+    void searchByFullTitleTest(String result) {
+        var responses = searchService.search(result);
         assertEquals(1, responses.size());
     }
 
-    @Test
-    void byContentTest() {
-        var q = "Унікальний контент";
+    public static Stream<Arguments> searchByFullTitleTest() {
+        return Arrays.stream(EventTitles.values())
+                .map(EventTitles::getValue)
+                .map(Arguments::of);
+    }
 
-        var responses = searchService.search(q);
+    @ParameterizedTest
+    @MethodSource
+    void searchByFullSummaryTest(String result) {
+        var responses = searchService.search(result);
+        assertEquals(1, responses.size());
+    }
 
-        assertEquals(20, responses.size());
+    public static Stream<Arguments> searchByFullSummaryTest() {
+        return Arrays.stream(EventSummary.values())
+                .map(EventSummary::getValue)
+                .map(Arguments::of);
     }
 }
