@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 import static baza.trainee.constants.MailConstants.ACTIVATION_COD;
 
@@ -53,9 +54,11 @@ public class AdminLoginServiceImpl implements AdminLoginService {
             throw new LoginNotValidException("Not valid code");
         }
 
+        opsForValue.getAndDelete(VERIFICATION_CODE_KEY + "_" + userLogin);
+
         User admin = userRepository.findByEmail(userLogin)
                 .orElseThrow(() -> new UsernameNotFoundException("Not find user by login"));
-        admin.setEmail(opsForValue.get(NEW_LOGIN_KEY + "_" + userLogin));
+        admin.setEmail(opsForValue.getAndDelete(NEW_LOGIN_KEY + "_" + userLogin));
         userRepository.update(admin);
     }
 
@@ -72,8 +75,10 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     }
 
     private void saveSettingLogin(String userLogin, String newLogin, String code) {
-        template.opsForValue().set(NEW_LOGIN_KEY + "_" + userLogin, newLogin);
-        template.opsForValue().set(VERIFICATION_CODE_KEY + "_" + userLogin, code);
+        template.opsForValue().set(NEW_LOGIN_KEY + "_" + userLogin, newLogin,
+                30L, TimeUnit.MINUTES);
+        template.opsForValue().set(VERIFICATION_CODE_KEY + "_" + userLogin, code,
+                30L, TimeUnit.MINUTES);
     }
 
     private void sendEmail(final String code, final String email) {

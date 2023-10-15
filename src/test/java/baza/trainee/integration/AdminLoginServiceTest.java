@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -87,6 +88,10 @@ class AdminLoginServiceTest extends AbstractIntegrationTest {
         assertDoesNotThrow(() -> adminLoginService.approveUpdateLogin(verificationCodeValue, oldLogin));
 
         verify(userRepository, times(1)).update(user);
+
+        assertAll("Test keys",
+                () -> assertNull(template.opsForValue().get(NEW_LOGIN_KEY + "_" + oldLogin)),
+                () -> assertNull(template.opsForValue().get(VERIFICATION_CODE_KEY + "_" + oldLogin)));
     }
 
     @Test
