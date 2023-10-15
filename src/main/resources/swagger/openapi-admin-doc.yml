@@ -35,9 +35,6 @@ tags:
   - name: Authentication
     description: |
       Endpoints for admin authentication.
-  - name: Admin Change Login
-    description: |
-      Endpoints for admin change login.
 
 paths:
   /events:
@@ -297,80 +294,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  /saveSettingLogin:
-    post:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Admin Change Login
-      description: 'Check and save old Login and new login. Check new login by duplicate.
-      Check new login is duplicate in date base. Send letter with change code'
-      operationId: saveLogin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginDto'
-      responses:
-        204:
-          description: Save logins and code. Send letter.
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /changeLogin:
-    put:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Admin Change Login
-      description: 'Check entered code by saved code. Find admin in date base by saved login.
-      Change admin login to new login.'
-      operationId: changeLogin
-      parameters:
-        - name: code
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        204:
-          description: Save logins and code. Send letter.
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /login:
     post:
       security:
@@ -589,21 +512,6 @@ components:
         funicularRoute:
           description: 'The funicular route information for reaching the museum'
           type: string
-    LoginDto:
-      description: Login form
-      required:
-        - newLogin
-        - duplicateNewLogin
-      type: object
-      properties:
-        newLogin:
-          type: string
-          format: email
-          nullable: false
-        duplicateNewLogin:
-          type: string
-          format: email
-          nullable: false
     SuccessAuthResponse:
       description: Login success response
       type: object
