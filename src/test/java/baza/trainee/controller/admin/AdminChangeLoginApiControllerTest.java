@@ -41,7 +41,6 @@ class AdminChangeLoginApiControllerTest {
                 .andDo(print()).andExpect(status().isNoContent());
     }
 
-
     @WithMockUser(roles = {"ADMIN"})
     @SneakyThrows
     @Test
