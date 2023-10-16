@@ -28,6 +28,7 @@ mail:
   museum:
     email: ${MAIL_USER:museum@gmail.com}
     label: Museum.ua
+    messagetimeout: 120
 
 resources:
   files:

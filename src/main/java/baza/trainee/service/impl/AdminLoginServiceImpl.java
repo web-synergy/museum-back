@@ -7,6 +7,7 @@ import baza.trainee.repository.UserRepository;
 import baza.trainee.service.AdminLoginService;
 import baza.trainee.service.MailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,6 +21,9 @@ import static baza.trainee.constants.MailConstants.ACTIVATION_COD;
 @Service
 @RequiredArgsConstructor
 public class AdminLoginServiceImpl implements AdminLoginService {
+
+    @Value("${mail.museum.messagetimeout}")
+    private String messageTimeout;
 
     private static final String NEW_LOGIN_KEY = "newLogin";
     private static final String VERIFICATION_CODE_KEY = "codeChange";
@@ -54,12 +58,12 @@ public class AdminLoginServiceImpl implements AdminLoginService {
             throw new LoginNotValidException("Not valid code");
         }
 
-        opsForValue.getAndDelete(VERIFICATION_CODE_KEY + "_" + userLogin);
-
         User admin = userRepository.findByEmail(userLogin)
                 .orElseThrow(() -> new UsernameNotFoundException("Not find user by login"));
         admin.setEmail(opsForValue.getAndDelete(NEW_LOGIN_KEY + "_" + userLogin));
         userRepository.update(admin);
+
+        opsForValue.getAndDelete(VERIFICATION_CODE_KEY + "_" + userLogin);
     }
 
     private void checkMatchesNewLoginAndDuplicate(String newLogin, String duplicateNewLogin) {
@@ -75,10 +79,14 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     }
 
     private void saveSettingLogin(String userLogin, String newLogin, String code) {
-        template.opsForValue().set(NEW_LOGIN_KEY + "_" + userLogin, newLogin,
-                30L, TimeUnit.MINUTES);
-        template.opsForValue().set(VERIFICATION_CODE_KEY + "_" + userLogin, code,
-                30L, TimeUnit.MINUTES);
+        try {
+            template.opsForValue().set(NEW_LOGIN_KEY + "_" + userLogin, newLogin,
+                    Long.parseLong(messageTimeout), TimeUnit.MINUTES);
+            template.opsForValue().set(VERIFICATION_CODE_KEY + "_" + userLogin, code,
+                    Long.parseLong(messageTimeout), TimeUnit.MINUTES);
+        } catch (NumberFormatException e) {
+            throw new LoginNotValidException("Not parse property timeout");
+        }
     }
 
     private void sendEmail(final String code, final String email) {

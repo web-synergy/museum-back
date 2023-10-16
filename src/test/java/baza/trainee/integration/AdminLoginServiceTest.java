@@ -71,7 +71,7 @@ class AdminLoginServiceTest extends AbstractIntegrationTest {
 
     @Test
     void checkAndSaveSettingLoginNotMatchesNewLoginAndDuplicate() {
-        UpdateLoginRequest loginDto = new UpdateLoginRequest(newLogin,oldLogin);
+        UpdateLoginRequest loginDto = new UpdateLoginRequest(newLogin, oldLogin);
 
         assertThrows(LoginNotValidException.class,
                 () -> adminLoginService.checkAndSaveSettingLogin(loginDto, oldLogin));

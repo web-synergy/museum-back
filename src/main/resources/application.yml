@@ -30,6 +30,7 @@ mail:
   museum:
     email: ${MAIL_USER}
     label: Museum.ua
+    messagetimeout: 120
 
 logging:
   file:
