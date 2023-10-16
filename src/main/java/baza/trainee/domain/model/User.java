@@ -7,6 +7,7 @@ import com.redis.om.spring.annotations.Document;
 import com.redis.om.spring.annotations.Indexed;
 
 import baza.trainee.domain.enums.Role;
+import baza.trainee.domain.enums.Scope;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -28,7 +29,14 @@ public class User {
     @Setter(AccessLevel.PROTECTED)
     private List<String> roles = new ArrayList<>();
 
+    @Setter(AccessLevel.PROTECTED)
+    private List<String> scope = new ArrayList<>();
+
     public void addRole(Role role) {
         this.roles.add(role.getValue());
+    }
+
+    public void addScope(Scope scope) {
+        this.scope.add(scope.getValue());
     }
 }

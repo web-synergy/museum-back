@@ -1,5 +1,6 @@
 package baza.trainee.security;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -17,10 +18,19 @@ public class SecureUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.user.getRoles().stream()
+        var roles = this.user.getRoles().stream()
                 .map(s -> "ROLE_" + s)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+        var scope = this.user.getScope().stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        var authorities = new ArrayList<GrantedAuthority>();
+        authorities.addAll(roles);
+        authorities.addAll(scope);
+
+        return authorities;
     }
 
     @Override

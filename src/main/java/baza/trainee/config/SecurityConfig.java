@@ -1,5 +1,7 @@
 package baza.trainee.config;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 import java.util.List;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -69,9 +71,10 @@ public class SecurityConfig {
                 .cors(cc -> cc.configurationSource(corsFilter()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/api/user/register").permitAll()
-                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "ROOT")
-                        .requestMatchers("/api/admin/**").authenticated()
+                        .requestMatchers("/api/admin/login").hasAnyRole("ADMIN", "ROOT")
+                        .requestMatchers("/api/admin/**").hasAuthority("SCOPE_WRITE")
                         .requestMatchers("/api/**").permitAll())
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .oauth2ResourceServer(t -> t.jwt(Customizer.withDefaults()))
                 .httpBasic(Customizer.withDefaults())
                 .logout(flc -> flc.logoutUrl("/api/admin/auth/logout"))
