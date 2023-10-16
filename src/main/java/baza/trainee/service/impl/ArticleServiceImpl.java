@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,18 +28,14 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     @PostConstruct
     @Transactional
-    public List<Article> saveStaticArticles() {
+    public void saveStaticArticles() {
         try {
             final var inputStream = new ClassPathResource(resource).getInputStream();
             final var fileData = FileCopyUtils.copyToByteArray(inputStream);
             final CollectionType collectionType =
                     objectMapper.getTypeFactory().constructCollectionType(List.class, Article.class);
             final List<Article> articleList = objectMapper.readValue(fileData, collectionType);
-
-            final List<Article> saved = new ArrayList<>();
-            articleList.forEach(a -> saved.add(articleRepository.save(a)));
-
-            return saved;
+            articleList.forEach(articleRepository::save);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }

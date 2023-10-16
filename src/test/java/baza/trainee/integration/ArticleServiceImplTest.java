@@ -1,21 +1,36 @@
 package baza.trainee.integration;
 
+import baza.trainee.domain.model.Article;
+import baza.trainee.repository.ArticleRepository;
 import baza.trainee.service.ArticleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Import({ArticleTestDataInitializer.class})
 class ArticleServiceImplTest extends AbstractIntegrationTest {
 
     @Autowired
     private ArticleService articleService;
 
+    @Autowired
+    ArticleRepository repository;
+
     @Test
     void saveStaticArticles() {
-        var result = articleService.saveStaticArticles();
+        List<Article> result = repository.findAll();
+        assertThat(result)
+                .isNotNull()
+                .isEmpty();
 
+        articleService.saveStaticArticles();
+
+        result = repository.findAll();
         assertThat(result)
                 .isNotNull()
                 .hasSize(6);
