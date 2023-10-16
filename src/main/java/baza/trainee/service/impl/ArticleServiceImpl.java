@@ -22,6 +22,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
     private final ObjectMapper objectMapper;
+
     @Value("${static.json.articles}")
     private String resource;
 
