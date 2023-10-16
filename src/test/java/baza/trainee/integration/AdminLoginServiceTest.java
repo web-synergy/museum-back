@@ -89,6 +89,8 @@ class AdminLoginServiceTest extends AbstractIntegrationTest {
 
         verify(userRepository, times(1)).update(user);
 
+        assertEquals(user.getEmail(), newLogin);
+
         assertAll("Test keys",
                 () -> assertNull(template.opsForValue().get(NEW_LOGIN_KEY + "_" + oldLogin)),
                 () -> assertNull(template.opsForValue().get(VERIFICATION_CODE_KEY + "_" + oldLogin)));
