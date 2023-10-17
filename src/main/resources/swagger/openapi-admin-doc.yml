@@ -15,10 +15,6 @@ servers:
   - url: http://127.0.0.1:8081/api/admin
     description: Service for managing website of the Kavaleridze museum
 
-security:
-  - basicAuth:
-      - basicAuth
-
 tags:
   - name: Admin Events
     description: |
@@ -43,8 +39,7 @@ paths:
   /events:
     post:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Admin Events
       summary: Create a new Event
@@ -84,8 +79,7 @@ paths:
   /events/{id}:
     put:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Admin Events
       summary: Update an existing Event
@@ -137,8 +131,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Admin Events
       summary: Delete an existing Event
@@ -181,8 +174,7 @@ paths:
   /images:
     post:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Admin Images
       operationId: saveImage
@@ -223,8 +215,7 @@ paths:
   /museum_data:
     post:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Admin Museum Data
       description: 'Adds new museum data'
@@ -261,8 +252,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Admin Museum Data
       description:  'Updates existing museum data.'
@@ -396,8 +386,7 @@ paths:
   /logout:
     post:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Authentication
       description: User logout endpoint
@@ -620,3 +609,7 @@ components:
     basicAuth:
       type: http
       scheme: basic
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

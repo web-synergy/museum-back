@@ -27,17 +27,17 @@ public class TokenService {
 
     public String generateToken(Authentication authentication) {
         var now = Instant.now();
-        var roles = authentication.getAuthorities()
+        var scope = authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
-                .filter(authority -> authority.startsWith("ROLE"))
+                .filter(authority -> !authority.startsWith("ROLE"))
                 .collect(Collectors.joining(" "));
         var claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
                 .expiresAt(now.plus(expirationTime, ChronoUnit.HOURS))
                 .subject(authentication.getName())
-                .claim("roles", roles)
+                .claim("scope", scope)
                 .build();
         var encoderParameters = JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS512).build(), claims);
         

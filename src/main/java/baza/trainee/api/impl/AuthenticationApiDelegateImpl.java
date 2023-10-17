@@ -37,6 +37,6 @@ public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate 
 
     @Override
     public ResponseEntity<Void> logout() {
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
