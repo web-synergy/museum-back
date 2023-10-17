@@ -10,10 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -41,10 +38,7 @@ class AdminChangeLoginApiControllerTest {
         String code = "123456";
         mockMvc.perform(put("/api/admin/changeLogin")
                         .param("code", code)
-                        .with(jwt().authorities(List.of(new SimpleGrantedAuthority("ADMIN"),
-                                new SimpleGrantedAuthority("ROLE_AUTHORIZED_PERSONNEL")))
-                                .jwt(jwt -> jwt.claim(StandardClaimNames.PREFERRED_USERNAME,
-                                        "ch4mpy"))))
+                        .with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"))))
                 .andDo(print()).andExpect(status().isNoContent());
     }
 
@@ -56,10 +50,7 @@ class AdminChangeLoginApiControllerTest {
                 "newLogin@email.com");
         mockMvc.perform(post("/api/admin/saveSettingLogin")
                         .requestAttr("updateLoginRequest", updateLoginRequest)
-                .with(jwt().authorities(List.of(new SimpleGrantedAuthority("ADMIN"),
-                                new SimpleGrantedAuthority("ROLE_AUTHORIZED_PERSONNEL")))
-                        .jwt(jwt -> jwt.claim(StandardClaimNames.PREFERRED_USERNAME,
-                                "ch4mpy"))))
+                        .with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"))))
                 .andDo(print()).andExpect(status().isNoContent());
     }
 
