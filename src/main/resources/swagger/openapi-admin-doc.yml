@@ -305,8 +305,8 @@ paths:
             - basicAuth
       tags:
         - Admin Change Login
-      description: 'Check and save old Login and new login. Check new login by duplicate.
-      Check new login is duplicate in date base. Send letter with change code'
+      description: 'Check new login by duplicate. Check is not exist user by new login.
+        Send letter with verification code. Save new login and verification code.'
       operationId: updateLogin
       requestBody:
         content:
@@ -341,8 +341,8 @@ paths:
             - basicAuth
       tags:
         - Admin Change Login
-      description: 'Check entered code by saved code. Find admin in date base by saved login.
-      Change admin login to new login.'
+      description: 'Check entered code by saved code. Find admin in date base by current login.
+        Change admin login to new login.'
       operationId: approveUpdateLogin
       parameters:
         - name: code

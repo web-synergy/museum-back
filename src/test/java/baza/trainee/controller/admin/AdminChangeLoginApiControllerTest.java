@@ -9,10 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -31,17 +35,19 @@ class AdminChangeLoginApiControllerTest {
     @MockBean
     private RootUserInitializer rootUserInitializer;
 
-    @WithMockUser(roles = {"ADMIN"})
     @SneakyThrows
     @Test
     void changeCurrentLoginToNewLogin() {
         String code = "123456";
         mockMvc.perform(put("/api/admin/changeLogin")
-                        .param("code", code))
+                        .param("code", code)
+                        .with(jwt().authorities(List.of(new SimpleGrantedAuthority("ADMIN"),
+                                new SimpleGrantedAuthority("ROLE_AUTHORIZED_PERSONNEL")))
+                                .jwt(jwt -> jwt.claim(StandardClaimNames.PREFERRED_USERNAME,
+                                        "ch4mpy"))))
                 .andDo(print()).andExpect(status().isNoContent());
     }
 
-    @WithMockUser(roles = {"ADMIN"})
     @SneakyThrows
     @Test
     void saveSettingForChangeLogin() {
@@ -49,7 +55,11 @@ class AdminChangeLoginApiControllerTest {
                 "newLogin@email.com",
                 "newLogin@email.com");
         mockMvc.perform(post("/api/admin/saveSettingLogin")
-                        .requestAttr("updateLoginRequest", updateLoginRequest))
+                        .requestAttr("updateLoginRequest", updateLoginRequest)
+                .with(jwt().authorities(List.of(new SimpleGrantedAuthority("ADMIN"),
+                                new SimpleGrantedAuthority("ROLE_AUTHORIZED_PERSONNEL")))
+                        .jwt(jwt -> jwt.claim(StandardClaimNames.PREFERRED_USERNAME,
+                                "ch4mpy"))))
                 .andDo(print()).andExpect(status().isNoContent());
     }
 
