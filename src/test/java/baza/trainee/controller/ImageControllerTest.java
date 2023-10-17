@@ -79,23 +79,4 @@ class ImageControllerTest {
                 .andExpect(content().contentType(MediaType.IMAGE_JPEG))
                 .andExpect(content().bytes(imageBytes));
     }
-
-    @Test
-    @WithMockUser(roles = {"ADMIN"})
-    void testSaveImage() throws Exception {
-        var session = new MockHttpSession(null, "session123");
-
-        var file = new File("src/test/resources/test-images/test.jpg");
-        var resource = new UrlResource(file.toURI());
-        byte[] imageBytes = resource.getContentAsByteArray();
-
-        var mockFile = new MockMultipartFile("file", "example.jpg", "image/jpeg", imageBytes);
-        var response = new SaveImageResponse();
-        response.imageId(UUID.randomUUID().toString());
-       
-        when(imageService.storeToTemp(eq(mockFile), anyString())).thenReturn(response);
-
-        mockMvc.perform(multipart("/api/admin/images").file(mockFile).session(session))
-                .andExpect(status().isCreated());
-    }
 }

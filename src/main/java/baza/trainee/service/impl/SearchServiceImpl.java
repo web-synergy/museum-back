@@ -1,7 +1,7 @@
 package baza.trainee.service.impl;
 
 import baza.trainee.domain.model.Event;
-import baza.trainee.domain.model.Post;
+import baza.trainee.domain.model.Searchable;
 import baza.trainee.dto.SearchResponse;
 import baza.trainee.service.SearchService;
 import com.redis.om.spring.search.stream.EntityStream;
@@ -37,41 +37,39 @@ public class SearchServiceImpl implements SearchService {
     public List<SearchResponse> search(String query) {
         final CharSequence sequence = query.toLowerCase();
 
-        var events = entityStream.of(Event.class)
-                .collect(Collectors.toList());
+        try (var eventStream = entityStream.of(Event.class)) {
+            var events = eventStream.collect(Collectors.toList());
+            var posts = new ArrayList<Searchable>(events);
 
-        var posts = new ArrayList<Post>();
-        posts.addAll(events);
-
-        return filterBySequence(posts, sequence);
+            return filterBySequence(posts, sequence);
+        }
     }
 
-    private <T extends Post> List<SearchResponse> filterBySequence(
+    private <T extends Searchable> List<SearchResponse> filterBySequence(
             List<T> posts,
-            final CharSequence sequence
-    ) {
+            final CharSequence sequence) {
         return posts.parallelStream()
                 .filter(searchPredicate(sequence))
                 .map(this::toSearchResponse)
                 .collect(Collectors.toList());
     }
 
-    private <T extends Post> Predicate<T> searchPredicate(CharSequence sequence) {
+    private <T extends Searchable> Predicate<T> searchPredicate(CharSequence sequence) {
         return post -> matchSequence(post.getTitle(), sequence)
-                || matchSequence(post.getSummary(), sequence)
-                || matchSequence(post.getDescription(), sequence);
+                || matchSequence(post.getContent(), sequence);
     }
 
     private boolean matchSequence(String string, CharSequence sequence) {
-        return string.toLowerCase().contains(sequence);
+        return string.toLowerCase().contains(sequence)
+                || string.toLowerCase().matches(sequence.toString());
     }
 
-    private SearchResponse toSearchResponse(Post post) {
+    private SearchResponse toSearchResponse(Searchable post) {
         var type = post instanceof Event ? EVENT : ARTICLE;
         SearchResponse response = new SearchResponse();
         response.id(post.getId());
         response.title(post.getTitle());
-        response.description(post.getSummary());
+        response.description(post.getContent());
         response.contentType(type);
 
         return response;
