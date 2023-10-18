@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @Service
@@ -30,9 +31,8 @@ public class ArticleServiceImpl implements ArticleService {
     @PostConstruct
     @Transactional
     public void saveStaticArticles() {
-        try {
-            final var inputStream = new ClassPathResource(resource).getInputStream();
-            final var fileData = FileCopyUtils.copyToByteArray(inputStream);
+        try (InputStream inputStream = new ClassPathResource(resource).getInputStream()) {
+            final byte[] fileData = FileCopyUtils.copyToByteArray(inputStream);
             final CollectionType collectionType =
                     objectMapper.getTypeFactory().constructCollectionType(List.class, Article.class);
             final List<Article> articleList = objectMapper.readValue(fileData, collectionType);
