@@ -46,24 +46,24 @@ class EventAdminControllerTest {
 
     @Autowired
     private EventMapper eventMapper;
-    
+
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @MockBean
     private EventService eventService;
-    
+
     @MockBean
     private RootUserInitializer rootUserInitializer;
-    
+
     private final JwtRequestPostProcessor ADMIN_AUTHORITIES = jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"));
     private EventPublication eventDto;
     private String eventDtoJson;
     private MockHttpSession session;
-    
+
 
     @BeforeEach
     void setUp() throws JsonProcessingException {

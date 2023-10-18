@@ -24,9 +24,11 @@ mail:
     path:
       user: templates/msg_for_user.html
       museum: templates/msg_for_museum.html
+      change_login: templates/msg_for_change_login.html
   museum:
     email: ${MAIL_USER:museum@gmail.com}
     label: Museum.ua
+    messagetimeout: 120
 
 resources:
   files:

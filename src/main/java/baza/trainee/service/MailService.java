@@ -29,4 +29,12 @@ public interface MailService {
      * @return A formatted html-message string for the museum that includes user information and message.
      */
     String buildMsgForMuseum(String firstName, String lastName, String email, String message);
+
+    /**
+     * Builds a message for the admin, including change code and a custom message.
+     *
+     * @param code Code for change login
+     * @return A formatted html-message string for the museum that includes user information and message.
+     */
+    String buildMsgForChangeLogin(String code);
 }

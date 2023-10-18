@@ -38,7 +38,7 @@ public class MuseumDataAdminControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @MockBean
     private MuseumDataService museumDataService;
 
