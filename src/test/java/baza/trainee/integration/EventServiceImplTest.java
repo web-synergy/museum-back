@@ -1,21 +1,18 @@
 package baza.trainee.integration;
 
 import baza.trainee.domain.mapper.EventMapper;
-import baza.trainee.domain.model.Event;
 import baza.trainee.dto.EventPublication;
-import baza.trainee.dto.PageEvent;
 import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.service.EventService;
 import baza.trainee.service.ImageService;
-import baza.trainee.service.SearchService;
-import jakarta.servlet.http.HttpServletRequest;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mock.web.MockHttpSession;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -34,13 +31,21 @@ class EventServiceImplTest extends AbstractIntegrationTest {
     private EventMapper mapper;
 
     @MockBean
-    private SearchService searchService;
-
-    @MockBean
-    private HttpServletRequest httpServletRequest;
-
-    @MockBean
     private ImageService imageService;
+
+    private EventPublication eventPublication;
+
+    @BeforeEach
+    void setUp() {
+        eventPublication = new EventPublication();
+        eventPublication.title("Title");
+        eventPublication.summary("Short Description");
+        eventPublication.description("Not so short Description, but not to long.");
+        eventPublication.type(CREATIVE_EVENING);
+        eventPublication.banner(UUID.randomUUID().toString());
+        eventPublication.begin(LocalDate.now());
+        eventPublication.end(LocalDate.now().plusDays(10));
+    }
 
     @Test
     @DisplayName("Checking number of pages and objects found.")
@@ -48,15 +53,15 @@ class EventServiceImplTest extends AbstractIntegrationTest {
 
         // given:
         var pageable = Pageable.ofSize(10).withPage(0);
-        PageEvent result = eventService.getAll(pageable);
+        var resultPage = eventService.getAll(pageable);
 
         // when:
-        int numberOfElements = result.getNumberOfElements();
+        int numberOfElements = resultPage.getNumberOfElements();
 
         // then:
         assertEquals(10, numberOfElements);
 
-        for (var event : result.getContent()) {
+        for (var event : resultPage.getContent()) {
             assertNotNull(event.getId());
         }
     }
@@ -66,19 +71,10 @@ class EventServiceImplTest extends AbstractIntegrationTest {
     void getByIdTest() {
 
         // given:
-        MockHttpSession session = new MockHttpSession(null, "httpSessionId");
-
-        var eventPublication = new EventPublication();
-        eventPublication.title("Title");
-        eventPublication.summary("Short Description");
-        eventPublication.description("Not so short Description, but not to long.");
-        eventPublication.type(CREATIVE_EVENING);
-        eventPublication.banner(UUID.randomUUID().toString());
-        eventPublication.begin(LocalDate.now());
-        eventPublication.end(LocalDate.now().plusDays(10));
+        var userId = "USER_ID";
 
         // when:
-        var createdEvent = eventService.save(eventPublication, session.getId());
+        var createdEvent = eventService.save(eventPublication, userId);
 
         // then:
         assertFalse(createdEvent.getId().isEmpty());
@@ -94,29 +90,24 @@ class EventServiceImplTest extends AbstractIntegrationTest {
     void updateTest() {
 
         // given:
-        MockHttpSession session = new MockHttpSession(null, "httpSessionId");
+        var userId = "USER_ID";
 
-        var eventPublication = new EventPublication();
-        eventPublication.title("Title");
-        eventPublication.summary("Short Description");
-        eventPublication.description("Not so short Description, but not to long.");
-        eventPublication.type(CREATIVE_EVENING);
-        eventPublication.banner(UUID.randomUUID().toString());
-        eventPublication.begin(LocalDate.now());
-        eventPublication.end(LocalDate.now().plusDays(10));
+        // when:
+        var eventToUpdate = eventService.save(eventPublication, userId);
 
-        var eventToUpdate = eventService.save(eventPublication, session.getId());
+        // then:
         eventPublication.title("TitleUpdate");
         eventPublication.description("DescriptionUpdate");
         eventPublication.type(CONTEST);
         eventPublication.banner("event/bannerUpdate");
 
         // when:
-        String id = eventToUpdate.getId();
-        Event event = mapper.toEvent(eventPublication);
-        event.setId(id);
+        var eventId = eventToUpdate.getId();
+        var event = mapper.toEvent(eventPublication);
+        event.setId(eventId);
+
         var expected = mapper.toResponse(event);
-        var actual = eventService.update(id, eventPublication, session.getId());
+        var actual = eventService.update(eventId, eventPublication, userId);
 
         // then:
         assertEquals(expected.getTitle(), actual.getTitle());
@@ -131,24 +122,15 @@ class EventServiceImplTest extends AbstractIntegrationTest {
     void deleteEventByIdTest() {
 
         // given:
-        var session = new MockHttpSession(null, "httpSessionId");
-
-        var eventPublication = new EventPublication();
-        eventPublication.title("Title");
-        eventPublication.summary("Short Description");
-        eventPublication.description("Not so short Description, but not to long.");
-        eventPublication.type(CREATIVE_EVENING);
-        eventPublication.banner(UUID.randomUUID().toString());
-        eventPublication.begin(LocalDate.now());
-        eventPublication.end(LocalDate.now().plusDays(10));
+        var userId = "USER_ID";
 
         // when:
-        var eventDelete = eventService.save(eventPublication, session.getId());
-        String id = eventDelete.getId();
-        eventService.deleteEventById(id);
+        var eventToDelete = eventService.save(eventPublication, userId);
+        var eventId = eventToDelete.getId();
+        eventService.deleteEventById(eventId);
 
         // then:
-        assertThrows(EntityNotFoundException.class, () -> eventService.getById(id),
-                "Event with `ID: " + id + "` was not found!");
+        assertThrows(EntityNotFoundException.class, () -> eventService.getById(eventId),
+                "Event with `ID: " + eventId + "` was not found!");
     }
 }
