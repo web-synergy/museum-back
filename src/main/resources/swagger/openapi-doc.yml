@@ -359,6 +359,9 @@ components:
         end:
           type: string
           format: date
+        created:
+          type: string
+          format: date
     MailDto:
       description: Feedback form
       required:

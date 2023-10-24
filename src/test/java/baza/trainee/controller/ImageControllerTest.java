@@ -1,6 +1,5 @@
 package baza.trainee.controller;
 
-import baza.trainee.dto.SaveImageResponse;
 import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.ArticleService;
 import baza.trainee.service.ImageService;
@@ -14,19 +13,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.File;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -82,24 +76,5 @@ class ImageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.IMAGE_JPEG))
                 .andExpect(content().bytes(imageBytes));
-    }
-
-    @Test
-    @WithMockUser(roles = {"ADMIN"})
-    void testSaveImage() throws Exception {
-        var session = new MockHttpSession(null, "session123");
-
-        var file = new File("src/test/resources/test-images/test.jpg");
-        var resource = new UrlResource(file.toURI());
-        byte[] imageBytes = resource.getContentAsByteArray();
-
-        var mockFile = new MockMultipartFile("file", "example.jpg", "image/jpeg", imageBytes);
-        var response = new SaveImageResponse();
-        response.imageId(UUID.randomUUID().toString());
-       
-        when(imageService.storeToTemp(eq(mockFile), anyString())).thenReturn(response);
-
-        mockMvc.perform(multipart("/api/admin/images").file(mockFile).session(session))
-                .andExpect(status().isCreated());
     }
 }

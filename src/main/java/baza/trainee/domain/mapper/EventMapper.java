@@ -25,6 +25,7 @@ public interface EventMapper {
     @Mapping(target = "id", ignore = true)
     Event toEvent(EventPublication publication);
 
+    @Mapping(target = "created", dateFormat = "yyyy-MM-dd")
     EventResponse toResponse(Event event);
 
 }

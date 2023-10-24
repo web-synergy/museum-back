@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import baza.trainee.domain.enums.Role;
+import baza.trainee.domain.enums.Scope;
 import baza.trainee.domain.model.User;
 import baza.trainee.repository.UserRepository;
 import baza.trainee.service.UserService;
@@ -24,6 +25,8 @@ public class UserServiceImpl implements UserService {
         rootUser.setPassword(encodedPassword);
         rootUser.addRole(Role.ROOT);
         rootUser.addRole(Role.ADMIN);
+        rootUser.addScope(Scope.READ);
+        rootUser.addScope(Scope.WRITE);
 
         return adminRepository.save(rootUser).getId();
     }

@@ -39,7 +39,7 @@ public class MuseumDataAdminControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @MockBean
     private MuseumDataService museumDataService;
 
@@ -65,7 +65,7 @@ public class MuseumDataAdminControllerTest {
 
         when(museumDataService.add(any(MuseumData.class))).thenReturn(museumData);
 
-        mockMvc.perform(performPost(museumDataJson, jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+        mockMvc.perform(performPost(museumDataJson, jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"))))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("1"))
@@ -79,7 +79,7 @@ public class MuseumDataAdminControllerTest {
 
         when(museumDataService.update(any(MuseumData.class))).thenReturn(museumData);
 
-        mockMvc.perform(performPut(museumDataJson, jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+        mockMvc.perform(performPut(museumDataJson, jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.phoneNumber").value("123-456-7890"))

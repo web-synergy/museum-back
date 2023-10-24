@@ -20,7 +20,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -48,27 +47,27 @@ class EventAdminControllerTest {
 
     @Autowired
     private EventMapper eventMapper;
-    
+
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @MockBean
     private EventService eventService;
-    
+
     @MockBean
     private RootUserInitializer rootUserInitializer;
 
     @MockBean
     ArticleService articleService;
     
-    private final JwtRequestPostProcessor ADMIN_AUTHORITIES = jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    private final JwtRequestPostProcessor ADMIN_AUTHORITIES = jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"));
     private EventPublication eventDto;
     private String eventDtoJson;
     private MockHttpSession session;
-    
+
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
@@ -160,7 +159,6 @@ class EventAdminControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = { "ADMIN" })
     void testDeleteEvent() throws Exception {
         String eventId = "12";
 

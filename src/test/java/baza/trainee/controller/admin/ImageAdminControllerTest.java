@@ -75,7 +75,7 @@ public class ImageAdminControllerTest {
         when(imageService.storeToTemp(eq(mockFile), anyString())).thenReturn(response);
 
         // then:
-        mockMvc.perform(performSave(session, mockFile, jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+        mockMvc.perform(performSave(session, mockFile, jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.imageId", is(response.getImageId())));
     }

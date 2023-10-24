@@ -15,10 +15,6 @@ servers:
   - url: http://127.0.0.1:8081/api/admin
     description: Service for managing website of the Kavaleridze museum
 
-security:
-  - basicAuth:
-      - basicAuth
-
 tags:
   - name: Admin Events
     description: |
@@ -35,13 +31,15 @@ tags:
   - name: Authentication
     description: |
       Endpoints for admin authentication.
+  - name: Admin Change Login
+    description: |
+      Endpoints for admin change login.
 
 paths:
   /events:
     post:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Admin Events
       summary: Create a new Event
@@ -81,8 +79,7 @@ paths:
   /events/{id}:
     put:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Admin Events
       summary: Update an existing Event
@@ -134,8 +131,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Admin Events
       summary: Delete an existing Event
@@ -178,8 +174,7 @@ paths:
   /images:
     post:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Admin Images
       operationId: saveImage
@@ -220,8 +215,7 @@ paths:
   /museum_data:
     post:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Admin Museum Data
       description: 'Adds new museum data'
@@ -258,8 +252,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Admin Museum Data
       description:  'Updates existing museum data.'
@@ -276,6 +269,80 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MuseumInfo'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /saveSettingLogin:
+    post:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Admin Change Login
+      description: 'Check new login by duplicate. Check is not exist user by new login.
+        Send letter with verification code. Save new login and verification code.'
+      operationId: updateLogin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLoginRequest'
+      responses:
+        204:
+          description: Save logins and code. Send letter.
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /changeLogin:
+    put:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Admin Change Login
+      description: 'Check entered code by saved code. Find admin in date base by current login.
+        Change admin login to new login.'
+      operationId: approveUpdateLogin
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Save logins and code. Send letter.
         400:
           description: Bad Request
           content:
@@ -319,8 +386,7 @@ paths:
   /logout:
     post:
       security:
-        - basicAuth:
-            - basicAuth
+        - bearerAuth: []
       tags:
         - Authentication
       description: User logout endpoint
@@ -428,6 +494,9 @@ components:
         end:
           type: string
           format: date
+        created:
+          type: string
+          format: date
     MailDto:
       description: Feedback form
       required:
@@ -512,6 +581,21 @@ components:
         funicularRoute:
           description: 'The funicular route information for reaching the museum'
           type: string
+    UpdateLoginRequest:
+      description: New login and  duplicate new login form form
+      required:
+        - newLogin
+        - duplicateNewLogin
+      type: object
+      properties:
+        newLogin:
+          type: string
+          format: email
+          nullable: false
+        duplicateNewLogin:
+          type: string
+          format: email
+          nullable: false
     SuccessAuthResponse:
       description: Login success response
       type: object
@@ -528,3 +612,7 @@ components:
     basicAuth:
       type: http
       scheme: basic
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

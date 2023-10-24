@@ -136,7 +136,7 @@ public class FileSystemStorageUtils {
         try {
             FileSystemUtils.deleteRecursively(root);
         } catch (IOException e) {
-            throw new StorageException("Could not delete session temp folder: " + root);
+            throw new StorageException("Could not delete folder: " + root);
         }
     }
 

@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.UUID;
 
 import static baza.trainee.service.impl.ImageServiceImpl.ImageType.ORIGINAL;
@@ -30,8 +29,8 @@ import static baza.trainee.service.impl.ImageServiceImpl.ImageType.PREVIEW;
 public class ImageServiceImpl implements ImageService {
 
     private final int previewWidth;
-    private final float previewQuality;
     private final int desktopWidth;
+    private final float previewQuality;
     private final float desktopQuality;
 
     private final Path rootPath;
@@ -49,8 +48,7 @@ public class ImageServiceImpl implements ImageService {
      */
     public ImageServiceImpl(
             final StorageProperties storageProperties,
-            final ImageCompressionConfig compressionConfig
-    ) {
+            final ImageCompressionConfig compressionConfig) {
         this.rootPath = Paths.get(storageProperties.getRootImageLocation());
         this.imagesPath = rootPath.resolve(storageProperties.getPersistImageLocation());
         this.tempPath = rootPath.resolve(storageProperties.getTempImagesLocation()).normalize();
@@ -81,20 +79,19 @@ public class ImageServiceImpl implements ImageService {
     }
 
     /**
-     * Load a temporary resource (image) by filename and session ID.
+     * Load a temporary resource (image) by filename and temp folder name.
      *
-     * @param fileId    The name of the file.
-     * @param sessionId The ID of the session associated with the temporary
-     *                  resource.
+     * @param fileId   The name of the file.
+     * @param username Username associated with the temporary
+     *                 resource.
      * @return A byte array containing the temporary resource data.
      */
     @Override
     public byte[] loadTempResource(
             final String fileId,
-            final String sessionId,
-            final String type
-    ) {
-        var tempSessionPath = tempPath.resolve(sessionId);
+            final String username,
+            final String type) {
+        var tempSessionPath = tempPath.resolve(username);
         var currentPath = getCurrentPath(tempSessionPath, fileId, type);
 
         return getResourceFromPath(currentPath);
@@ -103,17 +100,16 @@ public class ImageServiceImpl implements ImageService {
     /**
      * Convert and store an image from multipart file as a temporary resources.
      *
-     * @param file      The image as {@link MultipartFile} to store.
-     * @param sessionId The ID of the session associated with the temporary
-     *                  resource.
+     * @param file       The image as {@link MultipartFile} to store.
+     * @param tempFolder Temp folder name to create for temporary resources.
      * @return The ID of the stored file that represent name of subfolder
-     * with converted images.
+     *         with converted images.
      */
     @Override
-    public SaveImageResponse storeToTemp(final MultipartFile file, final String sessionId) {
+    public SaveImageResponse storeToTemp(final MultipartFile file, final String tempFolder) {
         var imageId = UUID.randomUUID().toString();
-        var sessionTempPath = this.tempPath.resolve(sessionId).resolve(imageId);
-        convertAndStore(sessionTempPath, file, ORIGINAL, PREVIEW);
+        var userTempPath = this.tempPath.resolve(tempFolder).resolve(imageId);
+        convertAndStore(userTempPath, file, ORIGINAL, PREVIEW);
 
         var response = new SaveImageResponse();
         response.setImageId(imageId);
@@ -123,21 +119,30 @@ public class ImageServiceImpl implements ImageService {
     }
 
     /**
-     * Persist and process a list of filenames associated with a session.
+     * Persist image by ID from temp folder to image folder.
      *
-     * @param imageIds  The list of filenames to persist and process.
-     * @param sessionId The ID of the session associated with the files.
+     * @param imageIds   The list of filenames to persist and process.
+     * @param tempFolder Folder associated with the temp files.
      */
     @Override
-    public void persist(final List<String> imageIds, final String sessionId) {
-        var sessionPath = tempPath.resolve(sessionId);
+    public void persist(final String imageId, final String tempFolder) {
+        var sessionPath = tempPath.resolve(tempFolder);
 
-        for (var imageId : imageIds) {
-            var imageTempPath = FileSystemStorageUtils.loadPath(sessionPath).resolve(imageId);
-            var destPath = imagesPath.resolve(imageId);
-            FileSystemStorageUtils.copyRecursively(imageTempPath, destPath);
-        }
+        var imageTempPath = FileSystemStorageUtils.loadPath(sessionPath).resolve(imageId);
+        var destPath = imagesPath.resolve(imageId);
+        FileSystemStorageUtils.copyRecursively(imageTempPath, destPath);
         FileSystemStorageUtils.deleteRecursively(sessionPath);
+    }
+
+    /**
+     * Delete existing image.
+     *
+     * @param imageId ID of image to delete.
+     */
+    @Override
+    public void deleteImage(String imageId) {
+        var pathToDelete = imagesPath.resolve(imageId);
+        FileSystemStorageUtils.deleteRecursively(pathToDelete);
     }
 
     private Path getCurrentPath(final Path root, final String fileId, final String type) {
