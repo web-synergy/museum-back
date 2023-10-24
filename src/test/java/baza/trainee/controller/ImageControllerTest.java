@@ -1,7 +1,7 @@
 package baza.trainee.controller;
 
-import baza.trainee.dto.SaveImageResponse;
 import baza.trainee.security.RootUserInitializer;
+import baza.trainee.service.ArticleService;
 import baza.trainee.service.ImageService;
 import baza.trainee.service.impl.ImageServiceImpl.ImageType;
 
@@ -13,19 +13,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.File;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,6 +36,9 @@ class ImageControllerTest {
 
     @MockBean
     private RootUserInitializer rootUserInitializer;
+
+    @MockBean
+    ArticleService articleService;
 
     @Test
     void testGetImage() throws Exception {

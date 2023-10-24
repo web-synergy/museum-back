@@ -1,6 +1,5 @@
 package baza.trainee.service.impl;
 
-
 import baza.trainee.domain.mapper.EventMapper;
 import baza.trainee.domain.mapper.PageEventMapper;
 import baza.trainee.domain.model.Event;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static baza.trainee.utils.ExceptionUtils.getNotFoundExceptionSupplier;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,35 +35,52 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventResponse getById(String id) {
-        Event event = eventRepository.findById(id)
-                .orElseThrow(getNotFoundExceptionSupplier(Event.class ,"ID: " + id));
+        var event = eventRepository.findById(id)
+                .orElseThrow(getNotFoundExceptionSupplier(Event.class, "ID: " + id));
         return eventMapper.toResponse(event);
     }
 
     @Override
     @Transactional
-    public EventResponse save(EventPublication newEvent, String sessionId) {
-        Event eventToSave = eventMapper.toEvent(newEvent);
+    public EventResponse save(EventPublication event, String username) {
+        var eventToSave = eventMapper.toEvent(event);
 
-        var fileNames = newEvent.getBanner();
+        Optional.ofNullable(event.getBanner())
+                .filter(imageId -> !imageId.isBlank() || !imageId.isEmpty())
+                .ifPresent(imageId -> imageService.persist(imageId, username));
 
-        imageService.persist(List.of(fileNames), sessionId);
-        Event savedEvent = eventRepository.save(eventToSave);
+        var savedEvent = eventRepository.save(eventToSave);
 
         return eventMapper.toResponse(savedEvent);
     }
 
     @Override
     @Transactional
-    public EventResponse update(String id, EventPublication publication, String sessionId) {
+    public EventResponse update(String id, EventPublication publication, String username) {
         var eventToUpdate = eventRepository.findById(id)
-                .orElseThrow(getNotFoundExceptionSupplier(Event.class ,"ID: " + id));
+                .orElseThrow(getNotFoundExceptionSupplier(Event.class, "ID: " + id));
+
         var eventForUpdate = eventMapper.toEvent(publication);
         eventForUpdate.setId(eventToUpdate.getId());
         eventForUpdate.setCreated(eventToUpdate.getCreated());
 
-        Optional.ofNullable(eventForUpdate.getBanner())
-                .ifPresent(i -> imageService.persist(List.of(i), sessionId));
+        if (eventToUpdate.getBanner() != null) {
+            var existingBanner = eventToUpdate.getBanner();
+
+            if (eventForUpdate.getBanner() != null
+                    && !eventForUpdate.getBanner().equals(existingBanner)) {
+                var bannerToUpdate = eventForUpdate.getBanner();
+
+                imageService.deleteImage(existingBanner);
+                imageService.persist(bannerToUpdate, username);
+            } else if (eventForUpdate.getBanner() == null) {
+                imageService.deleteImage(existingBanner);
+            }
+        } else if (eventForUpdate.getBanner() != null) {
+            var bannerToUpdate = eventForUpdate.getBanner();
+
+            imageService.persist(bannerToUpdate, username);
+        }
 
         var updatedEvent = eventRepository.update(eventForUpdate);
 
@@ -75,7 +90,12 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public void deleteEventById(String id) {
-        getById(id);
+        var existingEvent = getById(id);
+
+        Optional.ofNullable(existingEvent.getBanner())
+                .filter(imageId -> !imageId.isBlank() || !imageId.isEmpty())
+                .ifPresent(imageId -> imageService.deleteImage(imageId));
+
         eventRepository.deleteById(id);
     }
 }

@@ -14,7 +14,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -136,7 +135,7 @@ class ImageServiceTest {
                 .toFile();
 
         // when:
-        imageService.persist(List.of(generatedFileId.getImageId()), sessionId);
+        imageService.persist(generatedFileId.getImageId(), sessionId);
 
         // then:
         assertTrue(createdDesktopFile.exists());
@@ -180,7 +179,7 @@ class ImageServiceTest {
         var generatedFileName = imageService.storeToTemp(file, sessionId);
         
         String imageId = generatedFileName.getImageId();
-        imageService.persist(List.of(imageId), sessionId);
+        imageService.persist(imageId, sessionId);
 
         byte[] previewsResource = imageService.loadResource(imageId, ImageType.PREVIEW.getValue());
         byte[] originalsResource = imageService.loadResource(imageId, ImageType.ORIGINAL.getValue());

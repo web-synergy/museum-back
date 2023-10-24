@@ -3,6 +3,7 @@ package baza.trainee.controller.admin;
 import baza.trainee.dto.EventPublication;
 import baza.trainee.domain.mapper.EventMapper;
 import baza.trainee.security.RootUserInitializer;
+import baza.trainee.service.ArticleService;
 import baza.trainee.service.EventService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,24 +47,27 @@ class EventAdminControllerTest {
 
     @Autowired
     private EventMapper eventMapper;
-    
+
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @MockBean
     private EventService eventService;
-    
+
     @MockBean
     private RootUserInitializer rootUserInitializer;
+
+    @MockBean
+    ArticleService articleService;
     
     private final JwtRequestPostProcessor ADMIN_AUTHORITIES = jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"));
     private EventPublication eventDto;
     private String eventDtoJson;
     private MockHttpSession session;
-    
+
 
     @BeforeEach
     void setUp() throws JsonProcessingException {

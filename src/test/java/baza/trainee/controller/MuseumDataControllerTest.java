@@ -3,6 +3,7 @@ package baza.trainee.controller;
 import baza.trainee.domain.model.MuseumData;
 import baza.trainee.exceptions.custom.EntityNotFoundException;
 import baza.trainee.security.RootUserInitializer;
+import baza.trainee.service.ArticleService;
 import baza.trainee.service.MuseumDataService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,9 @@ public class MuseumDataControllerTest {
 
     @MockBean
     private RootUserInitializer initializer;
+
+    @MockBean
+    ArticleService articleService;
 
     private MuseumData museumData;
 

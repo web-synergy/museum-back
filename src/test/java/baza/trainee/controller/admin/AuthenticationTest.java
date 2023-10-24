@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import baza.trainee.service.ArticleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,6 +35,9 @@ public class AuthenticationTest {
 
     @MockBean
     private RootUserInitializer rootUserInitializer;
+
+    @MockBean
+    ArticleService articleService;
 
     @Test
     @WithMockUser(roles = { "ADMIN" })

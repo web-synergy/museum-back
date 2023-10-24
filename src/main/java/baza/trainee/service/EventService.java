@@ -15,6 +15,7 @@ public interface EventService {
 
     /**
      * Retrieve detailed information about a specific event by its id.
+     * 
      * @param id The unique identifier of the event.
      * @return An Event with given ID.
      */
@@ -23,24 +24,27 @@ public interface EventService {
     /**
      * Create a new event based on the provided EventPublicationDto.
      *
-     * @param newEvent The EventPublication containing information about the event to be created.
-     * @param sessionId - user sessionId
+     * @param event    The EventPublication containing information about the event
+     *                 to be created.
+     * @param username - admin`s username
      * @return Saved event.
      */
-    EventResponse save(EventPublication newEvent, String sessionId);
+    EventResponse save(EventPublication event, String username);
 
     /**
      * Update an existing event identified by id.
-     * @param updatedEvent The EventPublication containing updated information for the event.
-     * @param id The unique identifier of the event to be updated.
-     * @param sessionId - user sessionId
+     * 
+     * @param event    The EventPublication containing updated information for
+     *                 the event.
+     * @param id       The unique identifier of the event to be updated.
+     * @param username - admin`s username
      * @return Updated event.
      */
-    EventResponse update(String id, EventPublication updatedEvent, String sessionId
-    );
+    EventResponse update(String id, EventPublication event, String username);
 
     /**
      * Delete an event identified by its id.
+     * 
      * @param id The unique identifier of the event to be deleted.
      */
     void deleteEventById(String id);

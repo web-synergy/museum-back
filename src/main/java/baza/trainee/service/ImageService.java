@@ -4,8 +4,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import baza.trainee.dto.SaveImageResponse;
 
-import java.util.List;
-
 public interface ImageService {
 
     /**
@@ -20,30 +18,37 @@ public interface ImageService {
     /**
      * Load image from temporary file storage as array of bytes.
      *
-     * @param filename  name of the loaded image.
-     * @param sessionId ID of local session.
-     * @param type      type of the image.
+     * @param filename name of the loaded image.
+     * @param username Admin`s username.
+     * @param type     type of the image.
      * @return image as an array of bytes.
      */
-    byte[] loadTempResource(String filename, String sessionId, String type);
+    byte[] loadTempResource(String filename, String username, String type);
 
     /**
      * Store {@link MultipartFile} as File to temporary file storage
      * with random filename.
      *
-     * @param file      {@link MultipartFile} to store.
-     * @param sessionId ID of local session.
+     * @param file     {@link MultipartFile} to store.
+     * @param username Admin`s username.
      * @return Response with the image name of the saved file.
      */
-    SaveImageResponse storeToTemp(MultipartFile file, String sessionId);
+    SaveImageResponse storeToTemp(MultipartFile file, String username);
 
     /**
      * Store all files by filenames from temporary file storage to
      * permanent file storage.
      *
-     * @param filenames names of the persisted files.
-     * @param sessionId ID of local session.
+     * @param imageId  ID of the persisted files.
+     * @param username Admin`s username.
      */
-    void persist(List<String> filenames, String sessionId);
+    void persist(String imageId, String username);
+
+    /**
+     * Delete existing image.
+     *
+     * @param imageId ID of image to delete.
+     */
+    void deleteImage(String imageId);
 
 }

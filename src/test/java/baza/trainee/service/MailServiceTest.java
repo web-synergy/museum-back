@@ -18,6 +18,9 @@ class MailServiceTest {
     @MockBean
     RootUserInitializer rootUserInitializer;
 
+    @MockBean
+    ArticleService articleService;
+
     @Test
     void testBuildMsgForUser() {
         String result = mailService.buildMsgForUser();

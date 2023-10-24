@@ -29,9 +29,12 @@ mail:
     path:
       user: templates/msg_for_user.html
       museum: templates/msg_for_museum.html
+      change_login: templates/msg_for_change_login.html
+
   museum:
     email: ${MAIL_USER}
     label: Museum.ua
+    messagetimeout: 120
 
 logging:
   file:
@@ -50,6 +53,10 @@ resources:
       original: 'original'
       compressed: 'compressed'
       temporary: 'temp'
+
+static:
+  json:
+    articles: static/articles.json
 
 users:
   root:
