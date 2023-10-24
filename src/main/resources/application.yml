@@ -50,6 +50,10 @@ resources:
       compressed: 'compressed'
       temporary: 'temp'
 
+static:
+  json:
+    articles: static/articles.json
+
 users:
   root:
     credentials:

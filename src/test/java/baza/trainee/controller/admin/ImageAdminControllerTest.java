@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import baza.trainee.service.ArticleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class ImageAdminControllerTest {
 
     @MockBean
     private RootUserInitializer rootUserInitializer;
+
+    @MockBean
+    ArticleService articleService;
 
     private MockMultipartFile mockFile;
     private MockHttpSession session;

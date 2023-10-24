@@ -1,6 +1,7 @@
 package baza.trainee.controller;
 
 import baza.trainee.security.RootUserInitializer;
+import baza.trainee.service.ArticleService;
 import baza.trainee.service.ImageService;
 import baza.trainee.service.impl.ImageServiceImpl.ImageType;
 
@@ -35,6 +36,9 @@ class ImageControllerTest {
 
     @MockBean
     private RootUserInitializer rootUserInitializer;
+
+    @MockBean
+    ArticleService articleService;
 
     @Test
     void testGetImage() throws Exception {

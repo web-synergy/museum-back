@@ -3,20 +3,14 @@ package baza.trainee.domain.model;
 
 import com.redis.om.spring.annotations.Document;
 import com.redis.om.spring.annotations.Indexed;
-
-import baza.trainee.dto.ContentBlock;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The domain model of the static content of a web page.
@@ -24,12 +18,14 @@ import java.util.Set;
  * @author Olha Ryzhkova
  * @version 1.0
  */
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(toBuilder = true)
 @Document
-public class Article {
+public class Article implements Searchable {
 
     /**
      * Unique identifier.
@@ -45,34 +41,18 @@ public class Article {
     private String title;
 
     /**
-     * Brief description of the article.
-     */
-    @Indexed
-    private String description;
-
-    /**
      * Article content.
      */
-    @Builder.Default
-    private Set<ContentBlock> content = new HashSet<>();
+    @Indexed
+    private String content;
 
     /**
-     * The date the article was published.
+     * Type of the searchable object.
+     *
+     * @return object type.
      */
-    @CreatedDate
-    private LocalDate created;
-
-    /**
-     * The date the article was updated.
-     */
-    @LastModifiedDate
-    private LocalDate updated;
-
-    /**
-     * Add block of content to the article.
-     * @param block block of content
-     */
-    public void addContentBlock(final ContentBlock block) {
-        this.content.add(block);
+    @Override
+    public String getType() {
+        return "static";
     }
 }

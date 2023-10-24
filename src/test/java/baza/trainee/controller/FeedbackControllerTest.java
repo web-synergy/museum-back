@@ -3,6 +3,7 @@ package baza.trainee.controller;
 import baza.trainee.dto.MailDto;
 import baza.trainee.exceptions.custom.EmailSendingException;
 import baza.trainee.security.RootUserInitializer;
+import baza.trainee.service.ArticleService;
 import baza.trainee.service.MailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,6 +47,9 @@ class FeedbackControllerTest {
 
     @MockBean
     private RootUserInitializer rootUserInitializer;
+
+    @MockBean
+    ArticleService articleService;
 
     @BeforeAll
     public void setUp() {

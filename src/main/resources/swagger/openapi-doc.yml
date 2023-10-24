@@ -30,10 +30,6 @@ tags:
     description: |
       Endpoints for performing searches on the website.
       Allows users to search for events, articles, and more.
-  - name: Articles
-    description: |
-      Endpoints for performing article-related operations.
-      Provides access to articles and allows users to interact with them.
   - name: Museum Data
     description: |
       Endpoints for retrieving museum data in the public API.
@@ -248,45 +244,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /articles/{title}:
-    get:
-      tags:
-        - Articles
-      summary: Find article by title
-      description: Returns an article by its title.
-      operationId: findByTitle
-      parameters:
-        - name: title
-          in: path
-          description: Title of the article
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: Found the article
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticleResponse'
-        400:
-          description: Title request is invalid
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        404:
-          description: Article not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /search/{query}:
     get:
       tags:
@@ -440,59 +397,6 @@ components:
         imageId:
           type: string
         originalUrl:
-          type: string
-    ArticleResponse:
-      required:
-        - content
-        - description
-        - title
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-          minLength: 3
-          maxLength: 300
-        description:
-          type: string
-          minLength: 3
-          maxLength: 300
-        content:
-          type: array
-          uniqueItems: true
-          items:
-            $ref: '#/components/schemas/ContentBlock'
-        created:
-          type: string
-          format: date
-        updated:
-          type: string
-          format: date
-    ContentBlock:
-      required:
-        - blockType
-        - columns
-        - order
-      type: object
-      properties:
-        id:
-          type: string
-        order:
-          type: integer
-          format: int32
-        columns:
-          type: integer
-          format: int32
-        blockType:
-          type: string
-          enum:
-            - TEXT_BLOCK
-            - PICTURE_BLOCK
-            - PICTURE_TEXT_BLOCK
-        textContent:
-          type: string
-        pictureLink:
           type: string
     PageEvent:
       type: object
