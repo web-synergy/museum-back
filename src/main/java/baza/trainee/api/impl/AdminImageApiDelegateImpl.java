@@ -32,5 +32,5 @@ public class AdminImageApiDelegateImpl implements AdminImagesApiDelegate {
                 imageService.loadTempResource(filename, username, type),
                 HttpStatus.OK);
     }
-    
+
 }
