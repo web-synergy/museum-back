@@ -113,7 +113,7 @@ public class ImageServiceImpl implements ImageService {
 
         var response = new SaveImageResponse();
         response.setImageId(imageId);
-        response.setOriginalUrl("/api/images/temp?filename=" + imageId + "&type=" + ORIGINAL.getValue());
+        response.setOriginalUrl("/api/admin/images/temp?filename=" + imageId + "&type=" + ORIGINAL.getValue());
 
         return response;
     }
