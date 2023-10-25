@@ -19,12 +19,4 @@ public class ImageApiDelegateImpl implements ImagesApiDelegate {
     public ResponseEntity<byte[]> getImage(String filename, String type) {
         return new ResponseEntity<>(imageService.loadResource(filename, type), HttpStatus.OK);
     }
-
-    @Override
-    public ResponseEntity<byte[]> getTempImage(String filename, String type) {
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return new ResponseEntity<>(
-                imageService.loadTempResource(filename, username, type),
-                HttpStatus.OK);
-    }
 }

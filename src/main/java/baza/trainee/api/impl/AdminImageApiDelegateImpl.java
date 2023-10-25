@@ -24,5 +24,13 @@ public class AdminImageApiDelegateImpl implements AdminImagesApiDelegate {
                 imageService.storeToTemp(file, username),
                 HttpStatus.CREATED);
     }
+
+    @Override
+    public ResponseEntity<byte[]> getTempImage(String filename, String type) {
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ResponseEntity<>(
+                imageService.loadTempResource(filename, username, type),
+                HttpStatus.OK);
+    }
     
 }

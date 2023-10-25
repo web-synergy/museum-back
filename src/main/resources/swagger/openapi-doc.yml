@@ -36,51 +36,6 @@ tags:
       This API handles public operations with museum data.
 
 paths:
-  /images/temp:
-    get:
-      tags:
-        - Images
-      operationId: getTempImage
-      parameters:
-        - name: filename
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: type
-          in: query
-          required: true
-          schema:
-            type: string
-            enum:
-              - ORIGINAL
-              - PREVIEW
-      responses:
-        200:
-          description: OK
-          content:
-            image/jpeg:
-              schema:
-                type: string
-                format: byte
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        404:
-          description: Entity not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'  
   /images:
     get:
       tags:
