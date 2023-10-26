@@ -10,10 +10,10 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <groupId>baza.trainee</groupId>
-    <artifactId>kavaleridze-backend</artifactId>
+    <artifactId>museum-back</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>kavaleridze-backend</name>
-    <description>kavaleridze-backend</description>
+    <name>museum-back</name>
+    <description>museum-back</description>
     <properties>
         <java.version>17</java.version>
         <redis-om.version>0.8.6</redis-om.version>
