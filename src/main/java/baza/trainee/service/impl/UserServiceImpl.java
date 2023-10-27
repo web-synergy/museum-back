@@ -1,5 +1,6 @@
 package baza.trainee.service.impl;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository adminRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     public String createRootUser(String email, String rawPassword) {
@@ -28,6 +29,14 @@ public class UserServiceImpl implements UserService {
         rootUser.addScope(Scope.READ);
         rootUser.addScope(Scope.WRITE);
 
-        return adminRepository.save(rootUser).getId();
+        return userRepository.save(rootUser).getId();
+    }
+
+    @Override
+    public void updatePassword(String password, String userName) {
+        User user = userRepository.findByEmail(userName).orElseThrow(
+                () -> new UsernameNotFoundException(String.format("User with name %s was not found!", userName)));
+        user.setPassword(password);
+        userRepository.update(user);
     }
 }
