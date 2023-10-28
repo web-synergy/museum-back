@@ -34,6 +34,9 @@ tags:
   - name: Admin Change Login
     description: |
       Endpoints for admin change login.
+  - name: Admin Change Password
+    description: |
+      Endpoints for updating admins password.
 
 paths:
   /events:
@@ -334,7 +337,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
   /saveSettingLogin:
     post:
       security:
@@ -397,7 +399,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -443,6 +445,42 @@ paths:
           description: Logout successfully
         401:
           description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /change-password:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Change Password
+      description: |
+        Receive new password for update and save changed user with updated password.
+      operationId: updatePassword
+      parameters:
+        - name: password
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Password was updated
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
           content:
             application/json:
               schema:
