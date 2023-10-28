@@ -5,6 +5,7 @@ import baza.trainee.repository.UserRepository;
 import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.ArticleService;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -40,14 +41,20 @@ public class AdminChangePasswordTest {
     @MockBean
     private RootUserInitializer rootUserInitializer;
 
+    private User user;
+
+    @BeforeEach
+    void setUp(){
+        user = new User();
+        user.setId(UUID.randomUUID().toString());
+        user.setEmail("email@gmail.com");
+        user.setPassword("old_password");
+    }
+
     @Test
     @SneakyThrows
     void updatePasswordWithValidData_ShouldReturnNoContent() {
         String password = "new_password";
-        User user = new User();
-        user.setId(UUID.randomUUID().toString());
-        user.setEmail("email@gmail.com");
-        user.setPassword("old_password");
 
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
@@ -62,10 +69,6 @@ public class AdminChangePasswordTest {
     @SneakyThrows
     void updatePasswordWithInValidData_ShouldReturnBadRequest() {
         String password = null;
-        User user = new User();
-        user.setId(UUID.randomUUID().toString());
-        user.setEmail("email@gmail.com");
-        user.setPassword("old_password");
 
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
@@ -80,10 +83,6 @@ public class AdminChangePasswordTest {
     @SneakyThrows
     void updatePasswordWithoutAuthentication_ShouldReturnUnauthorized() {
         String password = "new_password";
-        User user = new User();
-        user.setId(UUID.randomUUID().toString());
-        user.setEmail("email@gmail.com");
-        user.setPassword("old_password");
 
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
