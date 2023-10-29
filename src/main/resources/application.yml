@@ -26,11 +26,11 @@ mail:
       user: templates/msg_for_user.html
       museum: templates/msg_for_museum.html
       change_login: templates/msg_for_change_login.html
-
+      password_recovery: templates/msg_for_password_recovery.html
   museum:
     email: ${MAIL_USER}
     label: Museum.ua
-    messagetimeout: 120
+    key_expiration_time: 120
 
 logging:
   file:
