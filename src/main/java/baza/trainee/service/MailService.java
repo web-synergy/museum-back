@@ -1,5 +1,6 @@
 package baza.trainee.service;
 
+import baza.trainee.domain.enums.Templates;
 
 public interface MailService {
 
@@ -13,28 +14,12 @@ public interface MailService {
     void sendEmail(String to, String message, String subject);
 
     /**
-     * Builds a message for a user.
+     * Build HTML message content from template with a given parameters.
      *
-     * @return A formatted html-message string for user.
+     * @param template   message template.
+     * @param parameters template params.
+     * @return formatted HTML content.
      */
-    String buildMsgForUser();
+    String buildHTMLMessageContent(Templates template, String... parameters);
 
-    /**
-     * Builds a message for a museum, including user information and a custom message.
-     *
-     * @param firstName The first name of the user.
-     * @param lastName  The last name of the user.
-     * @param email     The email address of the user.
-     * @param message   The message from user.
-     * @return A formatted html-message string for the museum that includes user information and message.
-     */
-    String buildMsgForMuseum(String firstName, String lastName, String email, String message);
-
-    /**
-     * Builds a message for the admin, including change code and a custom message.
-     *
-     * @param code Code for change login
-     * @return A formatted html-message string for the museum that includes user information and message.
-     */
-    String buildMsgForChangeLogin(String code);
 }

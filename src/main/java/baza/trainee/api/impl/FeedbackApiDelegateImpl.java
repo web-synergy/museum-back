@@ -1,6 +1,8 @@
 package baza.trainee.api.impl;
 
 import static baza.trainee.constants.MailConstants.MUSEUM_SUBJECT;
+import static baza.trainee.domain.enums.Templates.MUSEUM_FEEDBACK;
+import static baza.trainee.domain.enums.Templates.USER_FEEDBACK;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +24,16 @@ public class FeedbackApiDelegateImpl implements FeedbackApiDelegate {
 
     @Override
     public ResponseEntity<Void> submitContactForm(MailDto mailDto) {
-        String msgForUser = mailService.buildMsgForUser();
+        String msgForUser = mailService.buildHTMLMessageContent(USER_FEEDBACK);
         mailService.sendEmail(mailDto.getEmail(), msgForUser, MUSEUM_SUBJECT);
 
-        String msgForMuseum = mailService.buildMsgForMuseum(mailDto.getFirstName(), mailDto.getLastName(),
-                mailDto.getEmail(), mailDto.getMessage());
+        String msgForMuseum = mailService.buildHTMLMessageContent(
+                MUSEUM_FEEDBACK,
+                mailDto.getFirstName(),
+                mailDto.getLastName(),
+                mailDto.getEmail(),
+                mailDto.getMessage()
+        );
         mailService.sendEmail(museumEmail, msgForMuseum, MUSEUM_SUBJECT);
 
         return ResponseEntity.noContent().build();

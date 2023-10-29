@@ -1,7 +1,9 @@
 package baza.trainee.service.impl;
 
+import baza.trainee.domain.enums.Templates;
 import baza.trainee.exceptions.custom.EmailSendingException;
 import baza.trainee.service.MailService;
+import baza.trainee.utils.FileSystemStorageUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +12,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 
 import static baza.trainee.constants.MailConstants.FAIL_SEND_MSG;
 
@@ -23,13 +22,16 @@ import static baza.trainee.constants.MailConstants.FAIL_SEND_MSG;
 public class MailServiceImpl implements MailService {
 
     @Value("${mail.template.path.museum}")
-    private String museumTemplatePath;
+    private String museumFeedbackTemplatePath;
 
     @Value("${mail.template.path.user}")
-    private String userTemplatePath;
+    private String userFeedbackTemplatePath;
 
     @Value("${mail.template.path.change_login}")
-    private String changeLoginTemplatePath;
+    private String updateLoginTemplatePath;
+
+    @Value("${mail.template.path.password_recovery}")
+    private String passwordRecoveryTemplatePath;
 
     @Value("${mail.museum.email}")
     private String museumEmail;
@@ -38,6 +40,17 @@ public class MailServiceImpl implements MailService {
     private String museumLabel;
 
     private final JavaMailSender mailSender;
+
+    @Override
+    public String buildHTMLMessageContent(Templates template, String... parameters) {
+        return switch (template) {
+            case MUSEUM_FEEDBACK ->
+                    buildMuseumMessageContent(parameters[0], parameters[1], parameters[2], parameters[3]);
+            case USER_FEEDBACK -> buildUserMessageContent();
+            case UPDATE_LOGIN -> buildUpdateLoginMessageContent(parameters[0]);
+            case PASSWORD_RECOVERY -> buildPasswordRecoveryMessageContent(parameters[0]);
+        };
+    }
 
     @Override
     public void sendEmail(final String to, final String message, final String subject) {
@@ -54,41 +67,37 @@ public class MailServiceImpl implements MailService {
         }
     }
 
-    @Override
-    public String buildMsgForUser() {
-        return readHtmlTemplateFromFile(userTemplatePath);
+    private String buildUserMessageContent() {
+        return readHtmlTemplateFromFile(userFeedbackTemplatePath);
     }
 
-    @Override
-    public String buildMsgForChangeLogin(final String code) {
-        String emailTemplate = readHtmlTemplateFromFile(changeLoginTemplatePath);
-
-        emailTemplate = emailTemplate.replace("{{code}}", code);
-        return emailTemplate;
+    private String buildMuseumMessageContent(
+            final String firstName,
+            final String lastName,
+            final String email,
+            final String message
+    ) {
+        return readHtmlTemplateFromFile(museumFeedbackTemplatePath)
+                .replace("{{firstName}}", firstName)
+                .replace("{{lastName}}", lastName)
+                .replace("{{email}}", email)
+                .replace("{{message}}", message);
     }
 
-    @Override
-    public String buildMsgForMuseum(final String firstName, final String lastName,
-                                    final String email, final String message) {
-        String emailTemplate = readHtmlTemplateFromFile(museumTemplatePath);
+    private String buildUpdateLoginMessageContent(final String code) {
+        return readHtmlTemplateFromFile(updateLoginTemplatePath)
+                .replace("{{code}}", code);
+    }
 
-        emailTemplate = emailTemplate.replace("{{firstName}}", firstName);
-        emailTemplate = emailTemplate.replace("{{lastName}}", lastName);
-        emailTemplate = emailTemplate.replace("{{email}}", email);
-        emailTemplate = emailTemplate.replace("{{message}}", message);
-
-        return emailTemplate;
+    private String buildPasswordRecoveryMessageContent(String password) {
+        return readHtmlTemplateFromFile(passwordRecoveryTemplatePath)
+                .replace("{{password}}", password);
     }
 
     private String readHtmlTemplateFromFile(final String filePath) {
         ClassPathResource resource = new ClassPathResource(filePath);
+        byte[] byteArray = FileSystemStorageUtils.getByteArrayFromResource(resource);
 
-        byte[] byteArray;
-        try {
-            byteArray = FileCopyUtils.copyToByteArray(resource.getInputStream());
-        } catch (IOException e) {
-            throw new EmailSendingException("Impossible to read the file with the letter template.");
-        }
-        return new String(byteArray, StandardCharsets.UTF_8);
+        return new String(byteArray);
     }
 }
