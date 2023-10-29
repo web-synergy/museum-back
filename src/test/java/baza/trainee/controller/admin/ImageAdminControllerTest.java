@@ -5,7 +5,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import baza.trainee.service.ArticleService;
+import baza.trainee.service.impl.ImageServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -37,7 +41,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 @SpringBootTest(webEnvironment = MOCK)
 @AutoConfigureMockMvc
-public class ImageAdminControllerTest {
+class ImageAdminControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -70,7 +74,7 @@ public class ImageAdminControllerTest {
     }
 
     @Test
-    public void authorizeAdminShouldBeAbleToSaveImageToTemp() throws Exception {
+    void authorizeAdminShouldBeAbleToSaveImageToTemp() throws Exception {
         // when:
         when(imageService.storeToTemp(eq(mockFile), anyString())).thenReturn(response);
 
@@ -81,7 +85,7 @@ public class ImageAdminControllerTest {
     }
 
     @Test
-    public void anonymousUserShouldNotBeAbleToSaveImageToTemp() throws Exception {
+    void anonymousUserShouldNotBeAbleToSaveImageToTemp() throws Exception {
         // when:
         when(imageService.storeToTemp(eq(mockFile), anyString())).thenReturn(response);
 
@@ -89,6 +93,27 @@ public class ImageAdminControllerTest {
         mockMvc.perform(performSave(session, mockFile, anonymous()))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.imageId").doesNotExist());
+    }
+
+    @Test
+    void testGetTempImage() throws Exception {
+        var file = new File("src/test/resources/test-images/test.jpg");
+        var resource = new UrlResource(file.toURI());
+        byte[] imageBytes = resource.getContentAsByteArray();
+
+        when(imageService.loadTempResource(anyString(), anyString(), anyString())).thenReturn(imageBytes);
+
+        MockHttpSession session = new MockHttpSession(null, "session123");
+
+        mockMvc.perform(get("/api/admin/images/temp")
+                        .session(session)
+                        .with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE")))
+                        .param("filename", "temp.jpg")
+                        .param("type", ImageServiceImpl.ImageType.PREVIEW.getValue())
+                        .contentType(MediaType.IMAGE_JPEG_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.IMAGE_JPEG))
+                .andExpect(content().bytes(imageBytes));
     }
 
     private<T extends RequestPostProcessor> MockHttpServletRequestBuilder performSave(

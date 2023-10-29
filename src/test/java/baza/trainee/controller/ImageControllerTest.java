@@ -3,7 +3,6 @@ package baza.trainee.controller;
 import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.ArticleService;
 import baza.trainee.service.ImageService;
-import baza.trainee.service.impl.ImageServiceImpl.ImageType;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.File;
@@ -52,26 +50,6 @@ class ImageControllerTest {
                 get("/api/images")
                         .param("filename", "example.jpg")
                         .param("type", "preview")
-                        .contentType(MediaType.IMAGE_JPEG_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.IMAGE_JPEG))
-                .andExpect(content().bytes(imageBytes));
-    }
-
-    @Test
-    void testGetTempImage() throws Exception {
-        var file = new File("src/test/resources/test-images/test.jpg");
-        var resource = new UrlResource(file.toURI());
-        byte[] imageBytes = resource.getContentAsByteArray();
-
-        when(imageService.loadTempResource(anyString(), anyString(), anyString())).thenReturn(imageBytes);
-
-        MockHttpSession session = new MockHttpSession(null, "session123");
-
-        mockMvc.perform(get("/api/images/temp")
-                        .session(session)
-                        .param("filename", "temp.jpg")
-                        .param("type", ImageType.PREVIEW.getValue())
                         .contentType(MediaType.IMAGE_JPEG_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.IMAGE_JPEG))
