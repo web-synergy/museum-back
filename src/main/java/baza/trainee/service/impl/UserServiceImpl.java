@@ -19,9 +19,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     public String createRootUser(String email, String rawPassword) {
-        String encodedPassword = passwordEncoder.encode(rawPassword);
+        var encodedPassword = passwordEncoder.encode(rawPassword);
 
-        User rootUser = new User();
+        var rootUser = new User();
         rootUser.setEmail(email);
         rootUser.setPassword(encodedPassword);
         rootUser.addRole(Role.ROOT);
@@ -33,10 +33,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(String password, String userName) {
-        User user = userRepository.findByEmail(userName).orElseThrow(
-                () -> new UsernameNotFoundException(String.format("User with name %s was not found!", userName)));
-        user.setPassword(password);
+    public void updatePassword(String password, String email) {
+        var user = getUserByEmail(email);
+        var encodedPassword = passwordEncoder.encode(password);
+        user.setPassword(encodedPassword);
         userRepository.update(user);
+    }
+
+    @Override
+    public Integer incrementLoginCounter(String email) {
+        var user = getUserByEmail(email);
+        int counter = user.incrementLoginCounter();
+        userRepository.update(user);
+
+        return counter;
+    }
+
+    private User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new UsernameNotFoundException(String.format("User with email %s was not found!", email)));
     }
 }

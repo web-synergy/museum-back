@@ -2,6 +2,7 @@ package baza.trainee.api.impl;
 
 import java.util.stream.Collectors;
 
+import baza.trainee.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate {
 
     private final TokenService tokenService;
+    private final UserService userService;
 
     @Override
     public ResponseEntity<SuccessAuthResponse> login() {
@@ -31,6 +33,9 @@ public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate 
 
         var generatedToken = tokenService.generateToken(authentication);
         response.setToken(generatedToken);
+
+        int counter = userService.incrementLoginCounter(authentication.getName());
+        response.setLoginCounter(counter);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
