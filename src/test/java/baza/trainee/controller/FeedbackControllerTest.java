@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static baza.trainee.constants.MailConstants.FAIL_SEND_MSG;
 import static baza.trainee.constants.MailConstants.MUSEUM_SUBJECT;
+import static baza.trainee.domain.enums.Templates.MUSEUM_FEEDBACK;
+import static baza.trainee.domain.enums.Templates.USER_FEEDBACK;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,8 +61,9 @@ class FeedbackControllerTest {
 
     @Test
     void testSubmitContactFormWithValidData() throws Exception {
-        when(mailService.buildMsgForUser()).thenReturn("Message for user");
-        when(mailService.buildMsgForMuseum(any(), any(), any(), any())).thenReturn("Message for museum");
+        when(mailService.buildHTMLMessageContent(USER_FEEDBACK)).thenReturn("Message for user");
+        when(mailService.buildHTMLMessageContent(eq(MUSEUM_FEEDBACK), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn("Message for museum");
 
         mockMvc.perform(post("/api/feedback/submit")
                         .contentType(MediaType.APPLICATION_JSON)

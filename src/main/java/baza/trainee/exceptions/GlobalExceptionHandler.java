@@ -5,9 +5,11 @@ import baza.trainee.exceptions.errors.ErrorResponse;
 import baza.trainee.utils.Logger;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,7 +25,7 @@ public class GlobalExceptionHandler {
      *
      * @param ex The custom application exception to handle.
      * @return A ResponseEntity containing an error response
-     *         with the exception message and timestamp.
+     * with the exception message and timestamp.
      */
     @ExceptionHandler(BasicApplicationException.class)
     @ApiResponses(value = {
@@ -38,14 +40,34 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handles {@link UsernameNotFoundException} exception and logs the error
+     * before returning an error response 404.
+     *
+     * @param ex {@link UsernameNotFoundException} exception to handle.
+     * @return A ResponseEntity containing an error response 404
+     * with the exception message and timestamp.
+     */
+    @ExceptionHandler(UsernameNotFoundException.class)
+    @ApiResponse(responseCode = "404", description = "Entity not found")
+    public ResponseEntity<ErrorResponse> handleNotFoundException(final UsernameNotFoundException ex) {
+        Logger.error(ex.getClass().getSimpleName(), ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), System.currentTimeMillis());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    /**
      * Handles {@link MethodArgumentNotValidException} and logs the error
      * before returning an status 400.
      *
      * @param ex The {@link MethodArgumentNotValidException} exception to handle.
      * @return A ResponseEntity containing an error response
-     *         with the exception message and timestamp.
+     * with the exception message and timestamp.
      */
-    @ExceptionHandler({MethodArgumentNotValidException.class, MissingServletRequestParameterException.class})
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class,
+            MissingServletRequestParameterException.class,
+            ConstraintViolationException.class})
     @ApiResponse(responseCode = "400", description = "Invalid Input")
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidExceptionException(final Exception ex) {
         Logger.error(ex.getClass().getSimpleName(), ex.getMessage());
@@ -60,7 +82,7 @@ public class GlobalExceptionHandler {
      *
      * @param ex The server exception to handle.
      * @return A ResponseEntity containing an error response
-     *         with the exception message and timestamp.
+     * with the exception message and timestamp.
      */
     @ExceptionHandler(Exception.class)
     @ApiResponse(responseCode = "500", description = "Internal Server Error")

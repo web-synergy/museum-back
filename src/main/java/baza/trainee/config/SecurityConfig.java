@@ -71,6 +71,7 @@ public class SecurityConfig {
                 .cors(cc -> cc.configurationSource(corsFilter()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/api/user/register").permitAll()
+                        .requestMatchers("/api/admin/update/recovery-password").permitAll()
                         .requestMatchers("/api/admin/login").hasAnyRole("ADMIN", "ROOT")
                         .requestMatchers("/api/admin/**").hasAuthority("SCOPE_WRITE")
                         .requestMatchers("/api/**").permitAll())

@@ -144,11 +144,11 @@ public class FileSystemStorageUtils {
      * Create {@link UrlResource} based on given {@link URI} object.
      *
      * @param uri {@link URI} to resource.
-     * @return {@link UrlResource}.
+     * @return {@link Resource}.
      * @throws StorageFileNotFoundException if the given URI path is not
      *                valid.
      */
-    public static UrlResource getResource(URI uri) {
+    public static Resource getResource(URI uri) {
         try {
             return new UrlResource(uri);
         } catch (MalformedURLException e) {
@@ -161,14 +161,15 @@ public class FileSystemStorageUtils {
      *
      * @param resource {@link Resource} to read.
      * @return content as array of bytes.
-     * @throws StorageFileNotFoundException if could not read recourse.
+     * @throws StorageFileNotFoundException if it could not read recourse.
      */
     public static byte[] getByteArrayFromResource(Resource resource) {
         try {
             if (resource.exists() || resource.isReadable()) {
                 return resource.getContentAsByteArray();
             } else {
-                throw new StorageFileNotFoundException("Could not read resource.");
+                throw new StorageFileNotFoundException(
+                        String.format("Could not read resource: %s.", resource.getURL()));
             }
         } catch (IOException e) {
             throw new StorageFileNotFoundException("Could not read resource.");

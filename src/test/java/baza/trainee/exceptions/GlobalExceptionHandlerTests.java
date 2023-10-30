@@ -1,33 +1,25 @@
 package baza.trainee.exceptions;
 
-import baza.trainee.exceptions.custom.*;
-import baza.trainee.exceptions.errors.ErrorResponse;
-import baza.trainee.security.RootUserInitializer;
-import baza.trainee.service.ArticleService;
-import baza.trainee.service.EventService;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import baza.trainee.exceptions.custom.BasicApplicationException;
+import baza.trainee.exceptions.custom.EntityAlreadyExistsException;
+import baza.trainee.exceptions.custom.EntityNotFoundException;
+import baza.trainee.exceptions.custom.MethodArgumentNotValidException;
+import baza.trainee.exceptions.custom.NullEntityReferenceException;
+import baza.trainee.exceptions.errors.ErrorResponse;
 
-@SpringBootTest
+@WebMvcTest
 class GlobalExceptionHandlerTests {
 
     @Autowired
     private GlobalExceptionHandler globalExceptionHandler;
-
-    @MockBean
-    private EventService eventService;
-
-    @MockBean
-    private RootUserInitializer rootUserInitializer;
-
-    @MockBean
-    ArticleService articleService;
 
     @Test
     void testNotFoundExceptionHandling() {

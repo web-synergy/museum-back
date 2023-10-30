@@ -32,7 +32,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = MOCK)
 @AutoConfigureMockMvc
-public class MuseumDataAdminControllerTest {
+class MuseumDataAdminControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -60,7 +60,7 @@ public class MuseumDataAdminControllerTest {
     }
 
     @Test
-    public void authenticatedUserWithAdminRole_shouldBeAbleToPostMuseumData() throws Exception {
+    void authenticatedUserWithAdminRole_shouldBeAbleToPostMuseumData() throws Exception {
         String museumDataJson = objectMapper.writeValueAsString(museumData);
 
         when(museumDataService.add(any(MuseumData.class))).thenReturn(museumData);
@@ -74,7 +74,7 @@ public class MuseumDataAdminControllerTest {
     }
 
     @Test
-    public void authenticatedUserWithAdminRole_shouldBeAbleToUpdateMuseumData() throws Exception {
+    void authenticatedUserWithAdminRole_shouldBeAbleToUpdateMuseumData() throws Exception {
         String museumDataJson = objectMapper.writeValueAsString(museumData);
 
         when(museumDataService.update(any(MuseumData.class))).thenReturn(museumData);
@@ -87,7 +87,7 @@ public class MuseumDataAdminControllerTest {
     }
 
     @Test
-    public void anonymousUser_shouldNotBeAbleToPostMuseumData() throws Exception {
+    void anonymousUser_shouldNotBeAbleToPostMuseumData() throws Exception {
         String museumDataJson = objectMapper.writeValueAsString(museumData);
 
         when(museumDataService.add(any(MuseumData.class))).thenReturn(museumData);
@@ -97,7 +97,7 @@ public class MuseumDataAdminControllerTest {
     }
 
     @Test
-    public void anonymousUser_shouldNotBeAbleToUpdateMuseumData() throws Exception {
+    void anonymousUser_shouldNotBeAbleToUpdateMuseumData() throws Exception {
         String museumDataJson = objectMapper.writeValueAsString(museumData);
 
         when(museumDataService.update(any(MuseumData.class))).thenReturn(museumData);
@@ -109,7 +109,7 @@ public class MuseumDataAdminControllerTest {
     private <T extends RequestPostProcessor> MockHttpServletRequestBuilder performPost(
             String jsonString,
             T postProcessor) {
-        return post("/api/admin/museum_data")
+        return post("/api/admin/museum-data")
                 .with(postProcessor)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonString)
@@ -119,7 +119,7 @@ public class MuseumDataAdminControllerTest {
     private <T extends RequestPostProcessor> MockHttpServletRequestBuilder performPut(
             String jsonString,
             T postProcessor) {
-        return put("/api/admin/museum_data")
+        return put("/api/admin/museum-data")
                 .with(postProcessor)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonString)
