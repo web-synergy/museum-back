@@ -1,0 +1,740 @@
+openapi: 3.0.1
+
+info:
+  title: Kavaleridze Museum Admin Panel API
+  description: |
+    The Kavaleridze Museum Admin Panel API is a comprehensive RESTful API
+    that serves as the backbone of the Kavaleridze Museum's digital platform.
+    It provides a wide range of endpoints for managing museum events, images
+    and articles.
+    This API empowers administrators to interact with museum-related content
+    and facilitating efficient museum management.
+  version: v0.0.1
+
+servers:
+  - url: http://127.0.0.1:8081/api/admin
+    description: Service for managing website of the Kavaleridze museum
+
+tags:
+  - name: Admin Events
+    description: |
+      Endpoints for administrators to manage museum events.
+      Includes creating, updating, deleting events, and more.
+  - name: Admin Images
+    description: |
+      Endpoints for administrators to manage images on the website.
+      Provides operations for uploading, deleting, and organizing images.
+  - name: Admin Museum Data
+    description: |
+      Endpoints for managing museum data in the admin API.
+      This API handles operations such as adding and updating museum data.
+  - name: Authentication
+    description: |
+      Endpoints for admin authentication.
+  - name: Admin Update Credentials
+    description: |
+      Endpoints for admin change login.
+
+paths:
+  /events:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Events
+      summary: Create a new Event
+      description: Creates a new Event with the provided information.
+      operationId: createEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventPublication'
+        required: true
+      responses:
+        201:
+          description: Event created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /events/{id}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Events
+      summary: Update an existing Event
+      description: Updates an existing Event with the provided information.
+      operationId: updateEvent
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the Event to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventPublication'
+        required: true
+      responses:
+        200:
+          description: Event updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Events
+      summary: Delete an existing Event
+      description: Deletes an existing Event by its unique identifier.
+      operationId: deleteEvent
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the Event to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Event deleted successfully
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /images:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Images
+      operationId: saveImage
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveImageResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /images/temp:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Images
+      operationId: getTempImage
+      parameters:
+        - name: filename
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - ORIGINAL
+              - PREVIEW
+      responses:
+        200:
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: byte
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /museum-data:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Museum Data
+      description: 'Adds new museum data'
+      operationId: addData
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MuseumInfo'
+      responses:
+        201:
+          description: Museum data is posted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MuseumInfo'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Museum Data
+      description:  'Updates existing museum data.'
+      operationId: updateData
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MuseumInfo'
+      responses:
+        200:
+          description: Museum data is updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MuseumInfo'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /login:
+    post:
+      security:
+        - basicAuth:
+            - basicAuth
+      tags:
+        - Authentication
+      description: User login endpoint
+      operationId: login
+      responses:
+        200:
+          description: Authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessAuthResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /logout:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Authentication
+      description: User logout endpoint
+      operationId: logout
+      responses:
+        204:
+          description: Logout successfully
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /update/email:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Update Credentials
+      description: 'Check new login by duplicate. Check is not exist user by new login.
+        Send letter with verification code. Save new login and verification code.'
+      operationId: updateEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailUpdateRequest'
+      responses:
+        204:
+          description: Save logins and code. Send letter.
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /update/confirm-email:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Update Credentials
+      description: 'Check entered code by saved code. Find admin in date base by current login.
+        Change admin login to new login.'
+      operationId: confirmUpdateEmail
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Save logins and code. Send letter.
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /update/password:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Update Credentials
+      description: |
+        Receive new password for update and save changed user with updated password.
+      operationId: updatePassword
+      parameters:
+        - name: password
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Password was updated
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /update/recovery-password:
+    put:
+      tags:
+        - Admin Update Credentials
+      description: Recovery password endpoint
+      operationId: recoverPassword
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+            minLength: 1
+      responses:
+        204:
+          description: The password was changed and sent to the user's email
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ErrorResponse:
+      description: Error message with timestamp
+      type: object
+      properties:
+        message:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+    EventPublication:
+      description: Event publication form
+      required:
+        - title
+        - description
+        - type
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: false
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          nullable: false
+          minLength: 1
+          maxLength: 2000
+        summary:
+          type: string
+          maxLength: 150
+        type:
+          type: string
+          nullable: false
+          enum:
+            - EXHIBITION
+            - EXCURSION
+            - PRESENTATION
+            - CONTEST
+            - LECTURE
+            - MASTER_CLASS
+            - CREATIVE_EVENING
+            - OTHER
+        status:
+          type: string
+          nullable: false
+          enum:
+            - DRAFT
+            - PUBLISHED
+        banner:
+          type: string
+        begin:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+    EventResponse:
+      description: Event information
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          maxLength: 100
+          nullable: false
+        summary:
+          type: string
+          nullable: false
+          maxLength: 150
+        description:
+          type: string
+          nullable: false
+          maxLength: 2000
+        type:
+          type: string
+          nullable: false
+          enum:
+            - EXHIBITION
+            - EXCURSION
+            - PRESENTATION
+            - CONTEST
+            - LECTURE
+            - MASTER_CLASS
+            - CREATIVE_EVENING
+            - OTHER
+        status:
+          type: string
+          nullable: false
+          enum:
+            - DRAFT
+            - PUBLISHED
+        banner:
+          type: string
+        begin:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+        created:
+          type: string
+          format: date
+    MailDto:
+      description: Feedback form
+      required:
+        - email
+        - firstName
+        - lastName
+        - message
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 30
+          nullable: false
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 30
+          nullable: false
+        email:
+          type: string
+          format: email
+          nullable: false
+        message:
+          type: string
+          minLength: 10
+          maxLength: 300
+          nullable: false
+    SaveImageResponse:
+      description: Id of saved image
+      type: object
+      properties:
+        imageId:
+          type: string
+        originalUrl:
+          type: string
+    ContentBlock:
+      required:
+        - blockType
+        - columns
+        - order
+      type: object
+      properties:
+        id:
+          type: string
+        order:
+          type: integer
+          format: int32
+        columns:
+          type: integer
+          format: int32
+        blockType:
+          type: string
+          enum:
+            - TEXT_BLOCK
+            - PICTURE_BLOCK
+            - PICTURE_TEXT_BLOCK
+        textContent:
+          type: string
+        pictureLink:
+          type: string
+    MuseumInfo:
+      description: 'Represents museum data'
+      type: object
+      properties:
+        id:
+          description: 'The unique identifier for the museum data'
+          type: string
+        phoneNumber:
+          description: 'The phone number associated with the museum'
+          type: string
+        email:
+          description: 'The email address associated with the museum'
+          type: string
+          format: email
+        subwayRoute:
+          description: 'The subway route information for reaching the museum'
+          type: string
+        busRoute:
+          description: 'The bus route information for reaching the museum'
+          type: string
+        funicularRoute:
+          description: 'The funicular route information for reaching the museum'
+          type: string
+    EmailUpdateRequest:
+      description: Form for email update
+      required:
+        - email
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          nullable: false
+    SuccessAuthResponse:
+      description: Login success response
+      type: object
+      properties:
+        roles:
+          description: Authenticated user roles
+          type: array
+          items:
+            type: string
+        token:
+          description: Symmetric JWT token
+          type: string
+        login_counter:
+          description: Logins count
+          type: integer
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

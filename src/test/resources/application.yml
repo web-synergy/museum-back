@@ -1,0 +1,64 @@
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  mail:
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: 'true'
+          ssl:
+            enable: 'true'
+          auth: 'true'
+          connectiontimeout: '5000'
+          writetimeout: '5000'
+    host: smtp.meta.ua
+    username: ${MAIL_USER}
+    password: ${MAIL_PASSWORD}
+    port: 465
+
+mail:
+  template:
+    path:
+      user: templates/msg_for_user.html
+      museum: templates/msg_for_museum.html
+      change_login: templates/msg_for_change_login.html
+      password_recovery: templates/msg_for_password_recovery.html
+  museum:
+    email: ${MAIL_USER:museum@gmail.com}
+    label: Museum.ua
+    key_expiration_time: 120
+
+resources:
+  files:
+    root: 'files'
+    images:
+      root: 'images'
+      original: 'original'
+      compressed: 'compressed'
+      temporary: 'temp'
+
+static:
+  json:
+    articles: static/articles.json
+    museumData: static/museumData.json
+
+users:
+  root:
+    credentials:
+      username: 'root'
+      password: 'password'
+
+images:
+  desktop:
+    width: 1280
+    quality: 1
+  preview:
+    width: 768
+    quality: 1
+
+jwt:
+  key: ${JWT_KEY:FDCE463BB7CBE40F45CCE6AB930DFC43849921CA3E0648369ADC203284BE2E68}
+  expirationTime: 2
