@@ -2,6 +2,7 @@ package web.synergy.controller;
 
 import web.synergy.security.RootUserInitializer;
 import web.synergy.service.ArticleService;
+import web.synergy.service.MuseumDataService;
 import web.synergy.service.SearchService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
@@ -36,6 +37,9 @@ class SearchControllerTest {
 
     @MockBean
     ArticleService articleService;
+
+    @MockBean
+    MuseumDataService museumDataService;
 
     @Test
     @SneakyThrows

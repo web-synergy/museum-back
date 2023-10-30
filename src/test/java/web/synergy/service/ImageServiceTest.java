@@ -121,7 +121,6 @@ class ImageServiceTest {
                 .resolve(imagesDir)
                 .resolve(generatedFileId.getImageId())
                 .resolve(desktopDir)
-                .resolve(filename.replaceFirst("\\..+$", ".webp"))
                 .toFile();
 
         // Path => /root/images/image-UUID/preview/file.webp
@@ -129,7 +128,6 @@ class ImageServiceTest {
                 .resolve(imagesDir)
                 .resolve(generatedFileId.getImageId())
                 .resolve(previewDir)
-                .resolve(filename.replaceFirst("\\..+$", ".webp"))
                 .toFile();
 
         // when:
