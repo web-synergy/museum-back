@@ -2,7 +2,7 @@ package web.synergy.config;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-import java.util.List;
+import java.util.Arrays;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -44,6 +44,21 @@ public class SecurityConfig {
     @Value("${jwt.key}")
     private String jwtKey;
 
+    @Value("${web.cors.allowed_origins}")
+    private String[] allowedOrigins;
+
+    @Value("${web.cors.allowed_methods}")
+    private String[] allowedMethods;
+
+    @Value("${web.cors.max_age}")
+    private long maxAge;
+
+    @Value("${web.cors.allowed_headers}")
+    private String[] allowedHeaders;
+
+    @Value("${web.cors.exposed_headers}")
+    private String[] exposedHeaders;
+
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -53,10 +68,12 @@ public class SecurityConfig {
     CorsConfigurationSource corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-    
-        config.setAllowedOrigins(List.of("http://127.0.0.1:8080", "http://127.0.0.1:5174"));
-        config.addAllowedMethod("*");
-        config.addAllowedHeader("*");
+
+        config.addAllowedOrigin(allowedOrigins[0]);
+        config.setAllowedMethods(Arrays.asList(allowedMethods));
+        config.setAllowedHeaders(Arrays.asList(allowedHeaders));
+        config.setExposedHeaders(Arrays.asList(exposedHeaders));
+        config.setMaxAge(maxAge);
         config.setAllowCredentials(true);
 
         source.registerCorsConfiguration("/**", config);

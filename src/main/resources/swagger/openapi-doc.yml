@@ -10,7 +10,7 @@ info:
   version: v0.0.1
 
 servers:
-  - url: http://127.0.0.1:8081/api
+  - url: https://130.61.247.149/api/admin
     description: Service for  website API of the Kavaleridze museum
 
 tags:

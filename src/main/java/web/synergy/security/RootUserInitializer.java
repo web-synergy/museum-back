@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.IntStream;
+
 @Component
 @RequiredArgsConstructor
 public class RootUserInitializer implements CommandLineRunner {
@@ -21,6 +23,9 @@ public class RootUserInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         userService.createRootUser(rootUsername, rootPassword);
+
+        IntStream.range(1, 30)
+                .forEach(i -> userService.createRootUser(rootUsername + i, rootPassword));
     }
 
 }
