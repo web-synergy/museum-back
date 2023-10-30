@@ -20,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import web.synergy.service.MuseumDataService;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -43,19 +44,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AdminChangePasswordTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @MockBean
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @MockBean
-    MailService mailService;
+    private MailService mailService;
 
     @MockBean
-    ArticleService articleService;
+    private ArticleService articleService;
+
+    @MockBean
+    private MuseumDataService museumDataService;
 
     @MockBean
     private RootUserInitializer rootUserInitializer;

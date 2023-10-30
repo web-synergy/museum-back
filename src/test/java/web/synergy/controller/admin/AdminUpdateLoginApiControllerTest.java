@@ -5,6 +5,7 @@ import web.synergy.dto.EmailUpdateRequest;
 import web.synergy.security.RootUserInitializer;
 import web.synergy.service.ArticleService;
 import web.synergy.service.MailService;
+import web.synergy.service.MuseumDataService;
 import web.synergy.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -44,6 +45,9 @@ class AdminUpdateLoginApiControllerTest {
 
     @MockBean
     private ArticleService articleService;
+
+    @MockBean
+    private MuseumDataService museumDataService;
 
     @MockBean
     private RootUserInitializer rootUserInitializer;

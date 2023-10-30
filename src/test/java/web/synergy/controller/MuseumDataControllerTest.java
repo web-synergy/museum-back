@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = MOCK)
 @AutoConfigureMockMvc
-public class MuseumDataControllerTest {
+class MuseumDataControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -37,7 +37,7 @@ public class MuseumDataControllerTest {
     private RootUserInitializer initializer;
 
     @MockBean
-    ArticleService articleService;
+    private ArticleService articleService;
 
     private MuseumData museumData;
 

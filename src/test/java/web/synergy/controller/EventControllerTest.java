@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import web.synergy.service.MuseumDataService;
 
 import java.time.LocalDate;
 
@@ -47,7 +48,10 @@ class EventControllerTest {
     private EventMapper eventMapper;
 
     @MockBean
-    ArticleService articleService;
+    private ArticleService articleService;
+
+    @MockBean
+    private MuseumDataService museumDataService;
 
     @Test
     void testGetEvents() throws Exception {

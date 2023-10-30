@@ -41,17 +41,17 @@ class FeedbackControllerTest {
     @MockBean
     private MailService mailService;
 
+    @MockBean
+    private RootUserInitializer rootUserInitializer;
+
+    @MockBean
+    private ArticleService articleService;
+
     private MailDto validMailDto;
     private MailDto notValidMailDto;
 
     @Value("${mail.museum.email}")
     private String museumEmail;
-
-    @MockBean
-    private RootUserInitializer rootUserInitializer;
-
-    @MockBean
-    ArticleService articleService;
 
     @BeforeAll
     public void setUp() {

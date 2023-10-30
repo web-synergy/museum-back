@@ -47,7 +47,7 @@ class MuseumDataAdminControllerTest {
     private RootUserInitializer initializer;
 
     @MockBean
-    ArticleService articleService;
+    private ArticleService articleService;
 
     private MuseumData museumData;
 
