@@ -72,3 +72,11 @@ images:
 jwt:
   key: ${JWT_KEY:FDCE463BB7CBE40F45CCE6AB930DFC43849921CA3E0648369ADC203284BE2E68}
   expirationTime: 2
+
+web:
+  cors:
+    allowed_origins: https://web-synergy.github.io
+    allowed_methods: GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD
+    max_age: 3600
+    allowed_headers: Authorization, Requestor-Type, Access-Control-Allow-Headers, Access-Control-Allow-Origin, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
+    exposed_headers: "X-Get-Header"
