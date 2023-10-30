@@ -275,9 +275,6 @@ components:
           format: int64
     EventResponse:
       description: Event information
-      required:
-        - title
-        - description
       type: object
       properties:
         id:
@@ -306,6 +303,12 @@ components:
             - MASTER_CLASS
             - CREATIVE_EVENING
             - OTHER
+        status:
+          type: string
+          nullable: false
+          enum:
+            - DRAFT
+            - PUBLISHED
         banner:
           type: string
         begin:

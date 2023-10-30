@@ -26,4 +26,9 @@ public interface MuseumDataService {
      * @return The MuseumData object containing available museum data.
      */
     MuseumData getData();
+
+    /**
+     * Saves static museum data to DB while starting the application.
+     */
+    void saveStaticMuseumData();
 }

@@ -38,6 +38,8 @@ public class Event implements Searchable {
 
     private String banner;
 
+    private String status;
+
     private LocalDate begin;
 
     private LocalDate end;
@@ -47,25 +49,6 @@ public class Event implements Searchable {
 
     @LastModifiedDate
     private LocalDate updated;
-
-    public Event(
-            String id,
-            String title,
-            String summary,
-            String description, String type,
-            String bannerId,
-            LocalDate begin,
-            LocalDate end
-    ) {
-        this.id = id;
-        this.title = title;
-        this.summary = summary;
-        this.description = description;
-        this.type = type;
-        this.banner = bannerId;
-        this.begin = begin;
-        this.end = end;
-    }
 
     @Override
     public String getContent() {

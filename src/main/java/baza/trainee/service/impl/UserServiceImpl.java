@@ -24,7 +24,6 @@ import static baza.trainee.domain.enums.OpsKey.EMAIL_KEY;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private static final String USER_NOT_FOUND_MESSAGE = "User with email: %s was not found!";
     public static final String NOT_VALID_CONFIRMATION_CODE = "Not valid confirmation code.";
     public static final String NOT_FIND_USER_BY_LOGIN = "Not find user by login";
     public static final String USER_ALREADY_EXISTS = "This user already exists in the database";
@@ -37,9 +36,9 @@ public class UserServiceImpl implements UserService {
     private long keyExpirationTime;
 
     public String createRootUser(String email, String rawPassword) {
-        String encodedPassword = passwordEncoder.encode(rawPassword);
+        var encodedPassword = passwordEncoder.encode(rawPassword);
 
-        User rootUser = new User();
+        var rootUser = new User();
         rootUser.setEmail(email);
         rootUser.setPassword(encodedPassword);
         rootUser.addRole(Role.ROOT);
@@ -52,11 +51,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(String password, String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, email)));
-        String encodedPassword = passwordEncoder.encode(password);
+        var user = getUserByEmail(email);
+        var encodedPassword = passwordEncoder.encode(password);
         user.setPassword(encodedPassword);
         userRepository.update(user);
+    }
+
+    @Override
+    public Integer incrementLoginCounter(String email) {
+        var user = getUserByEmail(email);
+        int counter = user.incrementLoginCounter();
+        userRepository.update(user);
+
+        return counter;
     }
 
     @Override

@@ -53,6 +53,7 @@ resources:
 static:
   json:
     articles: static/articles.json
+    museumData: static/museumData.json
 
 users:
   root:

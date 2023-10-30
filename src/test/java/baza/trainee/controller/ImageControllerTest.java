@@ -3,7 +3,6 @@ package baza.trainee.controller;
 import baza.trainee.security.RootUserInitializer;
 import baza.trainee.service.ArticleService;
 import baza.trainee.service.ImageService;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
