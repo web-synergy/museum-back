@@ -66,8 +66,8 @@ jwt:
 
 web:
   cors:
-    allowed-origins: http://130.61.247.149:5174, http://130.61.247.149:8080
-    allowed-methods: GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD
-    max-age: 3600
-    allowed-headers: Authorization, Requestor-Type, Access-Control-Allow-Headers, Access-Control-Allow-Origin, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
-    exposed-headers: "X-Get-Header"
+    allowed_origins: https://web-synergy.github.io
+    allowed_methods: GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD
+    max_age: 3600
+    allowed_headers: Authorization, Requestor-Type, Access-Control-Allow-Headers, Access-Control-Allow-Origin, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
+    exposed_headers: "X-Get-Header"
