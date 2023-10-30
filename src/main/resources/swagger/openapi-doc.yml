@@ -10,7 +10,7 @@ info:
   version: v0.0.1
 
 servers:
-  - url: http://127.0.0.1:8081/api
+  - url: https://130.61.247.149/api/admin
     description: Service for  website API of the Kavaleridze museum
 
 tags:
@@ -275,9 +275,6 @@ components:
           format: int64
     EventResponse:
       description: Event information
-      required:
-        - title
-        - description
       type: object
       properties:
         id:
@@ -306,6 +303,12 @@ components:
             - MASTER_CLASS
             - CREATIVE_EVENING
             - OTHER
+        status:
+          type: string
+          nullable: false
+          enum:
+            - DRAFT
+            - PUBLISHED
         banner:
           type: string
         begin:

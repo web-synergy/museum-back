@@ -12,7 +12,7 @@ info:
   version: v0.0.1
 
 servers:
-  - url: http://127.0.0.1:8081/api/admin
+  - url: https://130.61.247.149/api/admin
     description: Service for managing website of the Kavaleridze museum
 
 tags:
@@ -31,7 +31,7 @@ tags:
   - name: Authentication
     description: |
       Endpoints for admin authentication.
-  - name: Admin Change Login
+  - name: Admin Update Credentials
     description: |
       Endpoints for admin change login.
 
@@ -259,7 +259,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /museum_data:
+  /museum-data:
     post:
       security:
         - bearerAuth: []
@@ -334,80 +334,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  /saveSettingLogin:
-    post:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Admin Change Login
-      description: 'Check new login by duplicate. Check is not exist user by new login.
-        Send letter with verification code. Save new login and verification code.'
-      operationId: updateLogin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateLoginRequest'
-      responses:
-        204:
-          description: Save logins and code. Send letter.
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /changeLogin:
-    put:
-      security:
-        - basicAuth:
-            - basicAuth
-      tags:
-        - Admin Change Login
-      description: 'Check entered code by saved code. Find admin in date base by current login.
-        Change admin login to new login.'
-      operationId: approveUpdateLogin
-      parameters:
-        - name: code
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        204:
-          description: Save logins and code. Send letter.
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorize
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /login:
     post:
       security:
@@ -443,6 +369,148 @@ paths:
           description: Logout successfully
         401:
           description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /update/email:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Update Credentials
+      description: 'Check new login by duplicate. Check is not exist user by new login.
+        Send letter with verification code. Save new login and verification code.'
+      operationId: updateEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailUpdateRequest'
+      responses:
+        204:
+          description: Save logins and code. Send letter.
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /update/confirm-email:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Update Credentials
+      description: 'Check entered code by saved code. Find admin in date base by current login.
+        Change admin login to new login.'
+      operationId: confirmUpdateEmail
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Save logins and code. Send letter.
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /update/password:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Update Credentials
+      description: |
+        Receive new password for update and save changed user with updated password.
+      operationId: updatePassword
+      parameters:
+        - name: password
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Password was updated
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /update/recovery-password:
+    put:
+      tags:
+        - Admin Update Credentials
+      description: Recovery password endpoint
+      operationId: recoverPassword
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+            minLength: 1
+      responses:
+        204:
+          description: The password was changed and sent to the user's email
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
           content:
             application/json:
               schema:
@@ -492,6 +560,12 @@ components:
             - MASTER_CLASS
             - CREATIVE_EVENING
             - OTHER
+        status:
+          type: string
+          nullable: false
+          enum:
+            - DRAFT
+            - PUBLISHED
         banner:
           type: string
         begin:
@@ -502,9 +576,6 @@ components:
           format: date
     EventResponse:
       description: Event information
-      required:
-        - title
-        - description
       type: object
       properties:
         id:
@@ -533,6 +604,12 @@ components:
             - MASTER_CLASS
             - CREATIVE_EVENING
             - OTHER
+        status:
+          type: string
+          nullable: false
+          enum:
+            - DRAFT
+            - PUBLISHED
         banner:
           type: string
         begin:
@@ -628,18 +705,13 @@ components:
         funicularRoute:
           description: 'The funicular route information for reaching the museum'
           type: string
-    UpdateLoginRequest:
-      description: New login and  duplicate new login form form
+    EmailUpdateRequest:
+      description: Form for email update
       required:
-        - newLogin
-        - duplicateNewLogin
+        - email
       type: object
       properties:
-        newLogin:
-          type: string
-          format: email
-          nullable: false
-        duplicateNewLogin:
+        email:
           type: string
           format: email
           nullable: false
@@ -655,6 +727,9 @@ components:
         token:
           description: Symmetric JWT token
           type: string
+        login_counter:
+          description: Logins count
+          type: integer
   securitySchemes:
     basicAuth:
       type: http
