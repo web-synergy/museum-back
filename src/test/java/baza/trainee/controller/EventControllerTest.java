@@ -75,15 +75,16 @@ class EventControllerTest {
         final LocalDate end = LocalDate.of(2023, 9, 12);
         final String eventId = "32";
 
-        Event event = new Event(
-                eventId,
-                "cool title",
-                "shortSumm",
-                "shortDesc",
-                EventResponse.TypeEnum.CONTEST.getValue(),
-                "/images/image1.jpeg",
-                begin,
-                end);
+        Event event = new Event();
+        event.setId(eventId);
+        event.setTitle("cool title");
+        event.setSummary("shortSumm");
+        event.setDescription("shortDesc");
+        event.setType(EventResponse.TypeEnum.CONTEST.getValue());
+        event.setBanner("/images/image1.jpeg");
+        event.setBegin(begin);
+        event.setEnd(end);
+
         var response = eventMapper.toResponse(event);
 
         // when:

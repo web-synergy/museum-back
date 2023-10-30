@@ -94,7 +94,7 @@ public class EventServiceImpl implements EventService {
 
         Optional.ofNullable(existingEvent.getBanner())
                 .filter(imageId -> !imageId.isBlank() || !imageId.isEmpty())
-                .ifPresent(imageId -> imageService.deleteImage(imageId));
+                .ifPresent(imageService::deleteImage);
 
         eventRepository.deleteById(id);
     }

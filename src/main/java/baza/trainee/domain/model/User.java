@@ -27,6 +27,9 @@ public class User {
     private String password;
 
     @Setter(AccessLevel.PROTECTED)
+    private Integer loginCounter = 0;
+
+    @Setter(AccessLevel.PROTECTED)
     private List<String> roles = new ArrayList<>();
 
     @Setter(AccessLevel.PROTECTED)
@@ -38,5 +41,10 @@ public class User {
 
     public void addScope(Scope scope) {
         this.scope.add(scope.getValue());
+    }
+
+    public int incrementLoginCounter() {
+        this.loginCounter += 1;
+        return this.loginCounter;
     }
 }
