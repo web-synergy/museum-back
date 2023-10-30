@@ -3,6 +3,7 @@ package web.synergy.controller.admin;
 import web.synergy.security.RootUserInitializer;
 import web.synergy.security.TokenService;
 import web.synergy.service.ArticleService;
+import web.synergy.service.MuseumDataService;
 import web.synergy.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,10 @@ class AuthenticationTest {
     private RootUserInitializer rootUserInitializer;
 
     @MockBean
-    ArticleService articleService;
+    private ArticleService articleService;
+
+    @MockBean
+    private MuseumDataService museumDataService;
 
     @Test
     @WithMockUser(roles = { "ADMIN" })

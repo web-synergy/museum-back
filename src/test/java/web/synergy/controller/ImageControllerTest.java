@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import web.synergy.service.MuseumDataService;
 
 import java.io.File;
 
@@ -35,7 +36,10 @@ class ImageControllerTest {
     private RootUserInitializer rootUserInitializer;
 
     @MockBean
-    ArticleService articleService;
+    private ArticleService articleService;
+
+    @MockBean
+    private MuseumDataService museumDataService;
 
     @Test
     void testGetImage() throws Exception {

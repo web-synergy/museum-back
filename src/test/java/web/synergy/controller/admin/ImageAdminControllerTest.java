@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import web.synergy.service.ArticleService;
+import web.synergy.service.MuseumDataService;
 import web.synergy.service.impl.ImageServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,10 @@ class ImageAdminControllerTest {
     private RootUserInitializer rootUserInitializer;
 
     @MockBean
-    ArticleService articleService;
+    private ArticleService articleService;
+
+    @MockBean
+    private MuseumDataService museumDataService;
 
     private MockMultipartFile mockFile;
     private MockHttpSession session;

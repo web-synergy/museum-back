@@ -24,6 +24,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import web.synergy.service.MuseumDataService;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -61,7 +62,10 @@ class EventAdminControllerTest {
     private RootUserInitializer rootUserInitializer;
 
     @MockBean
-    ArticleService articleService;
+    private ArticleService articleService;
+
+    @MockBean
+    private MuseumDataService museumDataService;
     
     private final JwtRequestPostProcessor ADMIN_AUTHORITIES = jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"));
     private EventPublication eventDto;
