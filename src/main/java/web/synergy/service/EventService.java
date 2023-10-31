@@ -4,6 +4,7 @@ import web.synergy.dto.EventPublication;
 import web.synergy.dto.EventResponse;
 import web.synergy.dto.PageEvent;
 import org.springframework.data.domain.Pageable;
+import web.synergy.exceptions.custom.EntityAlreadyExistsException;
 
 public interface EventService {
 
@@ -48,4 +49,20 @@ public interface EventService {
      * @param id The unique identifier of the event to be deleted.
      */
     void deleteEventById(String id);
+
+    /**
+     * Retrieve detailed information about a specific event by its title.
+     *
+     * @param title The unique Title of the event.
+     * @return An Event with given Title.
+     */
+    EventResponse getByTitle(String title);
+
+    /**
+     * Check if event`s title is taken.
+     *
+     * @param eventTitle The Title of the event.
+     * @throws EntityAlreadyExistsException if event`s title is taken.
+     */
+    void isExists(String eventTitle);
 }
