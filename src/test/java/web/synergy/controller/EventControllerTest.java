@@ -1,5 +1,6 @@
 package web.synergy.controller;
 
+import lombok.SneakyThrows;
 import web.synergy.domain.mapper.EventMapper;
 import web.synergy.domain.model.Event;
 import web.synergy.dto.EventResponse;
@@ -95,10 +96,50 @@ class EventControllerTest {
         when(eventService.getById(eventId)).thenReturn(response);
 
         // then:
-        mockMvc.perform(get("/api/events/{id}", eventId)
+        mockMvc.perform(get("/api/events/by-id/{id}", eventId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(eventId));
+    }
+
+    @Test
+    void testGetEventByTitle() throws Exception {
+        // given:
+        final LocalDate begin = LocalDate.of(2023, 9, 3);
+        final LocalDate end = LocalDate.of(2023, 9, 12);
+        final String title = "cool title";
+
+        Event event = new Event();
+        event.setId("32");
+        event.setTitle(title);
+        event.setSummary("shortSumm");
+        event.setDescription("shortDesc");
+        event.setType(EventResponse.TypeEnum.CONTEST.getValue());
+        event.setBanner("/images/image1.jpeg");
+        event.setBegin(begin);
+        event.setEnd(end);
+
+        var response = eventMapper.toResponse(event);
+
+        // when:
+        when(eventService.getByTitle(title)).thenReturn(response);
+
+        // then:
+        mockMvc.perform(get("/api/events/by-title/{title}", title)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(title));
+    }
+
+    @SneakyThrows
+    @Test
+    void testGetEventByTitleWithInvalidTitle() {
+        String invalidTitle = "x".repeat(101);
+
+        // then:
+        mockMvc.perform(get("/api/events/by-title/{title}", invalidTitle)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -112,7 +153,7 @@ class EventControllerTest {
                 new EntityNotFoundException("Event", "id: " + invalidEventId));
 
         // then:
-        mockMvc.perform(get("/api/events/{id}", invalidEventId))
+        mockMvc.perform(get("/api/events/by-id/{id}", invalidEventId))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(expectedMessage));
@@ -129,7 +170,7 @@ class EventControllerTest {
                 new MethodArgumentNotValidException(message));
 
         // then:
-        mockMvc.perform(get("/api/events/{id}", id))
+        mockMvc.perform(get("/api/events/by-id/{id}", id))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(message));
