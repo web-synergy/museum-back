@@ -19,6 +19,8 @@ public class AdminEventsDelegateImpl implements AdminEventsApiDelegate {
 
     @Override
     public ResponseEntity<EventResponse> createEvent(EventPublication eventPublication) {
+        eventService.isExists(eventPublication.getTitle());
+
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return new ResponseEntity<>(
                 eventService.save(eventPublication, username),
@@ -27,6 +29,8 @@ public class AdminEventsDelegateImpl implements AdminEventsApiDelegate {
 
     @Override
     public ResponseEntity<EventResponse> updateEvent(String id, EventPublication eventPublication) {
+        eventService.isExists(eventPublication.getTitle());
+
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return new ResponseEntity<>(
                 eventService.update(id, eventPublication, username),
