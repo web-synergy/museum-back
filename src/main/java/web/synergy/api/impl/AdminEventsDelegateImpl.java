@@ -1,5 +1,6 @@
 package web.synergy.api.impl;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import web.synergy.api.AdminEventsApiDelegate;
 import web.synergy.dto.EventPublication;
 import web.synergy.dto.EventResponse;
+import web.synergy.dto.PageEvent;
 import web.synergy.service.EventService;
 import lombok.RequiredArgsConstructor;
 
@@ -41,6 +43,12 @@ public class AdminEventsDelegateImpl implements AdminEventsApiDelegate {
     public ResponseEntity<Void> deleteEvent(String id) {
         eventService.deleteEventById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Override
+    public ResponseEntity<PageEvent> getAll(Integer size, Integer page) {
+        var pageable = PageRequest.of(page, size);
+        return new ResponseEntity<>(eventService.getAll(pageable), HttpStatus.OK);
     }
 
 }

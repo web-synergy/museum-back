@@ -17,9 +17,9 @@ public class EventApiDelegateImpl implements EventsApiDelegate {
     private final EventService eventService;
 
     @Override
-    public ResponseEntity<PageEvent> getAll(Integer size, Integer page) {
+    public ResponseEntity<PageEvent> getPublished(Integer size, Integer page) {
         var pageable = PageRequest.of(page, size);
-        return new ResponseEntity<>(eventService.getAll(pageable), HttpStatus.OK);
+        return new ResponseEntity<>(eventService.getPublished(pageable), HttpStatus.OK);
     }
 
     @Override

@@ -38,6 +38,7 @@ public class Event implements Searchable {
 
     private String banner;
 
+    @Indexed
     private String status;
 
     private LocalDate begin;

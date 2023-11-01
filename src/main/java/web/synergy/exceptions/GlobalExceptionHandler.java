@@ -1,5 +1,6 @@
 package web.synergy.exceptions;
 
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import web.synergy.exceptions.custom.BasicApplicationException;
 import web.synergy.exceptions.errors.ErrorResponse;
 import web.synergy.utils.Logger;
@@ -67,7 +68,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             MethodArgumentNotValidException.class,
             MissingServletRequestParameterException.class,
-            ConstraintViolationException.class})
+            ConstraintViolationException.class,
+            IllegalArgumentException.class,
+            MethodArgumentTypeMismatchException.class})
     @ApiResponse(responseCode = "400", description = "Invalid Input")
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidExceptionException(final Exception ex) {
         Logger.error(ex.getClass().getSimpleName(), ex.getMessage());

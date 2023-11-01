@@ -76,6 +76,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Events
+      summary: Get a page of events
+      description: Retrieves a page of events with the specified page size and page number.
+      operationId: getAll
+      parameters:
+        - name: size
+          in: query
+          description: Size of the page
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            nullable: false
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            nullable: false
+      responses:
+        200:
+          description: Page of events retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageEvent'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /events/{id}:
     put:
       security:
@@ -730,6 +782,65 @@ components:
         login_counter:
           description: Logins count
           type: integer
+    PageEvent:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        first:
+          type: boolean
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        last:
+          type: boolean
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventResponse'
+        number:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        offset:
+          type: integer
+          format: int64
+    SortObject:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean
   securitySchemes:
     basicAuth:
       type: http
