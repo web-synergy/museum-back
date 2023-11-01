@@ -26,4 +26,9 @@ public class EventApiDelegateImpl implements EventsApiDelegate {
     public ResponseEntity<EventResponse> getById(String id) {
         return new ResponseEntity<>(eventService.getById(id), HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<EventResponse> getByTitle(String title) {
+        return new ResponseEntity<>(eventService.getByTitle(title), HttpStatus.OK);
+    }
 }

@@ -6,6 +6,7 @@ import web.synergy.domain.model.Event;
 import web.synergy.dto.EventPublication;
 import web.synergy.dto.EventResponse;
 import web.synergy.dto.PageEvent;
+import web.synergy.exceptions.custom.EntityAlreadyExistsException;
 import web.synergy.repository.EventRepository;
 import web.synergy.service.EventService;
 import web.synergy.service.ImageService;
@@ -96,5 +97,19 @@ public class EventServiceImpl implements EventService {
                 .ifPresent(imageService::deleteImage);
 
         eventRepository.deleteById(id);
+    }
+
+    @Override
+    public EventResponse getByTitle(String title) {
+        var event = eventRepository.findByTitle(title)
+                .orElseThrow(ExceptionUtils.getNotFoundExceptionSupplier(Event.class, "Title: " + title));
+        return eventMapper.toResponse(event);
+    }
+
+    @Override
+    public void isExists(String eventTitle) {
+        if (eventRepository.existsByTitle(eventTitle)) {
+            throw new EntityAlreadyExistsException("Event", "Title: " + eventTitle);
+        }
     }
 }
