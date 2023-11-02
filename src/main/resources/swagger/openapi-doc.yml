@@ -162,57 +162,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /events/by-id/{id}:
+  /events/{slug}:
     get:
       tags:
         - Events
-      summary: Get an Event by ID
-      description: Retrieves an Event by its unique identifier.
-      operationId: getById
+      summary: Get an Event by Slug
+      description: Retrieves an Event by its unique Slug.
+      operationId: getBySlug
       parameters:
-        - name: id
+        - name: slug
           in: path
-          description: Unique identifier of the Event
-          required: true
-          schema:
-            type: string
-            minLength: 1
-      responses:
-        200:
-          description: Event retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EventResponse'
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        404:
-          description: Event not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /events/by-title/{title}:
-    get:
-      tags:
-        - Events
-      summary: Get an Event by Title
-      description: Retrieves an Event by its unique Title.
-      operationId: getByTitle
-      parameters:
-        - name: title
-          in: path
-          description: Unique Title of the Event
+          description: Unique Slug of the Event
           required: true
           schema:
             type: string
@@ -324,6 +284,11 @@ components:
       properties:
         id:
           type: string
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 100
+          nullable: false
         title:
           type: string
           maxLength: 100
