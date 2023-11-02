@@ -1,5 +1,6 @@
 package web.synergy.api.impl;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import web.synergy.api.AdminEventsApiDelegate;
 import web.synergy.domain.mapper.EventMapper;
+import web.synergy.domain.mapper.PageEventMapper;
+import web.synergy.domain.model.Event;
 import web.synergy.dto.EventDraft;
 import web.synergy.dto.EventPublication;
 import web.synergy.dto.EventResponse;
@@ -21,6 +24,7 @@ public class AdminEventsDelegateImpl implements AdminEventsApiDelegate {
 
     private final EventService eventService;
     private final EventMapper eventMapper;
+    private final PageEventMapper pageEventMapper;
 
     @Override
     public ResponseEntity<EventResponse> createDraft(EventDraft eventDraft) {
@@ -79,7 +83,10 @@ public class AdminEventsDelegateImpl implements AdminEventsApiDelegate {
     @Override
     public ResponseEntity<PageEvent> getAll(Integer size, Integer page) {
         var pageable = PageRequest.of(page, size);
-        return new ResponseEntity<>(eventService.getAll(pageable), HttpStatus.OK);
+        var pageEventResponses = eventService.getAll(pageable)
+                .map(eventMapper::toResponse);
+        var pageEvent = pageEventMapper.toPageEvent(pageEventResponses);
+        return new ResponseEntity<>(pageEvent, HttpStatus.OK);
     }
 
 }

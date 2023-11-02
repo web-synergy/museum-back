@@ -19,7 +19,7 @@ public interface EventService {
      * @param pageable described the page.
      * @return Page of published Events.
      */
-    PageEvent getPublished(Pageable pageable);
+    Page<Event> getPublished(Pageable pageable);
 
     /**
      * Retrieve detailed information about a specific event by its id.

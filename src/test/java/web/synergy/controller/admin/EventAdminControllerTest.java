@@ -1,15 +1,11 @@
 package web.synergy.controller.admin;
 
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullSource;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import web.synergy.domain.model.Event;
 import web.synergy.dto.EventPublication;
 import web.synergy.domain.mapper.EventMapper;
-import web.synergy.dto.PageEvent;
 import web.synergy.security.RootUserInitializer;
 import web.synergy.service.ArticleService;
 import web.synergy.service.EventService;
@@ -35,11 +31,10 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import web.synergy.service.MuseumDataService;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static web.synergy.dto.EventPublication.TypeEnum.CONTEST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -105,8 +100,7 @@ class EventAdminControllerTest {
     void testGetEvents_ShouldReturnStatusOK() throws Exception {
         // given:
         var pageable = Pageable.ofSize(10).withPage(0);
-        PageEvent events = new PageEvent();
-        events.setPageable(pageable);
+        var events = new PageImpl<Event>(List.of(), pageable, 10);
 
         // when:
         when(eventService.getAll(pageable)).thenReturn(events);
