@@ -14,6 +14,8 @@ import web.synergy.utils.ExceptionUtils;
 
 import java.util.Optional;
 
+import static web.synergy.dto.EventPublication.StatusEnum.PUBLISHED;
+
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
@@ -24,6 +26,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public Page<Event> getAll(Pageable pageable) {
         return eventRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Event> getPublished(Pageable pageable) {
+        return eventRepository.findAllByStatus(PUBLISHED.getValue(), pageable);
     }
 
     @Override

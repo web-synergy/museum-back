@@ -1,8 +1,15 @@
 package web.synergy.controller.admin;
 
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.springframework.data.domain.Pageable;
 import web.synergy.domain.model.Event;
 import web.synergy.dto.EventPublication;
 import web.synergy.domain.mapper.EventMapper;
+import web.synergy.dto.PageEvent;
 import web.synergy.security.RootUserInitializer;
 import web.synergy.service.ArticleService;
 import web.synergy.service.EventService;
@@ -29,7 +36,10 @@ import web.synergy.service.MuseumDataService;
 
 import java.time.LocalDate;
 import java.util.UUID;
+import java.util.stream.Stream;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static web.synergy.dto.EventPublication.TypeEnum.CONTEST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -67,8 +77,9 @@ class EventAdminControllerTest {
 
     @MockBean
     private MuseumDataService museumDataService;
-    
-    private final JwtRequestPostProcessor ADMIN_AUTHORITIES = jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"));
+
+    private final JwtRequestPostProcessor ADMIN_AUTHORITIES =
+            jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"));
     private EventPublication eventDto;
     private String eventDtoJson;
     private MockHttpSession session;
@@ -88,6 +99,36 @@ class EventAdminControllerTest {
         session = new MockHttpSession(null, "httpSessionId");
 
         eventDtoJson = objectMapper.writeValueAsString(eventDto);
+    }
+
+    @Test
+    void testGetEvents_ShouldReturnStatusOK() throws Exception {
+        // given:
+        var pageable = Pageable.ofSize(10).withPage(0);
+        PageEvent events = new PageEvent();
+        events.setPageable(pageable);
+
+        // when:
+        when(eventService.getAll(pageable)).thenReturn(events);
+
+        // then:
+        mockMvc.perform(performGetAll(ADMIN_AUTHORITIES, "10", "0"))
+                .andExpect(status().isOk());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "'-10',     '0'",
+            "'0',       '0'",
+            "'10',      '-10'",
+            "'',        ''",
+            "'String',  'String'"
+    })
+    void testGetEventsWithInvalidParameters_ShouldReturnStatusBadRequest(String size, String page) throws Exception {
+
+        // then:
+        mockMvc.perform(performGetAll(ADMIN_AUTHORITIES, size, page))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -194,6 +235,18 @@ class EventAdminControllerTest {
                 .andExpect(status().isUnauthorized());
 
         verify(eventService, times(0)).deleteEventById(eq(eventId));
+    }
+
+    private <T extends RequestPostProcessor> MockHttpServletRequestBuilder performGetAll(
+            T postProcessor,
+            String size,
+            String page
+    ) {
+        return get("/api/admin/events")
+                .param("size", size)
+                .param("page", page)
+                .with(postProcessor)
+                .contentType(MediaType.APPLICATION_JSON);
     }
 
     private <T extends RequestPostProcessor> MockHttpServletRequestBuilder performCreate(

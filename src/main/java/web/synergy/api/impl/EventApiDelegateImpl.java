@@ -21,9 +21,9 @@ public class EventApiDelegateImpl implements EventsApiDelegate {
     private final EventMapper eventMapper;
 
     @Override
-    public ResponseEntity<PageEvent> getAll(Integer size, Integer page) {
+    public ResponseEntity<PageEvent> getPublished(Integer size, Integer page) {
         var pageable = PageRequest.of(page, size);
-        var eventResponsePage = eventService.getAll(pageable).map(eventMapper::toResponse);
+        var eventResponsePage = eventService.getPublished(pageable).map(eventMapper::toResponse);
         var eventPage = pageEventMapper.toPageEvent(eventResponsePage);
         return new ResponseEntity<>(eventPage, HttpStatus.OK);
     }

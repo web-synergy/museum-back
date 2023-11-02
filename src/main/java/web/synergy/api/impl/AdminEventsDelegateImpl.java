@@ -1,5 +1,6 @@
 package web.synergy.api.impl;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +11,7 @@ import web.synergy.domain.mapper.EventMapper;
 import web.synergy.dto.EventDraft;
 import web.synergy.dto.EventPublication;
 import web.synergy.dto.EventResponse;
+import web.synergy.dto.PageEvent;
 import web.synergy.service.EventService;
 import lombok.RequiredArgsConstructor;
 
@@ -74,4 +76,10 @@ public class AdminEventsDelegateImpl implements AdminEventsApiDelegate {
     private static String getUsername() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
+    @Override
+    public ResponseEntity<PageEvent> getAll(Integer size, Integer page) {
+        var pageable = PageRequest.of(page, size);
+        return new ResponseEntity<>(eventService.getAll(pageable), HttpStatus.OK);
+    }
+
 }

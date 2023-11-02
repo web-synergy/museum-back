@@ -72,7 +72,7 @@ class EventControllerTest {
         var events = new PageImpl<Event>(List.of(), pageable, 10L);
 
         // when:
-        when(eventService.getAll(pageable)).thenReturn(events);
+        when(eventService.getPublished(pageable)).thenReturn(events);
 
         // then:
         mockMvc.perform(get("/api/events")

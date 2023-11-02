@@ -1,5 +1,6 @@
 package web.synergy.integration;
 
+import org.springframework.data.domain.PageRequest;
 import web.synergy.domain.mapper.EventMapper;
 import web.synergy.domain.model.Event;
 import web.synergy.exceptions.custom.EntityNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static web.synergy.dto.EventPublication.StatusEnum.DRAFT;
 import static web.synergy.dto.EventPublication.TypeEnum.CONTEST;
 import static web.synergy.dto.EventPublication.TypeEnum.CREATIVE_EVENING;
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,6 +45,7 @@ class EventServiceImplTest extends AbstractIntegrationTest {
         event.setDescription("Not so short Description, but not to long.");
         event.setType(CREATIVE_EVENING.getValue());
         event.setBanner(UUID.randomUUID().toString());
+        event.setStatus(DRAFT.getValue());
         event.setBegin(LocalDate.now());
         event.setEnd(LocalDate.now().plusDays(10));
     }
@@ -131,5 +134,18 @@ class EventServiceImplTest extends AbstractIntegrationTest {
         // then:
         assertThrows(EntityNotFoundException.class, () -> eventService.getById(eventId),
                 "Event with `ID: " + eventId + "` was not found!");
+    }
+
+    @Test
+    void retrievePublishedEvents() {
+
+        // given:
+        var pageable = PageRequest.of(0, 20);
+
+        // when:
+        var pagePublishedEvents = eventService.getPublished(pageable);
+
+        // then:
+        assertFalse(pagePublishedEvents.getContent().isEmpty());
     }
 }

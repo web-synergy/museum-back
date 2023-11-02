@@ -14,8 +14,16 @@ public interface EventService {
     Page<Event> getAll(Pageable pageable);
 
     /**
+     * Retrieve published Events page by Pageable object.
+     *
+     * @param pageable described the page.
+     * @return Page of published Events.
+     */
+    PageEvent getPublished(Pageable pageable);
+
+    /**
      * Retrieve detailed information about a specific event by its id.
-     * 
+     *
      * @param id The unique identifier of the event.
      * @return An Event with given ID.
      */
@@ -33,7 +41,7 @@ public interface EventService {
 
     /**
      * Update an existing event identified by id.
-     * 
+     *
      * @param event    The EventPublication containing updated information for
      *                 the event.
      * @param id       The unique identifier of the event to be updated.
@@ -44,7 +52,7 @@ public interface EventService {
 
     /**
      * Delete an event identified by its id.
-     * 
+     *
      * @param id The unique identifier of the event to be deleted.
      */
     void deleteEventById(String id);
