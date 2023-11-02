@@ -1,6 +1,7 @@
 package web.synergy.integration;
 
 import web.synergy.domain.model.Event;
+import web.synergy.dto.EventPublication;
 import web.synergy.dto.EventResponse;
 import web.synergy.repository.EventRepository;
 import lombok.Getter;
@@ -11,6 +12,9 @@ import org.springframework.context.annotation.Bean;
 import java.time.LocalDate;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
+
+import static web.synergy.dto.EventPublication.StatusEnum.DRAFT;
+import static web.synergy.dto.EventPublication.StatusEnum.PUBLISHED;
 
 /**
  * Initialize {@link Event} records to Redis DB for integration tests.
@@ -44,6 +48,9 @@ class EventTestDataInitializer {
                 var types = EventResponse.TypeEnum.values();
                 int typeIndex = ThreadLocalRandom.current().nextInt(types.length);
                 event.setType(types[typeIndex].getValue());
+
+                var status = i % 2 == 0 ? PUBLISHED.getValue() : DRAFT.getValue();
+                event.setStatus(status);
 
                 event.setBanner("null");
 

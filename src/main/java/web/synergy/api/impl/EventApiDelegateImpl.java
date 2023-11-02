@@ -1,6 +1,8 @@
 package web.synergy.api.impl;
 
 import web.synergy.api.EventsApiDelegate;
+import web.synergy.domain.mapper.EventMapper;
+import web.synergy.domain.mapper.PageEventMapper;
 import web.synergy.dto.EventResponse;
 import web.synergy.dto.PageEvent;
 import web.synergy.service.EventService;
@@ -15,20 +17,21 @@ import org.springframework.stereotype.Service;
 public class EventApiDelegateImpl implements EventsApiDelegate {
 
     private final EventService eventService;
+    private final PageEventMapper pageEventMapper;
+    private final EventMapper eventMapper;
 
     @Override
-    public ResponseEntity<PageEvent> getAll(Integer size, Integer page) {
+    public ResponseEntity<PageEvent> getPublished(Integer size, Integer page) {
         var pageable = PageRequest.of(page, size);
-        return new ResponseEntity<>(eventService.getAll(pageable), HttpStatus.OK);
+        var eventResponsePage = eventService.getPublished(pageable).map(eventMapper::toResponse);
+        var eventPage = pageEventMapper.toPageEvent(eventResponsePage);
+        return new ResponseEntity<>(eventPage, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<EventResponse> getById(String id) {
-        return new ResponseEntity<>(eventService.getById(id), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<EventResponse> getByTitle(String title) {
-        return new ResponseEntity<>(eventService.getByTitle(title), HttpStatus.OK);
+    public ResponseEntity<EventResponse> getBySlug(String slug) {
+        var event = eventService.getBySlug(slug);
+        var eventResponse = eventMapper.toResponse(event);
+        return new ResponseEntity<>(eventResponse, HttpStatus.OK);
     }
 }

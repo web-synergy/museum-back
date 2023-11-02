@@ -1,7 +1,11 @@
 package web.synergy.controller.admin;
 
+import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import web.synergy.domain.model.Event;
+import web.synergy.dto.EventDraft;
 import web.synergy.dto.EventPublication;
-import web.synergy.domain.mapper.EventMapper;
 import web.synergy.security.RootUserInitializer;
 import web.synergy.service.ArticleService;
 import web.synergy.service.EventService;
@@ -27,12 +31,14 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import web.synergy.service.MuseumDataService;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static web.synergy.dto.EventPublication.StatusEnum.DRAFT;
 import static web.synergy.dto.EventPublication.TypeEnum.CONTEST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -46,8 +52,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @AutoConfigureMockMvc
 class EventAdminControllerTest {
 
-    @Autowired
-    private EventMapper eventMapper;
+    private static final String CREATE_EVENT_URL = "/api/admin/events";
+    private static final String CREATE_DRAFT_URL = "/api/admin/events/draft";
+    private static final String UPDATE_DRAFT_URL = "/api/admin/events/draft/{slug}";
+    private static final String UPDATE_EVENT_URL =  "/api/admin/events/{id}";
 
     @Autowired
     private MockMvc mockMvc;
@@ -66,40 +74,111 @@ class EventAdminControllerTest {
 
     @MockBean
     private MuseumDataService museumDataService;
-    
-    private final JwtRequestPostProcessor ADMIN_AUTHORITIES = jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"));
-    private EventPublication eventDto;
-    private String eventDtoJson;
+
+    private final JwtRequestPostProcessor ADMIN_AUTHORITIES =
+            jwt().authorities(new SimpleGrantedAuthority("SCOPE_WRITE"));
+    private Event event;
+    private String eventPublicationJson;
+    private String eventDraftJson;
     private MockHttpSession session;
 
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
-        eventDto = new EventPublication();
-        eventDto.title("Title");
-        eventDto.description("Short Description");
-        eventDto.type(CONTEST);
-        eventDto.banner(UUID.randomUUID().toString());
-        eventDto.summary("Some valid content");
-        eventDto.begin(LocalDate.now());
-        eventDto.end(LocalDate.now().plusDays(1));
+        event = new Event();
+        event.setTitle("Title");
+        event.setSummary("Some valid content");
+        event.setDescription("Short Description");
+        event.setType(CONTEST.getValue());
+        event.setStatus(DRAFT.getValue());
+        event.setBanner(UUID.randomUUID().toString());
+        event.setBegin(LocalDate.now());
+        event.setEnd(LocalDate.now().plusDays(1));
+        event.setSlug();
 
         session = new MockHttpSession(null, "httpSessionId");
 
-        eventDtoJson = objectMapper.writeValueAsString(eventDto);
+        var eventPub = new EventPublication();
+        eventPub.title(event.getTitle());
+        eventPub.type(EventPublication.TypeEnum.valueOf(event.getType()));
+        eventPub.summary(event.getSummary());
+        eventPub.description(event.getDescription());
+
+        eventPublicationJson = objectMapper.writeValueAsString(eventPub);
+
+        var eventDraft = new EventDraft();
+        eventDraft.title(event.getTitle());
+        eventDraft.slug(event.getSlug());
+        eventDraft.type(EventDraft.TypeEnum.valueOf(event.getType()));
+        eventDraft.status(EventDraft.StatusEnum.valueOf(event.getStatus()));
+        eventDraft.summary(event.getSummary());
+        eventDraft.description(event.getDescription());
+        eventDraft.banner(event.getBanner());
+        eventDraft.begin(event.getBegin());
+        eventDraft.end(event.getEnd());
+        eventDraft.summary(event.getSummary());
+
+        eventDraftJson = objectMapper.writeValueAsString(eventDraft);
+    }
+
+    @Test
+    void testGetEvents_ShouldReturnStatusOK() throws Exception {
+        // given:
+        var pageable = Pageable.ofSize(10).withPage(0);
+        var events = new PageImpl<Event>(List.of(), pageable, 10);
+
+        // when:
+        when(eventService.getAll(pageable)).thenReturn(events);
+
+        // then:
+        mockMvc.perform(performGetAll(ADMIN_AUTHORITIES, "10", "0"))
+                .andExpect(status().isOk());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "'-10',     '0'",
+            "'0',       '0'",
+            "'10',      '-10'",
+            "'',        ''",
+            "'String',  'String'"
+    })
+    void testGetEventsWithInvalidParameters_ShouldReturnStatusBadRequest(String size, String page) throws Exception {
+
+        // then:
+        mockMvc.perform(performGetAll(ADMIN_AUTHORITIES, size, page))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateDraftEvent_ShouldReturnStatusIsCreated() throws Exception {
+        // when:
+        when(eventService.save(any(Event.class), anyString())).thenReturn(event);
+
+        // then:
+        mockMvc.perform(performCreate(CREATE_DRAFT_URL, eventDraftJson, ADMIN_AUTHORITIES))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void testUpdateDraftEvent_ShouldReturnStatusIsOk() throws Exception {
+        // when:
+        when(eventService.getBySlug(event.getSlug())).thenReturn(event);
+        doNothing().when(eventService).isExists(anyString());
+        when(eventService.update(anyString(), any(Event.class), anyString())).thenReturn(event);
+
+        // then:
+        mockMvc.perform(performUpdate(UPDATE_DRAFT_URL, event.getSlug(), eventDraftJson, ADMIN_AUTHORITIES))
+                .andExpect(status().isOk());
     }
 
     @Test
     void testCreateEventStatusIsCreated() throws Exception {
-        // given:
-        var event = eventMapper.toEvent(eventDto);
-        var eventResponse = eventMapper.toResponse(event);
-
         // when:
-        when(eventService.save(any(EventPublication.class), anyString())).thenReturn(eventResponse);
+        when(eventService.save(any(Event.class), anyString())).thenReturn(event);
 
         // then:
-        mockMvc.perform(performCreate(eventDtoJson, ADMIN_AUTHORITIES))
+        mockMvc.perform(performCreate(CREATE_EVENT_URL, eventPublicationJson, ADMIN_AUTHORITIES))
                 .andExpect(status().isCreated());
     }
 
@@ -108,35 +187,30 @@ class EventAdminControllerTest {
     void testCreateEventStatusBadRequest(String validatedField) throws Exception {
         // given:
 
-        eventDto.title(validatedField);
-        eventDto.description(validatedField);
-        eventDto.summary(validatedField);
+        event.setTitle(validatedField);
+        event.setSummary(validatedField);
+        event.setDescription(validatedField);
 
-        String invalidEventDtoJson = objectMapper.writeValueAsString(eventDto);
-        var event = eventMapper.toEvent(eventDto);
-        var eventResponse = eventMapper.toResponse(event);
+        var invalidEventDtoJson = objectMapper.writeValueAsString(event);
 
         // when:
-        when(eventService.save(eventDto, session.getId())).thenReturn(eventResponse);
+        when(eventService.save(event, session.getId())).thenReturn(event);
 
         // then:
-        mockMvc.perform(performCreate(invalidEventDtoJson, ADMIN_AUTHORITIES))
+        mockMvc.perform(performCreate(CREATE_EVENT_URL, invalidEventDtoJson, ADMIN_AUTHORITIES))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testUpdateEvent() throws Exception {
         // given:
-        String id = "12";
-        var event = eventMapper.toEvent(eventDto);
-        var eventResponse = eventMapper.toResponse(event);
-
-        String eventDtoJson = objectMapper.writeValueAsString(eventDto);
+        var id = "12";
+        var eventDtoJson = objectMapper.writeValueAsString(event);
 
         // when:
-        when(eventService.update(id, eventDto, "httpSessionId")).thenReturn(eventResponse);
+        when(eventService.update(id, event, "httpSessionId")).thenReturn(event);
 
-        mockMvc.perform(performUpdate(id, eventDtoJson, ADMIN_AUTHORITIES))
+        mockMvc.perform(performUpdate(UPDATE_EVENT_URL, id, eventDtoJson, ADMIN_AUTHORITIES))
                 .andExpect(status().isOk());
     }
 
@@ -144,75 +218,87 @@ class EventAdminControllerTest {
     @NullAndEmptySource
     void testUpdateEventStatusBadRequest(String validatedField) throws Exception {
         // given:
-        String id = "12";
+        var id = "12";
 
-        eventDto.title(validatedField);
-        eventDto.description(validatedField);
-        eventDto.summary(validatedField);
+        event.setTitle(validatedField);
+        event.setSummary(validatedField);
+        event.setDescription(validatedField);
 
-        var event = eventMapper.toEvent(eventDto);
-        var eventResponse = eventMapper.toResponse(event);
-        String invalidEventDtoJson = objectMapper.writeValueAsString(eventDto);
+        var invalidEventDtoJson = objectMapper.writeValueAsString(event);
 
         // when:
-        when(eventService.update(id, eventDto, "httpSessionId")).thenReturn(eventResponse);
+        when(eventService.update(id, event, "httpSessionId")).thenReturn(event);
 
         // then:
-        mockMvc.perform(performUpdate(id, invalidEventDtoJson, ADMIN_AUTHORITIES))
+        mockMvc.perform(performUpdate(UPDATE_EVENT_URL, id, invalidEventDtoJson, ADMIN_AUTHORITIES))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testDeleteEvent() throws Exception {
-        String eventId = "12";
+        var eventId = "12";
 
         mockMvc.perform(performDelete(eventId, ADMIN_AUTHORITIES))
                 .andExpect(status().isNoContent());
 
-        verify(eventService, times(1)).deleteEventById(eq(eventId));
+        verify(eventService, times(1)).deleteEventById(eventId);
     }
 
     @Test
     void testCreateEventStatusIsUnauthorized() throws Exception {
         // expected:
-        mockMvc.perform(performCreate(eventDtoJson, anonymous()))
+        mockMvc.perform(performCreate(CREATE_EVENT_URL, eventPublicationJson, anonymous()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void testUpdateEventStatusIsUnauthorized() throws Exception {
         // given:
-        String id = "12";
+        var id = "12";
 
         // expected:
-        mockMvc.perform(performUpdate(id, eventDtoJson, anonymous()))
+        mockMvc.perform(performUpdate(UPDATE_EVENT_URL, id, eventPublicationJson, anonymous()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void testDeleteEventIsUnauthorized() throws Exception {
-        String eventId = "12";
+        var eventId = "12";
 
         mockMvc.perform(performDelete(eventId, anonymous()))
                 .andExpect(status().isUnauthorized());
 
-        verify(eventService, times(0)).deleteEventById(eq(eventId));
+        verify(eventService, times(0)).deleteEventById(eventId);
+    }
+
+    private <T extends RequestPostProcessor> MockHttpServletRequestBuilder performGetAll(
+            T postProcessor,
+            String size,
+            String page
+    ) {
+        return get("/api/admin/events")
+                .param("size", size)
+                .param("page", page)
+                .with(postProcessor)
+                .contentType(MediaType.APPLICATION_JSON);
     }
 
     private <T extends RequestPostProcessor> MockHttpServletRequestBuilder performCreate(
+            String url,
             String jsonBody,
             T postProcessor) {
-        return post("/api/admin/events")
+        return post(url)
                 .with(postProcessor)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBody);
     }
 
     private <T extends RequestPostProcessor> MockHttpServletRequestBuilder performUpdate(
+            String url,
             String id,
             String jsonBody,
             T postProcessor) {
-        return put("/api/admin/events/{id}", id)
+        return put(url, id)
                 .with(postProcessor)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON)

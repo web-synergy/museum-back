@@ -2,6 +2,7 @@ package web.synergy.domain.mapper;
 
 
 import web.synergy.domain.model.Event;
+import web.synergy.dto.EventDraft;
 import web.synergy.dto.EventPublication;
 import web.synergy.dto.EventResponse;
 import org.mapstruct.Mapper;
@@ -27,5 +28,10 @@ public interface EventMapper {
 
     @Mapping(target = "created", dateFormat = "yyyy-MM-dd")
     EventResponse toResponse(Event event);
+
+    @Mapping(target = "updated", ignore = true)
+    @Mapping(target = "created", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    Event toEvent(EventDraft eventDraft);
 
 }

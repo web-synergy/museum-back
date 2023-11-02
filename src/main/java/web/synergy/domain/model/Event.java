@@ -3,6 +3,7 @@ package web.synergy.domain.model;
 import com.redis.om.spring.annotations.Document;
 import com.redis.om.spring.annotations.Indexed;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +13,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
+
+import static web.synergy.dto.EventPublication.TypeEnum.OTHER;
 
 @Getter
 @Setter
@@ -24,6 +29,10 @@ public class Event implements Searchable {
     @Id
     @Indexed
     private String id;
+
+    @Setter(AccessLevel.NONE)
+    @Indexed
+    private String slug;
 
     @Indexed
     private String title;
@@ -38,6 +47,7 @@ public class Event implements Searchable {
 
     private String banner;
 
+    @Indexed
     private String status;
 
     private LocalDate begin;
@@ -49,6 +59,11 @@ public class Event implements Searchable {
 
     @LastModifiedDate
     private LocalDate updated;
+
+    public void setSlug(){
+        var targetType = this.type == null ? OTHER.getValue() : this.type;
+        this.slug = targetType.toLowerCase() + "-" + LocalDateTime.now().toEpochSecond(ZoneOffset.MIN);
+    }
 
     @Override
     public String getContent() {
