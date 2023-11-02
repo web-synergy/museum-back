@@ -34,14 +34,13 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event getById(String id) {
-        return eventRepository.findById(id)
-                .orElseThrow(ExceptionUtils.getNotFoundExceptionSupplier(Event.class, "ID: " + id));
-    }
-
-    @Override
     @Transactional
     public Event save(Event event, String username) {
+        if(event.getId() != null) throw new EntityAlreadyExistsException("Event", "ID");
+        if(event.getSlug() != null) throw new EntityAlreadyExistsException("Event", "SLUG");
+        
+        event.updateSlug();
+
         Optional.ofNullable(event.getBanner())
                 .filter(imageId -> !imageId.isBlank() || !imageId.isEmpty())
                 .ifPresent(imageId -> imageService.persist(imageId, username));
@@ -51,9 +50,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public Event update(String id, Event event, String username) {
-        var eventToUpdate = eventRepository.findById(id)
-                .orElseThrow(ExceptionUtils.getNotFoundExceptionSupplier(Event.class, "ID: " + id));
+    public Event update(String slug, Event event, String username) {
+        var eventToUpdate = getBySlug(slug);
 
         event.setId(eventToUpdate.getId());
         event.setCreated(eventToUpdate.getCreated());
@@ -76,26 +74,21 @@ public class EventServiceImpl implements EventService {
             imageService.persist(bannerToUpdate, username);
         }
 
+        if (!event.getType().equals(eventToUpdate.getType())) event.updateSlug();
+
         return eventRepository.update(event);
     }
 
     @Override
     @Transactional
-    public void deleteEventById(String id) {
-        var existingEvent = getById(id);
+    public void deleteEventBySlug(String slug) {
+        var existingEvent = getBySlug(slug);
 
         Optional.ofNullable(existingEvent.getBanner())
                 .filter(imageId -> !imageId.isBlank() || !imageId.isEmpty())
                 .ifPresent(imageService::deleteImage);
 
-        eventRepository.deleteById(id);
-    }
-
-    @Override
-    public void isExists(String eventTitle) {
-        if (eventRepository.existsByTitle(eventTitle)) {
-            throw new EntityAlreadyExistsException("Event", "Title: " + eventTitle);
-        }
+        eventRepository.deleteById(existingEvent.getId());
     }
 
     @Override

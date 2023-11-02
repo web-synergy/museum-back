@@ -94,7 +94,7 @@ class EventAdminControllerTest {
         event.setBanner(UUID.randomUUID().toString());
         event.setBegin(LocalDate.now());
         event.setEnd(LocalDate.now().plusDays(1));
-        event.setSlug();
+        event.updateSlug();
 
         session = new MockHttpSession(null, "httpSessionId");
 
@@ -164,7 +164,6 @@ class EventAdminControllerTest {
     void testUpdateDraftEvent_ShouldReturnStatusIsOk() throws Exception {
         // when:
         when(eventService.getBySlug(event.getSlug())).thenReturn(event);
-        doNothing().when(eventService).isExists(anyString());
         when(eventService.update(anyString(), any(Event.class), anyString())).thenReturn(event);
 
         // then:
@@ -241,7 +240,7 @@ class EventAdminControllerTest {
         mockMvc.perform(performDelete(eventId, ADMIN_AUTHORITIES))
                 .andExpect(status().isNoContent());
 
-        verify(eventService, times(1)).deleteEventById(eventId);
+        verify(eventService, times(1)).deleteEventBySlug(eventId);
     }
 
     @Test
@@ -268,7 +267,7 @@ class EventAdminControllerTest {
         mockMvc.perform(performDelete(eventId, anonymous()))
                 .andExpect(status().isUnauthorized());
 
-        verify(eventService, times(0)).deleteEventById(eventId);
+        verify(eventService, times(0)).deleteEventBySlug(eventId);
     }
 
     private <T extends RequestPostProcessor> MockHttpServletRequestBuilder performGetAll(

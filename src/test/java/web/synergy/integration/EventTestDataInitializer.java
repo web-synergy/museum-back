@@ -1,7 +1,6 @@
 package web.synergy.integration;
 
 import web.synergy.domain.model.Event;
-import web.synergy.dto.EventPublication;
 import web.synergy.dto.EventResponse;
 import web.synergy.repository.EventRepository;
 import lombok.Getter;
@@ -57,6 +56,8 @@ class EventTestDataInitializer {
                 LocalDate begin = LocalDate.now().plusDays(i);
                 event.setBegin(begin);
                 event.setEnd(begin.plusDays(i));
+
+                event.updateSlug();
 
                 repository.save(event);
             });

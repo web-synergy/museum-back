@@ -282,8 +282,6 @@ components:
       description: Event information
       type: object
       properties:
-        id:
-          type: string
         slug:
           type: string
           minLength: 1
