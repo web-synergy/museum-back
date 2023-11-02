@@ -35,9 +35,9 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventResponse getById(String id) {
-        var event = eventRepository.findById(id)
+        return eventRepository.findById(id)
+                .map(eventMapper::toResponse)
                 .orElseThrow(ExceptionUtils.getNotFoundExceptionSupplier(Event.class, "ID: " + id));
-        return eventMapper.toResponse(event);
     }
 
     @Override
@@ -100,16 +100,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventResponse getByTitle(String title) {
-        var event = eventRepository.findByTitle(title)
-                .orElseThrow(ExceptionUtils.getNotFoundExceptionSupplier(Event.class, "Title: " + title));
-        return eventMapper.toResponse(event);
-    }
-
-    @Override
     public void isExists(String eventTitle) {
         if (eventRepository.existsByTitle(eventTitle)) {
             throw new EntityAlreadyExistsException("Event", "Title: " + eventTitle);
         }
+    }
+
+    @Override
+    public EventResponse getBySlug(String slug) {
+        return eventRepository.findBySlug(slug)
+                .map(eventMapper::toResponse)
+                .orElseThrow(ExceptionUtils.getNotFoundExceptionSupplier(Event.class, "Slug: " + slug));
     }
 }

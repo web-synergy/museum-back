@@ -7,7 +7,8 @@ import java.util.Optional;
 
 
 public interface EventRepository extends RedisDocumentRepository<Event, String> {
-    Optional<Event> findByTitle(String title);
 
     boolean existsByTitle(String eventTitle);
+
+    Optional<Event> findBySlug(String slug);
 }

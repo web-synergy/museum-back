@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import web.synergy.api.AdminEventsApiDelegate;
+import web.synergy.dto.EventDraft;
 import web.synergy.dto.EventPublication;
 import web.synergy.dto.EventResponse;
 import web.synergy.service.EventService;
@@ -16,6 +17,16 @@ import lombok.RequiredArgsConstructor;
 public class AdminEventsDelegateImpl implements AdminEventsApiDelegate {
 
     private final EventService eventService;
+
+    @Override
+    public ResponseEntity<EventResponse> createDraft(EventDraft eventDraft) {
+        return AdminEventsApiDelegate.super.createDraft(eventDraft);
+    }
+
+    @Override
+    public ResponseEntity<EventResponse> updateDraft(String slug, EventDraft eventDraft) {
+        return AdminEventsApiDelegate.super.updateDraft(slug, eventDraft);
+    }
 
     @Override
     public ResponseEntity<EventResponse> createEvent(EventPublication eventPublication) {

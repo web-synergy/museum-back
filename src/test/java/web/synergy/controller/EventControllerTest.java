@@ -5,8 +5,6 @@ import web.synergy.domain.mapper.EventMapper;
 import web.synergy.domain.model.Event;
 import web.synergy.dto.EventResponse;
 import web.synergy.dto.PageEvent;
-import web.synergy.exceptions.custom.EntityNotFoundException;
-import web.synergy.exceptions.custom.MethodArgumentNotValidException;
 import web.synergy.security.RootUserInitializer;
 import web.synergy.service.ArticleService;
 import web.synergy.service.EventService;
@@ -103,76 +101,45 @@ class EventControllerTest {
     }
 
     @Test
-    void testGetEventByTitle() throws Exception {
+    void testGetEventBySlug() throws Exception {
         // given:
         final LocalDate begin = LocalDate.of(2023, 9, 3);
         final LocalDate end = LocalDate.of(2023, 9, 12);
-        final String title = "cool title";
 
         Event event = new Event();
         event.setId("32");
-        event.setTitle(title);
+        event.setTitle("cool title");
         event.setSummary("shortSumm");
         event.setDescription("shortDesc");
         event.setType(EventResponse.TypeEnum.CONTEST.getValue());
         event.setBanner("/images/image1.jpeg");
         event.setBegin(begin);
         event.setEnd(end);
+        event.setSlug();
+
+        String slug = event.getSlug();
 
         var response = eventMapper.toResponse(event);
 
         // when:
-        when(eventService.getByTitle(title)).thenReturn(response);
+        when(eventService.getBySlug(slug)).thenReturn(response);
 
         // then:
-        mockMvc.perform(get("/api/events/by-title/{title}", title)
+        mockMvc.perform(get("/api/events/{slug}", slug)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(title));
+                .andExpect(jsonPath("$.slug").value(slug));
     }
 
     @SneakyThrows
     @Test
-    void testGetEventByTitleWithInvalidTitle() {
-        String invalidTitle = "x".repeat(101);
+    void testGetEventBySlugWithInvalidSlug() {
+        String invalidSlug = "x".repeat(101);
 
         // then:
-        mockMvc.perform(get("/api/events/by-title/{title}", invalidTitle)
+        mockMvc.perform(get("/api/events/{slug}", invalidSlug)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void testGetEventWithInvalidId() throws Exception {
-        // given:
-        final String invalidEventId = "999";
-        final String expectedMessage = "Event with `id: 999` was not found!";
-
-        // when:
-        when(eventService.getById(invalidEventId)).thenThrow(
-                new EntityNotFoundException("Event", "id: " + invalidEventId));
-
-        // then:
-        mockMvc.perform(get("/api/events/by-id/{id}", invalidEventId))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(expectedMessage));
-    }
-
-    @Test
-    void testBadRequest() throws Exception {
-        // given:
-        String id = "ID";
-        String message = "Event not valid!";
-
-        // when:
-        when(eventService.getById(id)).thenThrow(
-                new MethodArgumentNotValidException(message));
-
-        // then:
-        mockMvc.perform(get("/api/events/by-id/{id}", id))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(message));
-    }
 }

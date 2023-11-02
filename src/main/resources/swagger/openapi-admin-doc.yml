@@ -171,6 +171,99 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /events/draft/{slug}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Events
+      summary: Update an existing Event draft
+      description: Updates an existing Event draft with the provided information.
+      operationId: updateDraft
+      parameters:
+        - name: slug
+          in: path
+          description: Unique slug of the Event draft to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventDraft'
+        required: true
+      responses:
+        200:
+          description: Event draft updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Event draft not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /events/draft:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Events
+      summary: Create an Event draft
+      description: Create an Event draft with the provided information.
+      operationId: createDraft
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventDraft'
+        required: true
+      responses:
+        200:
+          description: Event draft created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /images:
     post:
       security:
@@ -574,12 +667,53 @@ components:
         end:
           type: string
           format: date
+    EventDraft:
+      description: Event draft publication form
+      type: object
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        summary:
+          type: string
+        type:
+          type: string
+          enum:
+            - EXHIBITION
+            - EXCURSION
+            - PRESENTATION
+            - CONTEST
+            - LECTURE
+            - MASTER_CLASS
+            - CREATIVE_EVENING
+            - OTHER
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - PUBLISHED
+        banner:
+          type: string
+        begin:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
     EventResponse:
       description: Event information
       type: object
       properties:
         id:
           type: string
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 100
+          nullable: false
         title:
           type: string
           maxLength: 100

@@ -23,12 +23,7 @@ public class EventApiDelegateImpl implements EventsApiDelegate {
     }
 
     @Override
-    public ResponseEntity<EventResponse> getById(String id) {
-        return new ResponseEntity<>(eventService.getById(id), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<EventResponse> getByTitle(String title) {
-        return new ResponseEntity<>(eventService.getByTitle(title), HttpStatus.OK);
+    public ResponseEntity<EventResponse> getBySlug(String slug) {
+        return new ResponseEntity<>(eventService.getBySlug(slug), HttpStatus.OK);
     }
 }
