@@ -39,7 +39,6 @@ import static web.synergy.dto.EventPublication.StatusEnum.DRAFT;
 import static web.synergy.dto.EventPublication.TypeEnum.CONTEST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
