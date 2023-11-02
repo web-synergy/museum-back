@@ -263,6 +263,8 @@
                                 <performBeanValidation>true</performBeanValidation>
                             </configOptions>
                             <typeMappings>
+                                <typeMapping>PageableObject=org.springframework.data.domain.Pageable</typeMapping>
+                                <typeMapping>SortObject=org.springframework.data.domain.Sort</typeMapping>
                                 <typeMapping>MuseumInfo=web.synergy.domain.model.MuseumData</typeMapping>
                             </typeMappings>
                         </configuration>
