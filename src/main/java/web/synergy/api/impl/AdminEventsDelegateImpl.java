@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import web.synergy.api.AdminEventsApiDelegate;
+import web.synergy.domain.mapper.EventMapper;
 import web.synergy.dto.EventDraft;
 import web.synergy.dto.EventPublication;
 import web.synergy.dto.EventResponse;
@@ -17,35 +18,51 @@ import lombok.RequiredArgsConstructor;
 public class AdminEventsDelegateImpl implements AdminEventsApiDelegate {
 
     private final EventService eventService;
+    private final EventMapper eventMapper;
 
     @Override
     public ResponseEntity<EventResponse> createDraft(EventDraft eventDraft) {
-        return AdminEventsApiDelegate.super.createDraft(eventDraft);
+        var username = getUsername();
+        var event = eventMapper.toEvent(eventDraft);
+        var savedEvent = eventService.save(event, username);
+        var eventResponse = eventMapper.toResponse(savedEvent);
+
+        return new ResponseEntity<>(eventResponse, HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity<EventResponse> updateDraft(String slug, EventDraft eventDraft) {
-        return AdminEventsApiDelegate.super.updateDraft(slug, eventDraft);
+        var username = getUsername();
+        var existingEvent = eventService.getBySlug(slug);
+        var eventForUpdate = eventMapper.toEvent(eventDraft);
+        var savedEvent = eventService.update(existingEvent.getId(), eventForUpdate, username);
+        var eventResponse = eventMapper.toResponse(savedEvent);
+
+        return new ResponseEntity<>(eventResponse, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<EventResponse> createEvent(EventPublication eventPublication) {
         eventService.isExists(eventPublication.getTitle());
 
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return new ResponseEntity<>(
-                eventService.save(eventPublication, username),
-                HttpStatus.CREATED);
+        var username = getUsername();
+        var event = eventMapper.toEvent(eventPublication);
+        var savedEvent = eventService.save(event, username);
+        var eventResponse = eventMapper.toResponse(savedEvent);
+
+        return new ResponseEntity<>(eventResponse, HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity<EventResponse> updateEvent(String id, EventPublication eventPublication) {
         eventService.isExists(eventPublication.getTitle());
 
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return new ResponseEntity<>(
-                eventService.update(id, eventPublication, username),
-                HttpStatus.OK);
+        var username = getUsername();
+        var event = eventMapper.toEvent(eventPublication);
+        var updatedEvent = eventService.update(id, event, username);
+        var eventResponse = eventMapper.toResponse(updatedEvent);
+
+        return new ResponseEntity<>(eventResponse, HttpStatus.OK);
     }
 
     @Override
@@ -54,4 +71,7 @@ public class AdminEventsDelegateImpl implements AdminEventsApiDelegate {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    private static String getUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
 }

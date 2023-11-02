@@ -60,8 +60,8 @@ public class Event implements Searchable {
     private LocalDate updated;
 
     public void setSlug(){
-        String type = this.type == null ? OTHER.getValue() : this.type;
-        this.slug = type.toLowerCase() + "-" + LocalDateTime.now().toEpochSecond(ZoneOffset.MIN);
+        var targetType = this.type == null ? OTHER.getValue() : this.type;
+        this.slug = targetType.toLowerCase() + "-" + LocalDateTime.now().toEpochSecond(ZoneOffset.MIN);
     }
 
     @Override

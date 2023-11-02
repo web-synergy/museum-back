@@ -1,14 +1,13 @@
 package web.synergy.controller;
 
 import lombok.SneakyThrows;
-import web.synergy.domain.mapper.EventMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.data.domain.PageImpl;
 import web.synergy.domain.model.Event;
 import web.synergy.dto.EventResponse;
-import web.synergy.dto.PageEvent;
 import web.synergy.security.RootUserInitializer;
 import web.synergy.service.ArticleService;
 import web.synergy.service.EventService;
-import web.synergy.service.MailService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import web.synergy.service.MuseumDataService;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
@@ -34,6 +34,8 @@ class EventControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private Event event;
+
     @MockBean
     private EventService eventService;
 
@@ -41,23 +43,33 @@ class EventControllerTest {
     private RootUserInitializer rootUserInitializer;
 
     @MockBean
-    private MailService mailService;
-
-    @Autowired
-    private EventMapper eventMapper;
-
-    @MockBean
     private ArticleService articleService;
 
     @MockBean
     private MuseumDataService museumDataService;
 
+    @BeforeEach
+    void setUp() {
+        final LocalDate begin = LocalDate.of(2023, 9, 3);
+        final LocalDate end = LocalDate.of(2023, 9, 12);
+
+        event = new Event();
+        event.setId("32");
+        event.setTitle("cool title");
+        event.setSummary("shortSumm");
+        event.setDescription("shortDesc");
+        event.setType(EventResponse.TypeEnum.CONTEST.getValue());
+        event.setBanner("/images/image1.jpeg");
+        event.setBegin(begin);
+        event.setEnd(end);
+        event.setSlug();
+    }
+
     @Test
     void testGetEvents() throws Exception {
         // given:
         var pageable = Pageable.ofSize(10).withPage(0);
-        PageEvent events = new PageEvent();
-        events.setPageable(pageable);
+        var events = new PageImpl<Event>(List.of(), pageable, 10L);
 
         // when:
         when(eventService.getAll(pageable)).thenReturn(events);
@@ -72,57 +84,12 @@ class EventControllerTest {
     }
 
     @Test
-    void testGetEvent() throws Exception {
-        // given:
-        final LocalDate begin = LocalDate.of(2023, 9, 3);
-        final LocalDate end = LocalDate.of(2023, 9, 12);
-        final String eventId = "32";
-
-        Event event = new Event();
-        event.setId(eventId);
-        event.setTitle("cool title");
-        event.setSummary("shortSumm");
-        event.setDescription("shortDesc");
-        event.setType(EventResponse.TypeEnum.CONTEST.getValue());
-        event.setBanner("/images/image1.jpeg");
-        event.setBegin(begin);
-        event.setEnd(end);
-
-        var response = eventMapper.toResponse(event);
-
-        // when:
-        when(eventService.getById(eventId)).thenReturn(response);
-
-        // then:
-        mockMvc.perform(get("/api/events/by-id/{id}", eventId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(eventId));
-    }
-
-    @Test
     void testGetEventBySlug() throws Exception {
         // given:
-        final LocalDate begin = LocalDate.of(2023, 9, 3);
-        final LocalDate end = LocalDate.of(2023, 9, 12);
-
-        Event event = new Event();
-        event.setId("32");
-        event.setTitle("cool title");
-        event.setSummary("shortSumm");
-        event.setDescription("shortDesc");
-        event.setType(EventResponse.TypeEnum.CONTEST.getValue());
-        event.setBanner("/images/image1.jpeg");
-        event.setBegin(begin);
-        event.setEnd(end);
-        event.setSlug();
-
         String slug = event.getSlug();
 
-        var response = eventMapper.toResponse(event);
-
         // when:
-        when(eventService.getBySlug(slug)).thenReturn(response);
+        when(eventService.getBySlug(slug)).thenReturn(event);
 
         // then:
         mockMvc.perform(get("/api/events/{slug}", slug)

@@ -1,8 +1,7 @@
 package web.synergy.service;
 
-import web.synergy.dto.EventPublication;
-import web.synergy.dto.EventResponse;
-import web.synergy.dto.PageEvent;
+import org.springframework.data.domain.Page;
+import web.synergy.domain.model.Event;
 import org.springframework.data.domain.Pageable;
 import web.synergy.exceptions.custom.EntityAlreadyExistsException;
 
@@ -12,7 +11,7 @@ public interface EventService {
      * @param pageable {@link Pageable} object.
      * @return A Page of events.
      */
-    PageEvent getAll(Pageable pageable);
+    Page<Event> getAll(Pageable pageable);
 
     /**
      * Retrieve detailed information about a specific event by its id.
@@ -20,7 +19,7 @@ public interface EventService {
      * @param id The unique identifier of the event.
      * @return An Event with given ID.
      */
-    EventResponse getById(String id);
+    Event getById(String id);
 
     /**
      * Create a new event based on the provided EventPublicationDto.
@@ -30,7 +29,7 @@ public interface EventService {
      * @param username - admin`s username
      * @return Saved event.
      */
-    EventResponse save(EventPublication event, String username);
+    Event save(Event event, String username);
 
     /**
      * Update an existing event identified by id.
@@ -41,7 +40,7 @@ public interface EventService {
      * @param username - admin`s username
      * @return Updated event.
      */
-    EventResponse update(String id, EventPublication event, String username);
+    Event update(String id, Event event, String username);
 
     /**
      * Delete an event identified by its id.
@@ -64,5 +63,5 @@ public interface EventService {
      * @param slug The unique Slug of the event.
      * @return An Event with given Slug.
      */
-    EventResponse getBySlug(String slug);
+    Event getBySlug(String slug);
 }

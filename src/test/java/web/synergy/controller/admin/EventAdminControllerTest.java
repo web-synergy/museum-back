@@ -1,5 +1,6 @@
 package web.synergy.controller.admin;
 
+import web.synergy.domain.model.Event;
 import web.synergy.dto.EventPublication;
 import web.synergy.domain.mapper.EventMapper;
 import web.synergy.security.RootUserInitializer;
@@ -93,10 +94,9 @@ class EventAdminControllerTest {
     void testCreateEventStatusIsCreated() throws Exception {
         // given:
         var event = eventMapper.toEvent(eventDto);
-        var eventResponse = eventMapper.toResponse(event);
 
         // when:
-        when(eventService.save(any(EventPublication.class), anyString())).thenReturn(eventResponse);
+        when(eventService.save(any(Event.class), anyString())).thenReturn(event);
 
         // then:
         mockMvc.perform(performCreate(eventDtoJson, ADMIN_AUTHORITIES))
@@ -114,10 +114,9 @@ class EventAdminControllerTest {
 
         String invalidEventDtoJson = objectMapper.writeValueAsString(eventDto);
         var event = eventMapper.toEvent(eventDto);
-        var eventResponse = eventMapper.toResponse(event);
 
         // when:
-        when(eventService.save(eventDto, session.getId())).thenReturn(eventResponse);
+        when(eventService.save(event, session.getId())).thenReturn(event);
 
         // then:
         mockMvc.perform(performCreate(invalidEventDtoJson, ADMIN_AUTHORITIES))
@@ -129,12 +128,11 @@ class EventAdminControllerTest {
         // given:
         String id = "12";
         var event = eventMapper.toEvent(eventDto);
-        var eventResponse = eventMapper.toResponse(event);
 
         String eventDtoJson = objectMapper.writeValueAsString(eventDto);
 
         // when:
-        when(eventService.update(id, eventDto, "httpSessionId")).thenReturn(eventResponse);
+        when(eventService.update(id, event, "httpSessionId")).thenReturn(event);
 
         mockMvc.perform(performUpdate(id, eventDtoJson, ADMIN_AUTHORITIES))
                 .andExpect(status().isOk());
@@ -151,11 +149,10 @@ class EventAdminControllerTest {
         eventDto.summary(validatedField);
 
         var event = eventMapper.toEvent(eventDto);
-        var eventResponse = eventMapper.toResponse(event);
         String invalidEventDtoJson = objectMapper.writeValueAsString(eventDto);
 
         // when:
-        when(eventService.update(id, eventDto, "httpSessionId")).thenReturn(eventResponse);
+        when(eventService.update(id, event, "httpSessionId")).thenReturn(event);
 
         // then:
         mockMvc.perform(performUpdate(id, invalidEventDtoJson, ADMIN_AUTHORITIES))

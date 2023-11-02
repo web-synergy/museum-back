@@ -1,7 +1,7 @@
 package web.synergy.integration;
 
 import web.synergy.domain.mapper.EventMapper;
-import web.synergy.dto.EventPublication;
+import web.synergy.domain.model.Event;
 import web.synergy.exceptions.custom.EntityNotFoundException;
 import web.synergy.service.EventService;
 import web.synergy.service.ImageService;
@@ -33,18 +33,18 @@ class EventServiceImplTest extends AbstractIntegrationTest {
     @MockBean
     private ImageService imageService;
 
-    private EventPublication eventPublication;
+    private Event event;
 
     @BeforeEach
     void setUp() {
-        eventPublication = new EventPublication();
-        eventPublication.title("Title");
-        eventPublication.summary("Short Description");
-        eventPublication.description("Not so short Description, but not to long.");
-        eventPublication.type(CREATIVE_EVENING);
-        eventPublication.banner(UUID.randomUUID().toString());
-        eventPublication.begin(LocalDate.now());
-        eventPublication.end(LocalDate.now().plusDays(10));
+        event = new Event();
+        event.setTitle("Title");
+        event.setSummary("Short Description");
+        event.setDescription("Not so short Description, but not to long.");
+        event.setType(CREATIVE_EVENING.getValue());
+        event.setBanner(UUID.randomUUID().toString());
+        event.setBegin(LocalDate.now());
+        event.setEnd(LocalDate.now().plusDays(10));
     }
 
     @Test
@@ -74,14 +74,14 @@ class EventServiceImplTest extends AbstractIntegrationTest {
         var userId = "USER_ID";
 
         // when:
-        var createdEvent = eventService.save(eventPublication, userId);
+        var createdEvent = eventService.save(event, userId);
 
         // then:
         assertFalse(createdEvent.getId().isEmpty());
-        assertEquals(eventPublication.getTitle(), createdEvent.getTitle());
-        assertEquals(eventPublication.getDescription(), createdEvent.getDescription());
-        assertEquals(eventPublication.getBegin(), createdEvent.getBegin());
-        assertEquals(eventPublication.getEnd(), createdEvent.getEnd());
+        assertEquals(event.getTitle(), createdEvent.getTitle());
+        assertEquals(event.getDescription(), createdEvent.getDescription());
+        assertEquals(event.getBegin(), createdEvent.getBegin());
+        assertEquals(event.getEnd(), createdEvent.getEnd());
     }
 
 
@@ -93,26 +93,25 @@ class EventServiceImplTest extends AbstractIntegrationTest {
         var userId = "USER_ID";
 
         // when:
-        var eventToUpdate = eventService.save(eventPublication, userId);
+        var eventToUpdate = eventService.save(event, userId);
 
         // then:
-        eventPublication.title("TitleUpdate");
-        eventPublication.description("DescriptionUpdate");
-        eventPublication.type(CONTEST);
-        eventPublication.banner("event/bannerUpdate");
+        event.setTitle("TitleUpdate");
+        event.setDescription("DescriptionUpdate");
+        event.setType(CONTEST.getValue());
+        event.setBanner("event/bannerUpdate");
 
         // when:
         var eventId = eventToUpdate.getId();
-        var event = mapper.toEvent(eventPublication);
         event.setId(eventId);
 
         var expected = mapper.toResponse(event);
-        var actual = eventService.update(eventId, eventPublication, userId);
+        var actual = eventService.update(eventId, event, userId);
 
         // then:
         assertEquals(expected.getTitle(), actual.getTitle());
         assertEquals(expected.getDescription(), actual.getDescription());
-        assertEquals(expected.getType(), actual.getType());
+        assertEquals(expected.getType().getValue(), actual.getType());
         assertEquals(expected.getBanner(), actual.getBanner());
 
     }
@@ -125,7 +124,7 @@ class EventServiceImplTest extends AbstractIntegrationTest {
         var userId = "USER_ID";
 
         // when:
-        var eventToDelete = eventService.save(eventPublication, userId);
+        var eventToDelete = eventService.save(event, userId);
         var eventId = eventToDelete.getId();
         eventService.deleteEventById(eventId);
 

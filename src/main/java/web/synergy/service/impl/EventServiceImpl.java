@@ -1,19 +1,15 @@
 package web.synergy.service.impl;
 
-import web.synergy.domain.mapper.EventMapper;
-import web.synergy.domain.mapper.PageEventMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import web.synergy.domain.model.Event;
-import web.synergy.dto.EventPublication;
-import web.synergy.dto.EventResponse;
-import web.synergy.dto.PageEvent;
 import web.synergy.exceptions.custom.EntityAlreadyExistsException;
 import web.synergy.repository.EventRepository;
 import web.synergy.service.EventService;
 import web.synergy.service.ImageService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import web.synergy.utils.ExceptionUtils;
 
 import java.util.Optional;
@@ -24,67 +20,56 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final ImageService imageService;
-    private final EventMapper eventMapper;
-    private final PageEventMapper pageMapper;
 
     @Override
-    public PageEvent getAll(Pageable pageable) {
-        return pageMapper.toPageEvent(eventRepository.findAll(pageable)
-                .map(eventMapper::toResponse));
+    public Page<Event> getAll(Pageable pageable) {
+        return eventRepository.findAll(pageable);
     }
 
     @Override
-    public EventResponse getById(String id) {
+    public Event getById(String id) {
         return eventRepository.findById(id)
-                .map(eventMapper::toResponse)
                 .orElseThrow(ExceptionUtils.getNotFoundExceptionSupplier(Event.class, "ID: " + id));
     }
 
     @Override
     @Transactional
-    public EventResponse save(EventPublication event, String username) {
-        var eventToSave = eventMapper.toEvent(event);
-
+    public Event save(Event event, String username) {
         Optional.ofNullable(event.getBanner())
                 .filter(imageId -> !imageId.isBlank() || !imageId.isEmpty())
                 .ifPresent(imageId -> imageService.persist(imageId, username));
 
-        var savedEvent = eventRepository.save(eventToSave);
-
-        return eventMapper.toResponse(savedEvent);
+        return eventRepository.save(event);
     }
 
     @Override
     @Transactional
-    public EventResponse update(String id, EventPublication publication, String username) {
+    public Event update(String id, Event event, String username) {
         var eventToUpdate = eventRepository.findById(id)
                 .orElseThrow(ExceptionUtils.getNotFoundExceptionSupplier(Event.class, "ID: " + id));
 
-        var eventForUpdate = eventMapper.toEvent(publication);
-        eventForUpdate.setId(eventToUpdate.getId());
-        eventForUpdate.setCreated(eventToUpdate.getCreated());
+        event.setId(eventToUpdate.getId());
+        event.setCreated(eventToUpdate.getCreated());
 
         if (eventToUpdate.getBanner() != null) {
             var existingBanner = eventToUpdate.getBanner();
 
-            if (eventForUpdate.getBanner() != null
-                    && !eventForUpdate.getBanner().equals(existingBanner)) {
-                var bannerToUpdate = eventForUpdate.getBanner();
+            if (event.getBanner() != null
+                    && !event.getBanner().equals(existingBanner)) {
+                var bannerToUpdate = event.getBanner();
 
                 imageService.deleteImage(existingBanner);
                 imageService.persist(bannerToUpdate, username);
-            } else if (eventForUpdate.getBanner() == null) {
+            } else if (event.getBanner() == null) {
                 imageService.deleteImage(existingBanner);
             }
-        } else if (eventForUpdate.getBanner() != null) {
-            var bannerToUpdate = eventForUpdate.getBanner();
+        } else if (event.getBanner() != null) {
+            var bannerToUpdate = event.getBanner();
 
             imageService.persist(bannerToUpdate, username);
         }
 
-        var updatedEvent = eventRepository.update(eventForUpdate);
-
-        return eventMapper.toResponse(updatedEvent);
+        return eventRepository.update(event);
     }
 
     @Override
@@ -107,9 +92,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventResponse getBySlug(String slug) {
+    public Event getBySlug(String slug) {
         return eventRepository.findBySlug(slug)
-                .map(eventMapper::toResponse)
                 .orElseThrow(ExceptionUtils.getNotFoundExceptionSupplier(Event.class, "Slug: " + slug));
     }
 }

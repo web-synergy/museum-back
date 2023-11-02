@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
-import web.synergy.dto.EventPublication;
+import web.synergy.domain.model.Event;
 import web.synergy.exceptions.custom.StorageException;
 import web.synergy.exceptions.custom.StorageFileNotFoundException;
 import web.synergy.service.EventService;
@@ -21,10 +21,10 @@ class EventImageProcessingTest extends AbstractIntegrationTest {
     void saveEventWithoutBanner() {
 
         // given:
-        var event = new EventPublication();
-        event.title("Test title");
-        event.summary("Test event summary");
-        event.description("Test event description");
+        var event = new Event();
+        event.setTitle("Test title");
+        event.setSummary("Test event summary");
+        event.setDescription("Test event description");
 
         // when:
         var savedEvent = eventService.save(event, "Some_User");
