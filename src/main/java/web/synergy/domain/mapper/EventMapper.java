@@ -22,7 +22,6 @@ public interface EventMapper {
      * @return mapped Event.
      */
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "slug", ignore = true)
     @Mapping(target = "created", ignore = true)
     @Mapping(target = "updated", ignore = true)
     Event toEvent(EventPublication publication);
