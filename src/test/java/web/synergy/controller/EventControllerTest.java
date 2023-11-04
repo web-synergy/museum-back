@@ -62,7 +62,7 @@ class EventControllerTest {
         event.setBanner("/images/image1.jpeg");
         event.setBegin(begin);
         event.setEnd(end);
-        event.setSlug();
+        event.updateSlug();
     }
 
     @Test

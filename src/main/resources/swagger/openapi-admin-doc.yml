@@ -128,7 +128,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /events/{id}:
+  /events/{slug}:
     put:
       security:
         - bearerAuth: []
@@ -138,7 +138,7 @@ paths:
       description: Updates an existing Event with the provided information.
       operationId: updateEvent
       parameters:
-        - name: id
+        - name: slug
           in: path
           description: Unique identifier of the Event to be updated
           required: true
@@ -190,7 +190,7 @@ paths:
       description: Deletes an existing Event by its unique identifier.
       operationId: deleteEvent
       parameters:
-        - name: id
+        - name: slug
           in: path
           description: Unique identifier of the Event to be deleted
           required: true
@@ -680,6 +680,8 @@ components:
         - type
       type: object
       properties:
+        slug:
+          type: string
         title:
           type: string
           nullable: false
@@ -759,8 +761,6 @@ components:
       description: Event information
       type: object
       properties:
-        id:
-          type: string
         slug:
           type: string
           minLength: 1

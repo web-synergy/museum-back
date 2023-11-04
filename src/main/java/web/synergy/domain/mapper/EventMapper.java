@@ -21,17 +21,17 @@ public interface EventMapper {
      * @param publication {@link EventPublication} DTO.
      * @return mapped Event.
      */
-    @Mapping(target = "updated", ignore = true)
-    @Mapping(target = "created", ignore = true)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "created", ignore = true)
+    @Mapping(target = "updated", ignore = true)
     Event toEvent(EventPublication publication);
 
     @Mapping(target = "created", dateFormat = "yyyy-MM-dd")
     EventResponse toResponse(Event event);
 
-    @Mapping(target = "updated", ignore = true)
-    @Mapping(target = "created", ignore = true)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "created", ignore = true)
+    @Mapping(target = "updated", ignore = true)
     Event toEvent(EventDraft eventDraft);
 
 }

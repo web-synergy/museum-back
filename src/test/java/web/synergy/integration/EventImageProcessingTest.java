@@ -35,7 +35,7 @@ class EventImageProcessingTest extends AbstractIntegrationTest {
         assertDoesNotThrow(() -> new StorageFileNotFoundException("Could not read resource."));
 
         // when:
-        var sameEvent = eventService.getById(savedEvent.getId());
+        var sameEvent = eventService.getBySlug(savedEvent.getSlug());
 
         // then:
         assertEquals(savedEvent.getTitle(), sameEvent.getTitle());

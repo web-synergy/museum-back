@@ -12,7 +12,7 @@ import org.testcontainers.utility.DockerImageName;
  *
  * @author Evhen Malysh
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @Testcontainers
 abstract class AbstractIntegrationTest {
 

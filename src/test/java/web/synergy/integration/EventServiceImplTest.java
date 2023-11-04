@@ -23,7 +23,7 @@ import static web.synergy.dto.EventPublication.TypeEnum.CONTEST;
 import static web.synergy.dto.EventPublication.TypeEnum.CREATIVE_EVENING;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Import({EventTestDataInitializer.class})
+@Import({ EventTestDataInitializer.class })
 class EventServiceImplTest extends AbstractIntegrationTest {
 
     @Autowired
@@ -87,7 +87,6 @@ class EventServiceImplTest extends AbstractIntegrationTest {
         assertEquals(event.getEnd(), createdEvent.getEnd());
     }
 
-
     @Test
     @DisplayName("Checking correctness of update object.")
     void updateTest() {
@@ -105,35 +104,34 @@ class EventServiceImplTest extends AbstractIntegrationTest {
         event.setBanner("event/bannerUpdate");
 
         // when:
-        var eventId = eventToUpdate.getId();
-        event.setId(eventId);
+        var slug = eventToUpdate.getSlug();
+        event.setSlug(slug);
 
         var expected = mapper.toResponse(event);
-        var actual = eventService.update(eventId, event, userId);
+        var actual = eventService.update(slug, event, userId);
 
         // then:
         assertEquals(expected.getTitle(), actual.getTitle());
         assertEquals(expected.getDescription(), actual.getDescription());
         assertEquals(expected.getType().getValue(), actual.getType());
         assertEquals(expected.getBanner(), actual.getBanner());
-
     }
 
     @Test
     @DisplayName("Checking delete object.")
-    void deleteEventByIdTest() {
+    void deleteEventBySlugTest() {
 
         // given:
         var userId = "USER_ID";
 
         // when:
         var eventToDelete = eventService.save(event, userId);
-        var eventId = eventToDelete.getId();
-        eventService.deleteEventById(eventId);
+        var slug = eventToDelete.getSlug();
+        eventService.deleteEventBySlug(slug);
 
         // then:
-        assertThrows(EntityNotFoundException.class, () -> eventService.getById(eventId),
-                "Event with `ID: " + eventId + "` was not found!");
+        assertThrows(EntityNotFoundException.class, () -> eventService.getBySlug(slug),
+                "Event with `Slug: " + slug + "` was not found!");
     }
 
     @Test
