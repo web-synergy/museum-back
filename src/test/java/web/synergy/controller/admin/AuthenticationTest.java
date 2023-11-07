@@ -85,4 +85,34 @@ class AuthenticationTest {
 
         verify(userService, times(1)).incrementLoginCounter("user@email.com");
     }
+
+    @Test
+    @WithMockUser(roles = { "ADMIN" }, username = "root20")
+    void userLoginWithRootUsername_ShouldReturnFalseIsValidEmail() throws Exception {
+        // when:
+        when(tokenService.generateToken(any(Authentication.class))).thenReturn(TOKEN);
+
+        // then:
+        mockMvc.perform(post("/api/admin/login"))
+                .andExpect(jsonPath("$.token").value(TOKEN))
+                .andExpect(jsonPath("$.is_valid_email").value(false))
+                .andExpect(status().isOk());
+
+        verify(userService, times(1)).incrementLoginCounter("root20");
+    }
+
+    @Test
+    @WithMockUser(roles = { "ADMIN" }, username = "root20@gmail.com")
+    void userLoginWithEmailUsername_ShouldReturnTrueIsValidEmail() throws Exception {
+        // when:
+        when(tokenService.generateToken(any(Authentication.class))).thenReturn(TOKEN);
+
+        // then:
+        mockMvc.perform(post("/api/admin/login"))
+                .andExpect(jsonPath("$.token").value(TOKEN))
+                .andExpect(jsonPath("$.is_valid_email").value(true))
+                .andExpect(status().isOk());
+
+        verify(userService, times(1)).incrementLoginCounter("root20@gmail.com");
+    }
 }

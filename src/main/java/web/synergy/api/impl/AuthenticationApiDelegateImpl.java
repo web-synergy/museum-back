@@ -31,6 +31,10 @@ public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate 
         var response = new SuccessAuthResponse();
         response.roles(authorities);
 
+        if (!authentication.getName().matches("^root\\d{0,2}")) {
+            response.setIsValidEmail(true);
+        }
+
         var generatedToken = tokenService.generateToken(authentication);
         response.setToken(generatedToken);
 

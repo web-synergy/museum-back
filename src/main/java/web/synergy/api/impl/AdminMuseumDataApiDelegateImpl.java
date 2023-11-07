@@ -18,8 +18,6 @@ public class AdminMuseumDataApiDelegateImpl implements AdminMuseumDataApiDelegat
     private final MuseumDataService museumDataService;
     private final MuseumDataMapper museumDataMapper;
 
-
-
     @Override
     public ResponseEntity<MuseumData> addData(MuseumInfo museumInfo) {
         var museumData = museumDataMapper.toMuseumData(museumInfo);

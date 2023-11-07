@@ -914,6 +914,10 @@ components:
         login_counter:
           description: Logins count
           type: integer
+        is_valid_email:
+          description: Boolean flag that indicates if the username was changed to a valid email
+          type: boolean
+          default: false
     PageEvent:
       type: object
       properties:
