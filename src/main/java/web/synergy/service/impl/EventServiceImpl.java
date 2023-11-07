@@ -36,9 +36,11 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public Event save(Event event, String username) {
-        if(event.getId() != null) throw new EntityAlreadyExistsException("Event", "ID");
-        if(event.getSlug() != null) throw new EntityAlreadyExistsException("Event", "SLUG");
-        
+        if (event.getId() != null)
+            throw new EntityAlreadyExistsException("Event", "ID");
+        if (event.getSlug() != null)
+            throw new EntityAlreadyExistsException("Event", "SLUG");
+
         event.updateSlug();
 
         Optional.ofNullable(event.getBanner())
@@ -74,7 +76,11 @@ public class EventServiceImpl implements EventService {
             imageService.persist(bannerToUpdate, username);
         }
 
-        if (!event.getType().equals(eventToUpdate.getType())) event.updateSlug();
+        else if (event.getType() == null && eventToUpdate.getType() != null ||
+                event.getType() != null && eventToUpdate.getType() == null ||
+                !event.getType().equals(eventToUpdate.getType())) {
+            event.updateSlug();
+        }
 
         return eventRepository.update(event);
     }
