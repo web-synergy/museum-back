@@ -17,8 +17,8 @@ services:
   app:
     build: .
     environment:
-      - MAIL_USER=MAIL_USER
-      - MAIL_PASSWORD=MAIL_PASSWORD
+      MAIL_USER: 'museum_kav_dev@meta.ua'
+      MAIL_PASSWORD: '!MUS!&2023!kav'
     volumes:
       - server_files:/app/files
     ports:
