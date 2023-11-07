@@ -241,7 +241,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /museum_data:
+  /museum-data:
     get:
       tags:
         - Museum Data
