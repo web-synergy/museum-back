@@ -40,6 +40,7 @@ public class Event implements Searchable {
     @Indexed
     private String description;
 
+    @Indexed
     private String type;
 
     private String banner;
@@ -47,13 +48,17 @@ public class Event implements Searchable {
     @Indexed
     private String status;
 
+    @Indexed
     private LocalDate begin;
 
+    @Indexed
     private LocalDate end;
 
+    @Indexed
     @CreatedDate
     private LocalDate created;
 
+    @Indexed
     @LastModifiedDate
     private LocalDate updated;
 

@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  proxy:
+    build: nginx/.
+    ports:
+      - '80:80'
+    depends_on:
+      - app
+
+  app:
+    build: .
+    environment:
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+    depends_on:
+      - redis
+    restart: on-failure
+
+  redis:
+    image: 'redis/redis-stack'
+    ports:
+      - '8001:8001'
+    restart: on-failure

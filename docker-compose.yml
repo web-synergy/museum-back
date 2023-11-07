@@ -1,12 +1,26 @@
 version: '3'
 
 services:
+  webserver:
+    image: nginx:1.15-alpine
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d:ro
+      - /usr/bin/certbot:/usr/bin/certbot:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - app
+    restart: on-failure
+
   app:
     build: .
     environment:
-      - MAIL_USER=MAIL_USER
-      - MAIL_PASSWORD=MAIL_PASSWORD
-      - ORIGIN_URI=https://museum-admin-weld.vercel.app
+      MAIL_USER: 'museum_kav_dev@meta.ua'
+      MAIL_PASSWORD: '!MUS!&2023!kav'
+    volumes:
+      - server_files:/app/files
     ports:
       - '8080:8080'
     depends_on:
@@ -14,7 +28,15 @@ services:
     restart: on-failure
 
   redis:
-    image: 'redis/redis-stack:7.2.0-v0'
+    image: 'redis/redis-stack'
     ports:
       - '8001:8001'
+    environment: 
+      REDIS_ARGS: '--appendonly yes'
+    volumes:
+      - redis_data:/data
     restart: on-failure
+
+volumes:
+  redis_data:
+  server_files:

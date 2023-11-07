@@ -53,7 +53,7 @@ class MuseumDataControllerTest {
     public void testGetAllData() throws Exception {
         when(museumDataService.getData()).thenReturn(museumData);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/museum_data")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/museum-data")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -69,7 +69,7 @@ class MuseumDataControllerTest {
 
         when(museumDataService.getData()).thenThrow((new EntityNotFoundException("MuseumData", "no details")));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/museum_data")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/museum-data")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())

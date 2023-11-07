@@ -12,7 +12,7 @@ info:
   version: v0.0.1
 
 servers:
-  - url: https://130.61.247.149/api/admin
+  - url: https://malyshevhen.uk.to/api/admin
     description: Service for managing website of the Kavaleridze museum
 
 tags:
@@ -680,6 +680,8 @@ components:
         - type
       type: object
       properties:
+        slug:
+          type: string
         title:
           type: string
           nullable: false

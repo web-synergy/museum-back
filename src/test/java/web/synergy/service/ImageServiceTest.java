@@ -90,12 +90,10 @@ class ImageServiceTest {
         var createdDesktopFile = sessionDir
                 .resolve(generatedFileName.getImageId())
                 .resolve(desktopDir)
-                .resolve(filename.replaceFirst("\\..+$", ".webp"))
                 .toFile();
         var createdPreviewFile = sessionDir
                 .resolve(generatedFileName.getImageId())
                 .resolve(previewDir)
-                .resolve(filename.replaceFirst("\\..+$", ".webp"))
                 .toFile();
 
         // then:
@@ -123,7 +121,6 @@ class ImageServiceTest {
                 .resolve(imagesDir)
                 .resolve(generatedFileId.getImageId())
                 .resolve(desktopDir)
-                .resolve(filename.replaceFirst("\\..+$", ".webp"))
                 .toFile();
 
         // Path => /root/images/image-UUID/preview/file.webp
@@ -131,7 +128,6 @@ class ImageServiceTest {
                 .resolve(imagesDir)
                 .resolve(generatedFileId.getImageId())
                 .resolve(previewDir)
-                .resolve(filename.replaceFirst("\\..+$", ".webp"))
                 .toFile();
 
         // when:

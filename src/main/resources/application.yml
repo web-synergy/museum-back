@@ -1,3 +1,7 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
 spring:
   data:
     redis:
@@ -75,7 +79,7 @@ jwt:
 
 web:
   cors:
-    allowed_origins: ${ORIGIN_URI}
+    allowed_origins: http://127.0.0.1:5174, http://127.0.0.1:8080, https://museum-main.vercel.app/, https://museum-admin-weld.vercel.app
     allowed_methods: GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD
     max_age: 3600
     allowed_headers: Authorization, Requestor-Type, Access-Control-Allow-Headers, Access-Control-Allow-Origin, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers
