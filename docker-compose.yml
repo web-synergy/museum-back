@@ -19,7 +19,6 @@ services:
     environment:
       - MAIL_USER=MAIL_USER
       - MAIL_PASSWORD=MAIL_PASSWORD
-      - ORIGIN_URI=https://museum-admin-weld.vercel.app
     volumes:
       - server_files:/app/files
     ports:
