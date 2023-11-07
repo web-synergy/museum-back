@@ -10,9 +10,7 @@ import java.util.Optional;
 
 public interface EventRepository extends RedisDocumentRepository<Event, String> {
 
-    boolean existsByTitle(String eventTitle);
-
-    Page<Event> findAllByStatus(String status, Pageable pageable);
+    Page<Event> findAllByStatusOrderByCreatedDesc(String status, Pageable pageable);
 
     Optional<Event> findBySlug(String slug);
 }

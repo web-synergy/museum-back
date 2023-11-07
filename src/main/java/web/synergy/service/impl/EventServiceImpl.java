@@ -30,7 +30,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Page<Event> getPublished(Pageable pageable) {
-        return eventRepository.findAllByStatus(PUBLISHED.getValue(), pageable);
+        return eventRepository.findAllByStatusOrderByCreatedDesc(PUBLISHED.getValue(), pageable);
     }
 
     @Override
