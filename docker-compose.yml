@@ -1,25 +1,18 @@
 version: '3'
 
 services:
-  proxy:
+  webserver:
     image: nginx:1.15-alpine
     ports:
       - '80:80'
       - '443:443'
     volumes:
-      - ./data/nginx:/etc/nginx/conf.d
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
+      - ./data/nginx:/etc/nginx/conf.d:ro
+      - /usr/bin/certbot:/usr/bin/certbot:ro
+      - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
       - app
     restart: on-failure
-
-  certbot:
-    image: certbot/certbot
-    restart: unless-stopped
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
 
   app:
     build: .
