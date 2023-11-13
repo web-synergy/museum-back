@@ -2,7 +2,6 @@ package web.synergy.domain.model;
 
 import com.redis.om.spring.annotations.Document;
 import com.redis.om.spring.annotations.Indexed;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,7 +21,7 @@ import static web.synergy.dto.EventPublication.TypeEnum.OTHER;
 @ToString
 @NoArgsConstructor
 @Document
-public class Event implements Searchable {
+public class Event implements Searchable, Comparable<Event> {
 
     @Id
     @Indexed
@@ -92,5 +91,14 @@ public class Event implements Searchable {
                 && Objects.equals(description, other.description)
                 && Objects.equals(banner, other.banner)
                 && Objects.equals(end, other.end);
+    }
+
+    @Override
+    public int compareTo(Event o) {
+        int statusComparison = this.getStatus().compareTo(o.getStatus());
+        if (statusComparison == 0) {
+            return o.getCreated().compareTo(this.getCreated());
+        }
+        return statusComparison;
     }
 }

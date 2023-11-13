@@ -59,6 +59,8 @@ class EventTestDataInitializer {
 
                 event.updateSlug();
 
+                event.setCreated(LocalDate.now().plusDays(i));
+
                 repository.save(event);
             });
         };

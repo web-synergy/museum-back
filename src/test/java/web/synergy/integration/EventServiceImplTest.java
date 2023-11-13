@@ -4,6 +4,7 @@ import org.springframework.data.domain.PageRequest;
 import web.synergy.domain.mapper.EventMapper;
 import web.synergy.domain.model.Event;
 import web.synergy.exceptions.custom.EntityNotFoundException;
+import web.synergy.repository.EventRepository;
 import web.synergy.service.EventService;
 import web.synergy.service.ImageService;
 
@@ -23,7 +24,7 @@ import static web.synergy.dto.EventPublication.TypeEnum.CONTEST;
 import static web.synergy.dto.EventPublication.TypeEnum.CREATIVE_EVENING;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Import({ EventTestDataInitializer.class })
+@Import({EventTestDataInitializer.class})
 class EventServiceImplTest extends AbstractIntegrationTest {
 
     @Autowired
@@ -31,6 +32,9 @@ class EventServiceImplTest extends AbstractIntegrationTest {
 
     @Autowired
     private EventMapper mapper;
+
+    @Autowired
+    private EventRepository eventRepository;
 
     @MockBean
     private ImageService imageService;
@@ -145,5 +149,18 @@ class EventServiceImplTest extends AbstractIntegrationTest {
 
         // then:
         assertFalse(pagePublishedEvents.getContent().isEmpty());
+    }
+
+    @Test
+    void retrieveSortedEvents() {
+
+        // given:
+        var pageable = PageRequest.of(0, 5);
+
+        // when:
+        var pageSortedEvents = eventRepository.findAllSorted(pageable);
+
+        // then:
+        assertFalse(pageSortedEvents.getContent().isEmpty());
     }
 }
