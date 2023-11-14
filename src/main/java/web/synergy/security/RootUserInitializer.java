@@ -22,10 +22,12 @@ public class RootUserInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        userService.createRootUser(rootUsername, rootPassword);
+        if (userService.isEmpty()) {
+            userService.createRootUser(rootUsername, rootPassword);
 
-        IntStream.range(1, 30)
-                .forEach(i -> userService.createRootUser(rootUsername + i, rootPassword));
+            IntStream.range(1, 30)
+                    .forEach(i -> userService.createRootUser(rootUsername + i, rootPassword));
+        }
     }
 
 }

@@ -93,6 +93,11 @@ public class UserServiceImpl implements UserService {
         opsForValue.getAndDelete(CONFIRM_CODE_KEY + "_" + authEmail);
     }
 
+    @Override
+    public boolean isEmpty() {
+        return userRepository.findAll().isEmpty();
+    }
+
     private User getUserByEmail(String userLogin) {
         return userRepository.findByEmail(userLogin)
                 .orElseThrow(() -> new UsernameNotFoundException(NOT_FIND_USER_BY_LOGIN));

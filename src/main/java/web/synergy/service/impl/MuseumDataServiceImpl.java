@@ -48,12 +48,14 @@ public class MuseumDataServiceImpl implements MuseumDataService {
     @PostConstruct
     @Transactional
     public void saveStaticMuseumData() {
-        try (InputStream inputStream = new ClassPathResource(resource).getInputStream()) {
-            final byte[] fileData = FileCopyUtils.copyToByteArray(inputStream);
-            final MuseumData museumData = objectMapper.readValue(fileData, MuseumData.class);
-            museumDataRepo.save(museumData);
-        } catch (IOException e) {
-            throw new BasicApplicationException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        if (museumDataRepo.findAll().isEmpty()) {
+            try (InputStream inputStream = new ClassPathResource(resource).getInputStream()) {
+                final byte[] fileData = FileCopyUtils.copyToByteArray(inputStream);
+                final MuseumData museumData = objectMapper.readValue(fileData, MuseumData.class);
+                museumDataRepo.save(museumData);
+            } catch (IOException e) {
+                throw new BasicApplicationException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
     }
 }

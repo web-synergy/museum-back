@@ -12,4 +12,5 @@ public interface UserService {
 
     void confirmUpdateEmail(String code, String userLogin);
 
+    boolean isEmpty();
 }
