@@ -35,6 +35,12 @@ public class Article implements Searchable {
     private String id;
 
     /**
+     * Article route.
+     */
+    @Indexed
+    private String slug;
+
+    /**
      * Article title.
      */
     @Indexed

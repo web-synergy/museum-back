@@ -35,8 +35,9 @@ public class ArticleServiceImpl implements ArticleService {
     public void saveStaticArticles() {
         try (InputStream inputStream = new ClassPathResource(resource).getInputStream()) {
             final byte[] fileData = FileCopyUtils.copyToByteArray(inputStream);
-            final CollectionType collectionType =
-                    objectMapper.getTypeFactory().constructCollectionType(List.class, Article.class);
+            final CollectionType collectionType = objectMapper
+                    .getTypeFactory()
+                    .constructCollectionType(List.class, Article.class);
             final List<Article> articleList = objectMapper.readValue(fileData, collectionType);
             articleRepository.saveAll(articleList);
         } catch (IOException e) {

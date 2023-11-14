@@ -15,6 +15,13 @@ public interface Searchable {
     String getId();
 
     /**
+     * Getter for ID field.
+     *
+     * @return ID of the Post.
+     */
+    String getSlug();
+
+    /**
      * Title of the searchable object.
      * 
      * @return Title of the searchable object.

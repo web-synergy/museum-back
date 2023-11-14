@@ -1,5 +1,6 @@
 package web.synergy.service.impl;
 
+import web.synergy.domain.model.Article;
 import web.synergy.domain.model.Event;
 import web.synergy.domain.model.Searchable;
 import web.synergy.dto.SearchResponse;
@@ -37,17 +38,31 @@ public class SearchServiceImpl implements SearchService {
     public List<SearchResponse> search(String query) {
         final CharSequence sequence = query.toLowerCase();
 
-        try (var eventStream = entityStream.of(Event.class)) {
-            var events = eventStream.collect(Collectors.toList());
-            var posts = new ArrayList<Searchable>(events);
-
-            return filterBySequence(posts, sequence);
-        }
+        return getSearchResults(sequence, Event.class, Article.class);
     }
 
-    private <T extends Searchable> List<SearchResponse> filterBySequence(
-            List<T> posts,
-            final CharSequence sequence) {
+    @SafeVarargs
+    private List<SearchResponse> getSearchResults(
+        final CharSequence sequence,
+        Class<? extends Searchable>... searchables
+    ) {
+        var result = new ArrayList<SearchResponse>();
+
+        for (var searchable : searchables) {
+            try (var searchableStream = entityStream.of(searchable)) {
+                var searchResults = searchableStream.collect(Collectors.toList());
+
+                var eventSearchResponses = filterBySequence(searchResults, sequence);
+                result.addAll(eventSearchResponses);
+            }
+        }
+        return result;
+    }
+
+    private List<SearchResponse> filterBySequence(
+            List<? extends Searchable> posts,
+            final CharSequence sequence
+    ) {
         return posts.parallelStream()
                 .filter(searchPredicate(sequence))
                 .map(this::toSearchResponse)
@@ -67,7 +82,7 @@ public class SearchServiceImpl implements SearchService {
     private SearchResponse toSearchResponse(Searchable post) {
         var type = post instanceof Event ? EVENT : ARTICLE;
         SearchResponse response = new SearchResponse();
-        response.id(post.getId());
+        response.id(post.getSlug());
         response.title(post.getTitle());
         response.description(post.getContent());
         response.contentType(type);
