@@ -58,7 +58,7 @@ class UpdateEmailIntegrationTest extends AbstractIntegrationTest {
         String message = "Code 123456";
         when(mailService.buildHTMLMessageContent(eq(UPDATE_LOGIN), anyString())).thenReturn(message);
 
-        assertDoesNotThrow(() -> userService.updateEmail(newLogin,
+        assertDoesNotThrow(() -> userService.requestToUpdateEmail(newLogin,
                 oldLogin));
 
         assertAll("Test keys",

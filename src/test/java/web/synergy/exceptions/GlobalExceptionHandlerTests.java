@@ -44,7 +44,7 @@ class GlobalExceptionHandlerTests {
         ResponseEntity<ErrorResponse> response =
                 globalExceptionHandler.handleCustomException(exception);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().timestamp()).isNotNull();
         assertThat(response.getBody().message()).isEqualTo(

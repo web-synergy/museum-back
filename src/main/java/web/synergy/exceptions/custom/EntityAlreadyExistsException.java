@@ -16,6 +16,6 @@ public class EntityAlreadyExistsException extends BasicApplicationException {
                                         final String details) {
         super(String.format("%s with `%s` already exists!", entityType,
                         details),
-                HttpStatus.CONFLICT);
+                HttpStatus.BAD_REQUEST);
     }
 }

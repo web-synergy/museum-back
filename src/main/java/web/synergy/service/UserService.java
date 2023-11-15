@@ -6,9 +6,11 @@ public interface UserService {
 
     void updatePassword(String password, String userName);
 
+    void updateEmail(String currentEmail, String emailForUpdate);
+
     Integer incrementLoginCounter(String email);
 
-    String updateEmail(String emailForUpdate, String currentEmail);
+    String requestToUpdateEmail(String emailForUpdate, String currentEmail);
 
     void confirmUpdateEmail(String code, String userLogin);
 

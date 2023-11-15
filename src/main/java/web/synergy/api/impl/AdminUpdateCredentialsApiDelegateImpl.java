@@ -48,7 +48,7 @@ public class AdminUpdateCredentialsApiDelegateImpl implements AdminUpdateCredent
     public ResponseEntity<Void> updateEmail(EmailUpdateRequest emailUpdateRequest) {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         var emailForUpdate = emailUpdateRequest.getEmail();
-        var confirmationCode = userService.updateEmail(emailForUpdate, username);
+        var confirmationCode = userService.requestToUpdateEmail(emailForUpdate, username);
 
         var confirmationCodeMessage = mailService.buildHTMLMessageContent(UPDATE_LOGIN, confirmationCode);
         mailService.sendEmail(emailForUpdate, confirmationCodeMessage, ACTIVATION_CODE);
@@ -75,5 +75,15 @@ public class AdminUpdateCredentialsApiDelegateImpl implements AdminUpdateCredent
                 password[i] = combinedChars.charAt(random.nextInt(combinedChars.length())));
 
         return String.valueOf(password);
+    }
+
+    @Override
+    public ResponseEntity<Void> updateEmailWithoutConfirm(EmailUpdateRequest emailUpdateRequest) {
+        var currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        var emailForUpdate = emailUpdateRequest.getEmail();
+
+        userService.updateEmail(currentEmail, emailForUpdate);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

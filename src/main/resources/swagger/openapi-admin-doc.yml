@@ -553,6 +553,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Admin Update Credentials
+      description: Update admins email explicitly without confirmation.
+      operationId: updateEmailWithoutConfirm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailUpdateRequest'
+      responses:
+        204:
+          description: Email updated successfully.
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'      
   /update/confirm-email:
     put:
       security:
@@ -901,6 +934,7 @@ components:
           type: string
           format: email
           nullable: false
+          minLength: 1
     SuccessAuthResponse:
       description: Login success response
       type: object

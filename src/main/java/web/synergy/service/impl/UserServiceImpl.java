@@ -58,6 +58,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateEmail(String currentEmail, String emailForUpdate) {
+        isEmailNotTaken(emailForUpdate);
+        
+        var admin = getUserByEmail(currentEmail);
+        admin.setEmail(emailForUpdate);
+        userRepository.update(admin);
+    }
+
+    @Override
     public Integer incrementLoginCounter(String email) {
         var user = getUserByEmail(email);
         int counter = user.incrementLoginCounter();
@@ -67,7 +76,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateEmail(String emailForUpdate, String currentEmail) {
+    public String requestToUpdateEmail(String emailForUpdate, String currentEmail) {
         isEmailNotTaken(emailForUpdate);
 
         var confirmationCode = createConfirmationCode();
@@ -85,9 +94,7 @@ public class UserServiceImpl implements UserService {
 
         if (!actualCode.equals(expectedCode)) throw new LoginNotValidException(NOT_VALID_CONFIRMATION_CODE);
 
-        var admin = getUserByEmail(authEmail);
-        admin.setEmail(emailForUpdate);
-        userRepository.update(admin);
+        updateEmail(authEmail, emailForUpdate);
 
         opsForValue.getAndDelete(EMAIL_KEY + "_" + authEmail);
         opsForValue.getAndDelete(CONFIRM_CODE_KEY + "_" + authEmail);
@@ -95,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isEmpty() {
-        return userRepository.findAll().isEmpty();
+        return userRepository.count() == 0;
     }
 
     private User getUserByEmail(String userLogin) {
