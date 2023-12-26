@@ -15,7 +15,7 @@ import web.synergy.exceptions.custom.MethodArgumentNotValidException;
 import web.synergy.exceptions.custom.NullEntityReferenceException;
 import web.synergy.exceptions.errors.ErrorResponse;
 
-@WebMvcTest
+@WebMvcTest(GlobalExceptionHandler.class)
 class GlobalExceptionHandlerTests {
 
     @Autowired

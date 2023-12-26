@@ -70,7 +70,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         Arrays.stream(allowedOrigins)
-                .forEach(o -> config.addAllowedOrigin(o));
+                .forEach(config::addAllowedOrigin);
         config.setAllowedMethods(Arrays.asList(allowedMethods));
         config.setAllowedHeaders(Arrays.asList(allowedHeaders));
         config.setExposedHeaders(Arrays.asList(exposedHeaders));

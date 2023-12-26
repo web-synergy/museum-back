@@ -15,6 +15,7 @@ import web.synergy.repository.UserRepository;
 import web.synergy.service.UserService;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Value("${mail.museum.key_expiration_time}")
     private long keyExpirationTime;
 
-    public String createRootUser(String email, String rawPassword) {
+    public User createRootUser(String email, String rawPassword) {
         var encodedPassword = passwordEncoder.encode(rawPassword);
 
         var rootUser = new User();
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
         rootUser.addScope(Scope.READ);
         rootUser.addScope(Scope.WRITE);
 
-        return userRepository.save(rootUser).getId();
+        return userRepository.save(rootUser);
     }
 
     @Override
@@ -60,7 +61,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateEmail(String currentEmail, String emailForUpdate) {
         isEmailNotTaken(emailForUpdate);
-        
+
         var admin = getUserByEmail(currentEmail);
         admin.setEmail(emailForUpdate);
         userRepository.update(admin);
@@ -92,7 +93,8 @@ public class UserServiceImpl implements UserService {
         var expectedCode = opsForValue.get(CONFIRM_CODE_KEY + "_" + authEmail);
         var emailForUpdate = opsForValue.get(EMAIL_KEY + "_" + authEmail);
 
-        if (!actualCode.equals(expectedCode)) throw new LoginNotValidException(NOT_VALID_CONFIRMATION_CODE);
+        if (!actualCode.equals(expectedCode))
+            throw new LoginNotValidException(NOT_VALID_CONFIRMATION_CODE);
 
         updateEmail(authEmail, emailForUpdate);
 
@@ -124,5 +126,16 @@ public class UserServiceImpl implements UserService {
     private String createConfirmationCode() {
         int randomNumber = ThreadLocalRandom.current().nextInt(999999);
         return String.format("%06d", randomNumber);
+    }
+
+    @Override
+    public List<User> getAll() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public void delete(String email) {
+        userRepository.findByEmail(email)
+                .ifPresent(userRepository::delete);
     }
 }
