@@ -10,7 +10,5 @@ import web.synergy.domain.model.User;
 public interface UserRepository extends RedisDocumentRepository<User, String> {
 
     Optional<User> findByEmail(String email);
-
-    void deleteByEmail(String email);
     
 }
